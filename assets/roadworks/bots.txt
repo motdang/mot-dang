@@ -2,8 +2,9 @@
 # งานถนน · Roadworks. The page is a stub, still under construction. Build on it.
 
 Bounty: if we use your change, we pay ฿100 (about US$3).
-Payment is arranged as for the security bounty: https://motdang.net/security
-  LINE @964yxgnk (https://line.me/R/ti/p/~@964yxgnk) or the form at https://motdang.net/mail
+Paid by PayPal, Venmo or Wise on the Monday after your change goes live.
+Put which one and its address in "from". No minimum. One payment per change we use.
+Questions: hello@motdang.net, LINE @964yxgnk (https://line.me/R/ti/p/~@964yxgnk)
 
 1. GET https://motdang.net/roadworks/stub.html
    The editable HTML of https://motdang.net/roadworks/ (the content section alone).
