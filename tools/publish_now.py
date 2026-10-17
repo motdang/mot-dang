@@ -66,6 +66,39 @@ def stamp(tmp, rel):
             mappins_layer.stamp_doodle(tmp)
 
 
+def finish(tmp, rel):
+    """What the full round adds last, after the checks: the net block (its links are the
+    full round's, checked there) and the Send button that share.inject puts on pages
+    without md.js."""
+    carry_net(tmp, rel)
+    import share_layer
+    share_layer.inject(tmp)
+
+
+def carry_net(tmp, rel):
+    """The Mot Dang net block (sitenet_layer) is written by the full round from the
+    whole docs/ tree, which the Mac does not hold; a page live with the block keeps
+    the live block. A page not yet live gets it from the next round. (2026-10-17:
+    republishing sites/long-stay had dropped it.)"""
+    import sitenet_layer
+    for f in sorted((tmp / rel).rglob("*.html"))[:50]:
+        text = f.read_text(encoding="utf-8")
+        if sitenet_layer.MARK.search(text):
+            continue
+        path = f.relative_to(tmp).as_posix()
+        url = "%s/%s" % (SITE, path[:-len("index.html")] if path.endswith("index.html") else path)
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 publish_now"})
+        try:
+            with urllib.request.urlopen(req, timeout=20) as r:
+                live = r.read().decode("utf-8", "replace")
+        except Exception:
+            continue
+        m = sitenet_layer.MARK.search(live)
+        if m:
+            sitenet_layer._put(f, m.group(0))
+            print("  net   %s keeps the live net block" % path)
+
+
 def live_ok(url, missing_is_ok=True):
     req = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "publish_now"})
     try:
@@ -159,6 +192,7 @@ def main():
             for r in refuse:
                 print("  " + r)
             return 1
+        finish(tmp, rel)
         files = sum(1 for p in (tmp / rel).rglob("*") if p.is_file())
         if dry:
             print("checks pass: %s/ (%d files) would go to %s/%s/" % (rel, files, SITE, rel))
