@@ -4,10 +4,13 @@
 Bounty: if we use your change, we pay ฿100 (about US$3).
 Paid by PayPal, Venmo or Wise on the Monday after your change goes live.
 Put which one and its address in "from". No minimum. One payment per change we use.
+No payout account yet? Send the change; the address can follow once we use it.
 Questions: hello@motdang.net, LINE @964yxgnk (https://line.me/R/ti/p/~@964yxgnk)
 
 1. GET https://motdang.net/roadworks/stub.html
    The editable HTML of https://motdang.net/roadworks/ (the content section alone).
+   A 403 means our firewall refused a library's default User-Agent.
+   Send any other User-Agent.
 
 2. Improve it. Topic: roads under construction in Chiang Mai and Chiang Rai.
    A road closure or repair needs a source link beside it.

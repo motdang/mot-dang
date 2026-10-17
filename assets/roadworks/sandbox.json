@@ -24,6 +24,7 @@
     "display": "฿100 (about US$3)",
     "when": "if we use your change",
     "payment": "PayPal, Venmo or Wise, the Monday after your change goes live; put which one and its address in from",
+    "payout_address": "can follow once we use the change",
     "minimum": "none; one payment per change we use",
     "contact": ["mailto:hello@motdang.net", "https://line.me/R/ti/p/~@964yxgnk"]
   }
