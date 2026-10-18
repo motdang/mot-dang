@@ -25,12 +25,20 @@ def is_bounty(s):
 
 
 def line_for(s):
+    # the amount is this week's Shoup payout (payout_shoup.py), not a fixed ฿100
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import payout_shoup
+        pr = payout_shoup.price("roadworks")
+        amt = "฿%d, %d of %d slots left this week" % (pr["baht"], pr["left"], pr["slots"])
+    except Exception:
+        amt = "this week's amount"
     day = (s.get("createdAt") or "")[:10]
     who = (s.get("from") or "no contact given").replace("\n", " ")[:120]
-    return ("- ROADWORKS ฿100 (added %s, bounty). A change from %s, %d characters, "
-            "suggestion %s. Say go and I check it, put it live if it holds, "
-            "and give you the payout link to tap. Say no and nobody is paid.\n"
-            % (day, who, len(s.get("what") or ""), s["id"][:8]))
+    return ("- ROADWORKS BOUNTY (added %s, %s). A change from %s, %d characters, "
+            "suggestion %s. Say go and I check it, put it live if it holds, record it with "
+            "payout_shoup.py accept, and give you the payout link to tap. Say no and nobody is paid.\n"
+            % (day, amt, who, len(s.get("what") or ""), s["id"][:8]))
 
 
 def main():
