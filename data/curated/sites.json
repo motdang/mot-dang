@@ -1636,6 +1636,34 @@
     "แผนที่ร้าน",
     "ป้ายคิวอาร์"
    ]
+  },
+  {
+   "id": "bots-for-sale",
+   "href": "https://hongdam.net/bots/",
+   "th": "บอทขายถนนให้เรา",
+   "en": "A bot sold us a road",
+   "line_th": "บอทตัวหนึ่งทำงานให้เราแล้วขายผลงาน ฿100 ครึ่งชั่วโมงต่อมาเรามีบอทของเราเอง: สเกาต์ โต๊ะค่าหัวบอท บอทหาเงิน ซื้อได้",
+   "line_en": "a bot did our job and sold us the result for ฿100; half an hour later we had our own: Scout, Bot Bounty Desk, Earner. Purchase them",
+   "icon": "i-ant",
+   "shipped": "2026-10-18",
+   "group": "bots",
+   "where": "both",
+   "served": "external",
+   "words": [
+    "bots",
+    "bot bounty",
+    "ai agent",
+    "agent",
+    "scout",
+    "earner",
+    "nanobot",
+    "bots.txt",
+    "bounty",
+    "บอท",
+    "ค่าหัว",
+    "หงส์ดำ",
+    "hongdam"
+   ]
   }
  ],
  "pages": [
