@@ -40,8 +40,8 @@
     ],
     "rule": "Shoup: each Monday, all 5 weekly slots used last week → one step down; under 3 → one step up; ฿1–฿20",
     "slots_per_week": 5,
-    "slots_left_this_week": 1,
-    "next_free_slot_week": "2026-10-12",
+    "slots_left_this_week": 0,
+    "next_free_slot_week": "2026-10-19",
     "next_change": "2026-10-19"
   }
 }
