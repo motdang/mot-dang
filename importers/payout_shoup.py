@@ -13,7 +13,7 @@ change. A change accepted once this week's slots are used takes a slot in the
 first week with room, at that week's payout. So a week costs at most
 slots × payout, and the payout stays between floor and ceiling.
 
-Opening amounts are Nan's ฿100; slots, ladder and reach are a session's picks
+Opening amounts were Nan's ฿100, cut to ฿10 on her word the same day; slots, ladder and reach are a session's picks
 under her Shoup word (2026-10-15). Each payout still waits for her go
 (her word 2026-10-17); this file only says how much.
 
@@ -34,9 +34,10 @@ BKK = datetime.timezone(datetime.timedelta(hours=7))
 
 PROGRAMS = {
     "roadworks": {
-        "open": 100, "slots": 5,
-        "ladder": [10, 20, 30, 50, 100, 150, 200],
-        "down": 4, "up": 2,                   # ฿10 floor, ฿200 ceiling
+        # Nan 2026-10-18 "try 1/10 current offer for everything focused on bots": ฿100 → ฿10
+        "open": 10, "slots": 5,
+        "ladder": [1, 2, 3, 5, 10, 15, 20],
+        "down": 4, "up": 2,                   # ฿1 floor, ฿20 ceiling
         "opened": "2026-10-12",               # the Monday of the week Briefcraft's first change landed
         "dir": "assets/roadworks", "live": ["roadworks/index.html", "roadworks/stub.html",
                                              "roadworks/bots.txt", "roadworks/sandbox.json"],
@@ -98,7 +99,8 @@ def walk(program, until, c=None):
 
 
 def usd(b):
-    return max(1, round(b / 33))
+    """US$ at ฿33, whole dollars from ฿33 up, cents below."""
+    return str(round(b / 33)) if b >= 33 else "%.2f" % (b / 33)
 
 
 def price(program="roadworks"):
@@ -217,7 +219,7 @@ def publish(live=False):
     sj = os.path.join(d, "sandbox.json")
     j = json.load(open(sj, encoding="utf-8"))
     b = j.setdefault("bounty", {})
-    want = dict(b, amount_thb=pr["baht"], display="฿%d (about US$%d) this week" % (pr["baht"], pr["usd"]),
+    want = dict(b, amount_thb=pr["baht"], display="฿%s (about US$%s) this week" % (pr["baht"], pr["usd"]),
                 rule="Shoup: each Monday, all %d weekly slots used last week → one step down; under 3 → one step up; ฿%d–฿%d"
                      % (pr["slots"], pr["floor"], pr["ceiling"]),
                 slots_per_week=pr["slots"], slots_left_this_week=pr["left"], next_free_slot_week=pr["next_free"], next_change=pr["next_check"],
