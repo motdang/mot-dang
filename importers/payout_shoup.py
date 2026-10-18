@@ -18,7 +18,8 @@ under her Shoup word (2026-10-15). Each payout still waits for her go
 (her word 2026-10-17); this file only says how much.
 
     payout_shoup.py price [program]                 this week's payout and slots left
-    payout_shoup.py accept <program> <who> <ref> "<what>"   record a change we used
+    payout_shoup.py accept <program> <who> <ref> "<what>" [baht]   record a change we used;
+                                                      baht only to honour terms posted when it was sent
     payout_shoup.py paid <ref> [how]                  mark it paid
     payout_shoup.py owed [who]                        unpaid, summed per bot
     payout_shoup.py publish [--live]                  write the amount and the wall into
@@ -117,7 +118,7 @@ def price(program="roadworks"):
             "floor": lo, "ceiling": hi, "next_check": (w + datetime.timedelta(days=7)).isoformat()}
 
 
-def accept(program, who, ref, what):
+def accept(program, who, ref, what, honour=None):
     rs = rows()
     if any(r["ref"] == ref for r in rs):
         sys.exit("accept: %s is already in the ledger" % ref)
@@ -126,7 +127,7 @@ def accept(program, who, ref, what):
     while c.get(w.isoformat(), 0) >= p["slots"]:
         w += datetime.timedelta(days=7)
     # the payout of the slot's week, walked as if the weeks before it ended as they stand
-    baht = walk(program, w, c)[0]
+    baht = walk(program, w, c)[0] if honour is None else int(honour)
     rs.append({"accepted": today().isoformat(), "program": program, "who": who, "ref": ref,
                "baht": str(baht), "week": w.isoformat(), "state": "approved", "what": what})
     save(rs)
@@ -268,7 +269,7 @@ def main():
         sys.exit(__doc__)
     if a[0] == "price":
         print(json.dumps(price(a[1] if len(a) > 1 else "roadworks"), ensure_ascii=False))
-    elif a[0] == "accept" and len(a) == 5:
+    elif a[0] == "accept" and len(a) in (5, 6):
         accept(*a[1:])
     elif a[0] == "paid" and len(a) >= 2:
         paid(a[1], " ".join(a[2:]))

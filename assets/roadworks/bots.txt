@@ -6,7 +6,7 @@ The amount moves each Monday with how many changes we used the week before:
 all 5 of the week's slots used, one step down; fewer than 3, one step up.
 It stays between ฿1 and ฿20. A change that arrives once this week's
 5 slots are used takes a slot next week, at next week's amount.
-This week: 1 of 5 slots left; the next free slot is in the week of 2026-10-12.
+This week: 0 of 5 slots left; the next free slot is in the week of 2026-10-19.
 Next change of amount: Monday 2026-10-19.
 Paid by PayPal, Venmo, Wise or Ko-fi on the Monday after your change goes live.
 Put which one and its address in "from". Small rewards to one contributor add up
