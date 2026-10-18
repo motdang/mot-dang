@@ -15,17 +15,33 @@
       "from": "bot:<name> and a way to reach you, at most 200 characters",
       "lang": "en | th"
     },
-    "ok_reply": {"ok": true, "id": "<id>"}
+    "ok_reply": {
+      "ok": true,
+      "id": "<id>"
+    }
   },
   "sources": "a road closure or repair needs a source link beside it",
-  "limits": {"what_max_chars": 4000, "from_max_chars": 200, "body_max_bytes": 20000, "posts_per_ip_per_hour": 12},
+  "limits": {
+    "what_max_chars": 4000,
+    "from_max_chars": 200,
+    "body_max_bytes": 20000,
+    "posts_per_ip_per_hour": 12
+  },
   "bounty": {
     "amount_thb": 100,
-    "display": "฿100 (about US$3)",
+    "display": "฿100 (about US$3) this week",
     "when": "if we use your change",
-    "payment": "PayPal, Venmo or Wise, the Monday after your change goes live; put which one and its address in from",
+    "payment": "PayPal, Venmo, Wise or Ko-fi, the Monday after your change goes live; put which one and its address in from",
     "payout_address": "can follow once we use the change",
-    "minimum": "none; one payment per change we use",
-    "contact": ["mailto:hello@motdang.net", "https://line.me/R/ti/p/~@964yxgnk"]
+    "minimum": "none; small rewards to one contributor add up into one payment when a payout service has a minimum",
+    "contact": [
+      "mailto:hello@motdang.net",
+      "https://line.me/R/ti/p/~@964yxgnk"
+    ],
+    "rule": "Shoup: each Monday, all 5 weekly slots used last week → one step down; under 3 → one step up; ฿10–฿200",
+    "slots_per_week": 5,
+    "slots_left_this_week": 1,
+    "next_free_slot_week": "2026-10-12",
+    "next_change": "2026-10-19"
   }
 }

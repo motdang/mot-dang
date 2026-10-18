@@ -44,6 +44,7 @@ step claims      python3 importers/sync_claims.py
 step suggestions python3 importers/sync_suggestions.py
 step bounty      python3 importers/bounty_ask.py   # a roadworks change → one go line in QUEUE A
 step scout       python3 importers/roadworks_scout.py   # Mondays: news leads for /roadworks → one go line in QUEUE A
+step payouts     python3 importers/payout_shoup.py publish --live --monday   # Mondays: bounty amount by Shoup, wall of bots
 step misses      python3 importers/box_misses.py --days 14
 
 # The Worker's own health line. /health is new and may not be deployed yet:
