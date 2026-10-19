@@ -18,8 +18,12 @@ under her Shoup word (2026-10-15). Each payout still waits for her go
 (her word 2026-10-17); this file only says how much.
 
     payout_shoup.py price [program]                 this week's payout and slots left
-    payout_shoup.py accept <program> <who> <ref> "<what>" [baht]   record a change we used;
-                                                      baht only to honour terms posted when it was sent
+    payout_shoup.py accept <program> <who> <ref> "<what>" [baht] --src URL [--src URL]
+                           [--sent ISO] [--also-credited WHO]
+                                                    record a change we used; baht only to honour
+                                                      terms posted when it was sent. Refuses when a
+                                                      different sender sent one of its links earlier
+                                                      and is not credited for it (first_sender)
     payout_shoup.py paid <ref> [how]                  mark it paid
     payout_shoup.py owed [who]                        unpaid, summed per bot
     payout_shoup.py publish [--live]                  write the amount and the wall into
@@ -30,6 +34,13 @@ import datetime, json, os, re, shutil, subprocess, sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LEDGER = os.path.expanduser("~/.claude/state/payouts.tsv")
+# The source links of each accepted ref, one "ref<TAB>url" a line, kept beside the
+# ledger so the ledger's columns stay as botlist and state.py read them.
+SRCS = os.path.expanduser("~/.claude/state/payout-srcs.tsv")
+SUGG = os.path.join(REPO, "_incoming", "suggestions.json")
+# Every /roadworks suggestion bounty_ask.py has seen, whatever its status since:
+# suggestions.json holds only the current fetch.
+SEEN = os.path.join(REPO, "_incoming", "roadworks-suggestions.jsonl")
 HEAD = "# accepted\tprogram\twho\tref\tbaht\tweek\tstate\twhat\n"
 BKK = datetime.timezone(datetime.timedelta(hours=7))
 
@@ -118,10 +129,126 @@ def price(program="roadworks"):
             "floor": lo, "ceiling": hi, "next_check": (w + datetime.timedelta(days=7)).isoformat()}
 
 
-def accept(program, who, ref, what, honour=None):
+# ---- who sent a link first ----------------------------------------------
+#
+# Nan, 2026-10-19, on the Samoeng row: "let's not make this category of errors
+# again." Briefcraft Lab emailed the row to hello@ on 18 Oct and it was accepted
+# and paid; dot had sent the same row, with the same Highways Office notice, on
+# 17 Oct through /suggest, and nobody looked in _incoming/suggestions.json.
+
+URL_RE = re.compile(r"https?://[^\s\"'<>)\]]+")
+
+
+def norm_url(u):
+    """host + path, slugs cut: chiangmai.doh.go.th/content/9895-แจ้ง… → chiangmai.doh.go.th/content/9895."""
+    from urllib.parse import urlsplit, unquote
+    u = unquote(u.strip().rstrip(".,;"))
+    if "://" not in u:
+        u = "https://" + u
+    p = urlsplit(u)
+    host = p.netloc.lower().split("@")[-1]
+    host = host[4:] if host.startswith("www.") else host
+    segs = []
+    for seg in p.path.split("/"):
+        if not seg:
+            continue
+        m = re.match(r"^(\d+)[-_]", seg)
+        segs.append(m.group(1) if m else seg.lower())
+    return host + "/" + "/".join(segs) + ("?" + p.query if p.query else "")
+
+
+def urls_in(text):
+    return {norm_url(u) for u in URL_RE.findall(text or "")}
+
+
+def src_rows():
+    out = []
+    if os.path.exists(SRCS):
+        for l in open(SRCS, encoding="utf-8"):
+            f = l.rstrip("\n").split("\t")
+            if len(f) >= 2 and not l.startswith("#"):
+                out.append((f[0], f[1]))
+    return out
+
+
+def suggestions():
+    """Every suggestion on disk, by id: the current fetch and the roadworks archive."""
+    found = {}
+    if os.path.exists(SEEN):
+        for l in open(SEEN, encoding="utf-8"):
+            try:
+                x = json.loads(l)
+                found[x["id"]] = x
+            except (ValueError, KeyError):
+                continue
+    try:
+        subs = json.load(open(SUGG, encoding="utf-8")).get("suggestions") or []
+        for x in subs.values() if isinstance(subs, dict) else subs:
+            if x.get("id"):
+                found[x["id"]] = x
+    except (OSError, ValueError):
+        pass
+    return list(found.values())
+
+
+def same_sender(who, sender):
+    """`who` is a ledger name ("Briefcraft Lab", "dot"); `sender` a suggestion's from line."""
+    w = re.sub(r"[^a-z0-9]", "", (who or "").lower())
+    tokens = {re.sub(r"[^a-z0-9]", "", t) for t in re.split(r"[\s:;,<>()]+", (sender or "").lower())}
+    return bool(w) and (w in tokens or w == re.sub(r"[^a-z0-9]", "", (sender or "").lower()))
+
+
+def first_sender(who, srcs, sent=None, rs=None, subs=None):
+    """The earlier senders of any of `srcs` who are not `who` and are not credited for that link.
+
+    [(sender, when, where, link)] — empty when nobody else had it first. A sender
+    counts as credited when a ledger row of theirs carries the same link."""
+    links = {norm_url(u) for u in srcs}
+    if not links:
+        return []
+    rs = rows() if rs is None else rs
+    by_ref = {r["ref"]: r for r in rs}
+    credited = {}                                     # link → ledger names credited with it
+    for ref, u in src_rows():
+        r = by_ref.get(ref)
+        if r and r["state"] != "void":
+            credited.setdefault(norm_url(u), set()).add(r["who"])
+    sent = sent or datetime.datetime.now(datetime.timezone.utc).isoformat()
+    out = []
+    for x in suggestions() if subs is None else subs:
+        sender = x.get("from") or ""
+        when = x.get("createdAt") or ""
+        if same_sender(who, sender) or not when or when >= sent:
+            continue
+        for link in links & urls_in(json.dumps(x, ensure_ascii=False)):
+            if any(same_sender(c, sender) for c in credited.get(link, ())):
+                continue
+            out.append((sender, when, "suggestion %s" % x["id"][:8], link))
+    return sorted(out, key=lambda t: t[1])
+
+
+def in_ledger(who, srcs, rs=None):
+    """[(who, ref)] of other ledger rows carrying one of `srcs`: credited already, said, not refused."""
+    links = {norm_url(u) for u in srcs}
+    by_ref = {r["ref"]: r for r in (rows() if rs is None else rs)}
+    return sorted({(by_ref[ref]["who"], ref) for ref, u in src_rows()
+                   if ref in by_ref and by_ref[ref]["state"] != "void"
+                   and by_ref[ref]["who"] != who and norm_url(u) in links})
+
+
+def accept(program, who, ref, what, honour=None, srcs=(), sent=None, also=None):
     rs = rows()
     if any(r["ref"] == ref for r in rs):
         sys.exit("accept: %s is already in the ledger" % ref)
+    if not srcs:
+        sys.exit("accept: give the row's source link with --src URL, so an earlier sender of it is found")
+    earlier = first_sender(who, srcs, sent, rs)
+    if earlier and not (also and all(same_sender(also, e[0]) for e in earlier)):
+        lines = ["accept: REFUSED — %s sent this link before %s and is not credited for it:" % (e[0], who) for e in earlier[:1]]
+        lines += ["  %s  %s  (%s)" % (e[1][:16].replace("T", " "), e[3], e[2]) for e in earlier]
+        lines.append("  Credit them first (accept with their name and the same --src), or say "
+                     "--also-credited \"<their name>\" to record %s as a second sender." % ref)
+        sys.exit("\n".join(lines))
     p, c = PROGRAMS[program], counts(program, rs)
     w = monday(today())
     while c.get(w.isoformat(), 0) >= p["slots"]:
@@ -130,8 +257,13 @@ def accept(program, who, ref, what, honour=None):
     baht = walk(program, w, c)[0] if honour is None else int(honour)
     rs.append({"accepted": today().isoformat(), "program": program, "who": who, "ref": ref,
                "baht": str(baht), "week": w.isoformat(), "state": "approved", "what": what})
+    for o, oref in in_ledger(who, srcs, rs):
+        print("accept: %s is credited for the same link already (%s); this is a second credit" % (o, oref))
     save(rs)
-    print("%s · %s · ฿%d · slot week %s" % (ref, who, baht, w.isoformat()))
+    with open(SRCS, "a", encoding="utf-8") as f:
+        f.write("".join("%s\t%s\n" % (ref, u) for u in srcs))
+    print("%s · %s · ฿%d · slot week %s%s" % (ref, who, baht, w.isoformat(),
+                                             " · also credited: %s" % also if earlier else ""))
 
 
 def paid(ref, how=""):
@@ -180,6 +312,11 @@ def fill(t, pr):
     return t.format(lo_n=3, **pr)
 
 
+def row_key(r):
+    """The table row a ledger entry is for: its "what" without a trailing note in brackets."""
+    return re.sub(r"\s*\([^()]*\)\s*$", "", r["what"]).strip()
+
+
 def wall(program):
     by = {}
     for r in rows():
@@ -193,7 +330,8 @@ def wall(program):
         first = min(r["accepted"] for r in rs)
         items.append("<li><b>%s</b> · %d · %s<span class=\"en\">since %s</span></li>"
                      % (who, len(rs), whats, first))
-    n = sum(len(v) for v in by.values())
+    # Rows, not ledger entries: a row two bots sent (Samoeng, dot and Briefcraft) counts once.
+    n = len({row_key(r) for v in by.values() for r in v})
     return ("<section id=\"built-by\" aria-labelledby=\"bb-h\">\n"
             "<h2 id=\"bb-h\">บอทที่ช่วยสร้างหน้านี้<span class=\"en\">Bots that built this page</span></h2>\n"
             "<p>แถวในตารางนี้ %d แถวมาจากบอท แต่ละแถวมีแหล่งข้อมูลและวันที่ คนของเราตรวจกับประกาศจริงก่อนขึ้นเว็บ"
@@ -269,8 +407,17 @@ def main():
         sys.exit(__doc__)
     if a[0] == "price":
         print(json.dumps(price(a[1] if len(a) > 1 else "roadworks"), ensure_ascii=False))
-    elif a[0] == "accept" and len(a) in (5, 6):
-        accept(*a[1:])
+    elif a[0] == "accept":
+        opts, pos, i = {"--src": [], "--sent": [], "--also-credited": []}, [], 1
+        while i < len(a):
+            if a[i] in opts and i + 1 < len(a):
+                opts[a[i]].append(a[i + 1]); i += 2
+            else:
+                pos.append(a[i]); i += 1
+        if len(pos) not in (4, 5):
+            sys.exit(__doc__)
+        accept(*pos[:4], honour=pos[4] if len(pos) > 4 else None, srcs=opts["--src"],
+               sent=(opts["--sent"] or [None])[0], also=(opts["--also-credited"] or [None])[0])
     elif a[0] == "paid" and len(a) >= 2:
         paid(a[1], " ".join(a[2:]))
     elif a[0] == "owed":
