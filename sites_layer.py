@@ -121,6 +121,24 @@ def load(docs=None):
             c.setdefault("served", "docs")
             cards.append(c)
             have.add(href)
+    # A folder installed whole at the top level (assets/parking/ → /parking/)
+    # ships its card beside its index.html. Until 2026-10-18 only sites/<slug>/
+    # was read, so parking/'s card, written with the site on 10-13, never
+    # registered and the gate held the site back.
+    for cj in sorted((ROOT / "assets").glob("*/card.json")):
+        href = "%s/" % cj.parent.name
+        if cj.parent.name == "sites" or href in have \
+                or not (cj.parent / "index.html").exists():
+            continue
+        try:
+            c = json.loads(cj.read_text(encoding="utf-8"))
+        except ValueError:
+            continue
+        c.setdefault("id", cj.parent.name)
+        c["href"] = href
+        c.setdefault("served", "docs")
+        cards.append(c)
+        have.add(href)
     reg["cards"] = cards
     _REG = reg
     return reg

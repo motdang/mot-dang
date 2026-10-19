@@ -28,9 +28,13 @@ WHAT THIS LAYER DOES.
 """
 from __future__ import annotations
 
+import html
 import json
 import os
+import re
 import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -238,6 +242,53 @@ def place_row(r, bi, esc, base=""):
     return "".join(out)
 
 
+_SITE_A = re.compile(r'<a href="([^"]+)" rel="nofollow">[^<]*</a>')
+
+
+def _refresh_websites(bdir):
+    """Re-apply today's link verdicts to the register's building pages.
+
+    The sheet writes b/ only when it is rebuilt, and publish.sh rebuilds it
+    only when a listing arrives. A building site check_links finds dead after
+    that kept its live link here, and the publish gate held 15 pages back for
+    it (2026-10-17, condo domains gone 13-17 Oct; out/ last built 12 Oct). So
+    each anchor the sheet wrote for a website is asked again, in the sheet's
+    own words (register.website_html), and replaced where the answer changed.
+    Run in the sheet's directory as its own process: register.py imports
+    sibling modules by bare name (buildings, facets, th). Returns pages changed.
+    """
+    pages = sorted(bdir.glob("*.html")) if bdir.is_dir() else []
+    texts = {p: p.read_text(encoding="utf-8") for p in pages}
+    urls = sorted({html.unescape(m.group(1))
+                   for t in texts.values() for m in _SITE_A.finditer(t)})
+    if not urls:
+        return 0
+    # Only what is now dead or moved: a live link keeps the label the sheet
+    # gave it ("Facebook", a LINE id), which website_html would not.
+    ask = ("import json, sys, register as R\n"
+           "out = {}\n"
+           "for u in json.load(sys.stdin):\n"
+           "    st = R.link_verdict(u).get('status')\n"
+           "    if st in R.BROKEN or st == 'moved-social':\n"
+           "        out[u] = R.website_html(u)\n"
+           "print(json.dumps(out))")
+    try:
+        done = subprocess.run([sys.executable, "-c", ask], cwd=SHEET,
+                              input=json.dumps(urls), capture_output=True,
+                              text=True, timeout=300, check=True)
+        now = json.loads(done.stdout)
+    except (subprocess.SubprocessError, OSError, ValueError) as e:
+        print(f"  listings: link verdicts not re-applied to b/ ({e})")
+        return 0
+    n = 0
+    for p, t in texts.items():
+        new = _SITE_A.sub(lambda m: now.get(html.unescape(m.group(1)), m.group(0)), t)
+        if new != t:
+            p.write_text(new, encoding="utf-8")
+            n += 1
+    return n
+
+
 def emit(g, data):
     """Copy the sheet in and publish the counts. Returns a one-line status."""
     docs = g["DOCS"]
@@ -284,6 +335,7 @@ def emit(g, data):
         src = out / name
         if src.is_dir():
             shutil.copytree(src, dest / name, dirs_exist_ok=True)
+    stale = _refresh_websites(dest / "b")
     photos = out / "photos"
     if photos.is_dir():
         shutil.copytree(photos, dest / "photos", dirs_exist_ok=True)
@@ -321,7 +373,8 @@ def emit(g, data):
     n = sum(e.get("n", 0) for e in join.values())
     known = sum(1 for ref in join if ref in (g.get("BY_ID") or {}))
     return (f"/listings/ copied · {n} offer(s) on {len(join)} building(s), "
-            f"{live} live · {known} of those buildings are on our register")
+            f"{live} live · {known} of those buildings are on our register"
+            + (f" · {stale} building page(s) given today's link verdicts" if stale else ""))
 
 
 if __name__ == "__main__":
