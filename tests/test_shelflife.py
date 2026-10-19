@@ -64,6 +64,7 @@ console.log(JSON.stringify({shown: block.style.display !== 'none', standIn: !aft
         "build.py": ['shelflife.guard("weather"', 'shelflife.guard("air"', 'shelflife.guard("showtimes"',
                      'shelflife.guard("fx"', 'shelflife.guard("gold"', 'shelflife.guard("crypto"'],
         "home_next.py": ['shelflife.guard("air"'],
+        "flights_layer.py": ['shelflife.fresh("fares"'],
         "nam_layer.py": ['shelflife.guard("river"'],
         "foon_layer.py": ['shelflife.guard("air"'],
         "chuai_layer.py": ['shelflife.guard("air"'],

@@ -75,6 +75,8 @@ CHECKS = [
     # A claim count of zero is a true fact about the world, not a broken
     # fetcher — only its freshness is checked.
     ("claims.json",         ["generated"],              3,  []),
+    # cached fares for the weekend finder on /flights; the page hides them after 3 days
+    ("flight_prices.json",  ["generated"],              1,  [("rows", 1)]),
 ]
 
 
@@ -95,6 +97,7 @@ FETCHERS = {
     "fortune.json":        (["importers/make_fortune.py"], 600),
     "sky.json":            (["importers/make_sky.py"], 900),
     "claims.json":         (["importers/sync_claims.py"], 300),
+    "flight_prices.json":  (["importers/fetch_flight_prices.py"], 600),
 }
 HEAL_EVERY_H = 6
 ATTEMPTS = os.path.join(ROOT, "cache", "heal-attempts.json")

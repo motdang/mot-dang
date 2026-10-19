@@ -88,11 +88,18 @@ def days_bi(days):
     return th, en
 
 
+def marker(place):
+    """Partner ID plus a SubID per placement, so Travelpayouts' reports say
+    which part of the page a booking came from: 749581.motdang_routes,
+    749581.motdang_weekend. A SubID takes letters, digits and _ only."""
+    return f'{AFF["marker"]}_{place}'
+
+
 def fare_href(origin, dest, depart):
     """Aviasales deep link, one adult, origin = our airport (the reader who
     books from this page mostly lives here). flights.js re-dates it later."""
     return (f'{AFF["host"]}/search/{origin}{depart:%d%m}{dest}1'
-            f'?marker={AFF["marker"]}')
+            f'?marker={marker("routes")}')
 
 
 def airline_name(g, code, link=False):
@@ -448,6 +455,112 @@ def today_section(g):
             '</script></section>')
 
 
+# ------------------------------------------------------------ weekend away
+
+# UTC offsets for the far ends of our routes (none of them keeps summer time).
+# Ours, and every Thai airport, are +7.
+TZ = {"PVG": 8, "TPE": 8, "CAN": 8, "XIY": 8, "CKG": 8, "KMG": 8, "HKG": 8,
+      "PEK": 8, "TFU": 8, "JHG": 8, "SIN": 8, "KUL": 8, "PUS": 9, "ICN": 9,
+      "KIX": 9, "RGN": 6.5, "MDL": 6.5, "AUH": 4}
+# A city with two airports is one destination: land at one, leave from either.
+CITY = {"DMK": ("BKK", "กรุงเทพฯ", "Bangkok"), "BKK": ("BKK", "กรุงเทพฯ", "Bangkok")}
+
+
+def _plus(dep, arr):
+    return 1 if arr < dep else 0
+
+
+def trip_data():
+    """What the weekend finder pairs: per (our airport, destination city), every
+    timetable row and every dated time seen on a booking page, both ways."""
+    places = {}
+    for r in ROUTES:
+        city, th, en = CITY.get(r["iata"], (r["iata"], r["th"], r["en"]))
+        key = f'{r["airport"]}-{city}'
+        p = places.setdefault(key, {"k": key, "from": r["airport"], "to": city,
+                                    "th": th, "en": en, "tz": TZ.get(r["iata"], 7),
+                                    "aps": [], "al": [], "legs": []})
+        p["aps"].append(r["iata"])
+        p["al"] += [c for c in r["airlines"] if c not in p["al"]]
+        for d in ("out", "in"):
+            for f in r.get(d, []):
+                p["legs"].append({"d": d, "ap": r["iata"], "al": f["al"], "no": f["no"],
+                                  "dep": f["dep"], "arr": f["arr"], "plus": f.get("plus", 0),
+                                  "days": f.get("days", ""), "valid": f.get("valid") or "/"})
+        for f in r.get("seen", []):
+            on = f.get("dates") or ([f["on"]] if f.get("on") else [])
+            if not (f.get("arr") and on):
+                continue
+            p["legs"].append({"d": f["dir"], "ap": r["iata"], "al": f["al"], "no": f.get("no", ""),
+                              "dep": f["dep"], "arr": f["arr"], "plus": _plus(f["dep"], f["arr"]),
+                              "on": on, "seen": 1})
+    keep = [p for p in places.values()
+            if any(l["d"] == "out" for l in p["legs"]) and any(l["d"] == "in" for l in p["legs"])]
+    # Which airlines on the route have no full timetable in our rows.
+    for p in keep:
+        full = {l["al"] for l in p["legs"] if not l.get("seen")}
+        p["gap"] = [c for c in p["al"] if c not in full]
+    keep.sort(key=lambda p: (p["from"], p["to"] != "BKK", p["en"]))
+    return {"places": keep,
+            "al": {k: [v["th"], v["en"]] for k, v in AIRLINES.items()},
+            "aff": {"host": AFF["host"], "marker": marker("weekend")}, "fares": fares()}
+
+
+def fares():
+    """Cached fares (importers/fetch_flight_prices.py), keyed origin>dest airline
+    departure, or None once the file is past shelflife's "fares" limit.
+    flights.js drops them too when a reader's clock passes the limit."""
+    f = ROOT / "data" / "flight_prices.json"
+    if not f.exists():
+        return None
+    import shelflife
+    doc = json.loads(f.read_text())
+    if not shelflife.fresh("fares", doc.get("generated")):
+        return None
+    return {"asof": doc["generated"][:10], "max": shelflife.MAX_DAYS["fares"],
+            "thb": {f'{r["o"]}>{r["d"]} {r["al"]} {r["dep"]}': r["thb"] for r in doc["rows"]}}
+
+
+def trip_section(g):
+    """Out window + back window → out/back pairs with hours there and hotel
+    nights. Baked as controls and data; flights.js does the pairing."""
+    bi, bi_text = g["bi"], g["bi_text"]
+    data = json.dumps(trip_data(), ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+
+    def when(cls, th, en):
+        return (f'<label class="tw">{bi(th, en)}'
+                f'<input type="datetime-local" class="{cls}" step="900" '
+                f'aria-label="{bi_text(th, en)}"></label>')
+    return (
+        '<section class="ftrip" id="trip">'
+        f'<h2>{bi("ไปกลับสุดสัปดาห์", "A weekend away")}</h2>'
+        f'<p class="bnote">{bi("เลือกที่หมาย ช่วงเวลาขาไป และช่วงเวลาขากลับ แล้วดูคู่เที่ยวบินไป–กลับ อยู่ที่นั่นกี่ชั่วโมง และต้องค้างกี่คืน ราคาอยู่ในปุ่มราคาตั๋วของแต่ละเที่ยว", "Pick a place, a window to leave and a window to come back, and see the out-and-back pairs: hours there and hotel nights. Each flight carries its own fare link.")}</p>'
+        f'<p class="tnojs">{bi("ต้องเปิด JavaScript ตารางรายวันด้านล่างมีทุกเที่ยว", "This needs JavaScript; the daily timetable below lists every flight.")}</p>'
+        '<div class="tform" hidden>'
+        '<div class="trow">'
+        '<div class="seg" role="group" data-k="from" aria-label="ออกจาก · From">'
+        '<button type="button" data-v="CNX" aria-pressed="true">เชียงใหม่ CNX</button>'
+        '<button type="button" data-v="CEI" aria-pressed="false">เชียงราย CEI</button></div>'
+        f'<label class="tw">{bi("ไปที่", "To")}<select class="tto" aria-label="{bi_text("ไปที่", "To")}"></select></label>'
+        '</div>'
+        '<div class="trow">'
+        + when("ol", "ขาไป ออกไม่ก่อน", "Leave from")
+        + when("oh", "ไม่เกิน", "until")
+        + '</div><div class="trow">'
+        + when("bl", "ขากลับ ออกไม่ก่อน", "Come back from")
+        + when("bh", "ไม่เกิน", "until")
+        + '</div><div class="trow">'
+        f'<label class="tw">{bi("อยู่ที่นั่นอย่างน้อย (ชม.)", "At least (hours there)")}'
+        f'<input type="number" class="tmin" min="0" max="240" value="12" aria-label="{bi_text("อยู่ที่นั่นอย่างน้อย ชั่วโมง", "At least hours there")}"></label>'
+        f'<label class="tw">{bi("ทั้งทริปไม่เกิน (ชม.)", "Whole trip at most (hours)")}'
+        f'<input type="number" class="tmax" min="1" max="480" value="48" aria-label="{bi_text("ทั้งทริปไม่เกิน ชั่วโมง", "Whole trip at most hours")}"></label>'
+        '</div></div>'
+        '<div class="tout" aria-live="polite"></div>'
+        f'<p class="bnote">{bi("จากตารางบินที่สายการบินประกาศ และเวลาที่เห็นในหน้าจองตั๋วสำหรับวันนั้น ๆ ไม่ใช่ที่นั่งว่าง ค้างคืน = อยู่ช่วงตีสองที่นั่น ปุ่มราคาตั๋วเป็นลิงก์แนะนำ ค้นทุกสายการบินในวันนั้น", "From the airlines’ published timetables and times seen on booking pages for single dates, not seat availability. A hotel night is a stay that covers 2 a.m. Fare links are referral links and search every airline on that day.")}</p>'
+        f'<script type="application/json" id="tripdata">{data}</script>'
+        '</section>')
+
+
 ARRIVING = [  # Travelpayouts, project Motdang, sub ID "flights" (Nan, 2026-10-04)
     ("https://kiwitaxi.tpx.li/TdHDVcyJ", "i-bus", "รถรับสนามบิน", "Airport pickup", "Kiwitaxi"),
     ("https://tpx.li/AGwXCfaX", "i-bus", "รถรับสนามบิน", "Airport pickup", "Welcome Pickups"),
@@ -497,10 +610,11 @@ def build_board(g):
     body = (
         f'<h1>✈️ {bi("กระดานเที่ยวบิน เชียงใหม่ · เชียงราย", "Flights board — CNX & CEI")}</h1>'
         f'<p class="lede">{bi(lede_th, lede_en)}</p>'
-        f'<nav class="apjump"><a href="#today">{bi("วันนี้", "Today")}</a><a href="#board">{bi("ตารางรายวัน", "Daily timetable")}</a>'
+        f'<nav class="apjump"><a href="#today">{bi("วันนี้", "Today")}</a><a href="#trip">{bi("ไปกลับสุดสัปดาห์", "Weekend away")}</a><a href="#board">{bi("ตารางรายวัน", "Daily timetable")}</a>'
         f'<a href="#cnx">เชียงใหม่ CNX</a><a href="#cei">เชียงราย CEI</a>'
         f'<a href="#airlines">{bi("สายการบิน", "Airlines")}</a></nav>'
         + today_section(g)
+        + trip_section(g)
         + arriving_row(g)
         + board(g, build_day)
         + airport_section(g, "CNX", build_day)
@@ -694,6 +808,34 @@ padding:.22rem .8rem;background:var(--card)}
 .arrb{font-weight:400;color:var(--gloss)}
 .arr1:hover .arrb{color:var(--paper)}
 .arrnote{font-size:.78rem;color:var(--gloss);margin:.35rem 0 0}
+.ftrip{margin:0 0 2.2rem}
+.ftrip h2{margin:0 0 .2rem}
+.ftrip.js .tnojs{display:none}
+.trow{display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:flex-end;margin:0 0 .55rem}
+.tw{display:flex;flex-direction:column;gap:.15rem;font-size:.8rem;font-weight:700;color:var(--ink-soft);min-width:0}
+.tw input,.tw select{font:inherit;font-size:.9rem;font-weight:400;border:2px solid var(--ink);border-radius:.5rem;
+padding:.25rem .45rem;background:var(--card);color:var(--ink);max-width:100%}
+.tw input[type=number]{width:6rem}
+.tsum{font-size:.85rem;color:var(--ink-soft);margin:.3rem 0 .5rem}
+.tpairs{display:grid;gap:.55rem}
+.tpair{background:var(--card);border:2px solid var(--ink);border-radius:.7rem;padding:.5rem .65rem;
+box-shadow:3px 3px 0 var(--card-alt)}
+.tph{display:flex;flex-wrap:wrap;gap:.2rem .7rem;align-items:baseline;margin:0 0 .25rem}
+.tph b{font-size:1.05rem;font-variant-numeric:tabular-nums}
+.tnights{font-size:.82rem;font-weight:700;border-radius:2rem;padding:.08em .6em;background:var(--card-alt);
+border:1.5px solid var(--gloss)}
+.tleg{display:flex;flex-wrap:wrap;gap:.15rem .6rem;align-items:center;font-size:.86rem;
+padding:.2rem 0;border-top:1px solid var(--rule);font-variant-numeric:tabular-nums}
+.tleg .rowicon{width:16px;height:16px;flex:0 0 auto}
+.tleg.back .rowicon{transform:scaleX(-1)}
+.tleg .tt1{font-weight:700}
+.tleg .tseen{font-size:.75rem;color:var(--gloss);font-style:italic}
+.tleg .fare{margin:0 0 0 auto;font-size:.78rem;padding:.12rem .7rem}
+.tleg .tthb{font-weight:800}
+.tboth{font-size:.85rem;font-weight:800;color:var(--ant-dark)}
+.tmore{font:inherit;font-size:.85rem;margin:.5rem 0 0;border:2px solid var(--ink);border-radius:2rem;
+background:var(--card);color:var(--ink);padding:.25rem .9rem;cursor:pointer}
+.tgap{font-size:.8rem;color:var(--ink-soft);margin:.5rem 0 0}
 """
 
 # ---------------------------------------------------------------------- js
@@ -783,12 +925,154 @@ setInterval(paint,60000);
 """
 
 
+TRIP_CORE = """
+// weekend away: pair out and back flights (the pairing in ~/.claude/bin/trip, on timetable rows).
+// Times are local at each airport; a window is local at the airport the flight leaves from.
+var mdTrip=(function(){
+function addDays(iso,n){var t=new Date(iso+'T00:00:00Z');t.setUTCDate(t.getUTCDate()+n);return t.toISOString().slice(0,10);}
+function dow(iso){return (new Date(iso+'T00:00:00Z').getUTCDay()+6)%7+1;}
+function ms(iso,hm,tz){return Date.parse(iso+'T'+hm+':00Z')-tz*3600e3;}
+function legs(P,dir,lo,hi){
+  var tzD=dir==='out'?7:P.tz,tzA=dir==='out'?P.tz:7,got=[],have={};
+  for(var day=lo.slice(0,10);day<=hi.slice(0,10);day=addDays(day,1)){
+    var dn=String(dow(day));
+    P.legs.forEach(function(f){
+      if(f.d!==dir)return;
+      if(f.on){if(f.on.indexOf(day)<0)return;}
+      else{var v=f.valid.split('/');if(f.days.indexOf(dn)<0||(v[0]&&day<v[0])||(v[1]&&day>v[1]))return;}
+      var at=day+'T'+f.dep;if(at<lo||at>hi)return;
+      var k=f.al+at;if(have[k])return;have[k]=1;
+      var ad=addDays(day,f.plus||0);
+      got.push({f:f,day:day,aday:ad,dep:ms(day,f.dep,tzD),arr:ms(ad,f.arr,tzA)});});
+  }
+  // a timetable row wins over the same flight seen on a booking page
+  got.sort(function(a,b){return (a.f.seen||0)-(b.f.seen||0);});
+  var seen={};got=got.filter(function(x){var k=x.f.al+x.day+x.f.dep;if(seen[k])return false;seen[k]=1;return true;});
+  return got.sort(function(a,b){return a.dep-b.dep;});
+}
+// nights in the city: each 02:00 there that falls between landing and leaving
+function nights(arr,dep,tz){
+  var n=0,day=new Date(arr+tz*3600e3).toISOString().slice(0,10);
+  for(;;day=addDays(day,1)){var two=ms(day,'02:00',tz);if(two>dep)return n;if(two>arr)n++;}
+}
+function pairs(P,q){
+  var outs=legs(P,'out',q.outLo,q.outHi),backs=legs(P,'in',q.backLo,q.backHi),ps=[];
+  outs.forEach(function(o){backs.forEach(function(b){
+    var ground=(b.dep-o.arr)/36e5,whole=(b.arr-o.dep)/36e5;
+    if(ground>0&&ground>=q.min&&whole<=q.max)
+      ps.push({out:o,back:b,ground:ground,whole:whole,nights:nights(o.arr,b.dep,P.tz)});});});
+  ps.sort(function(a,b){return a.nights-b.nights||b.ground-a.ground||a.out.dep-b.out.dep;});
+  return {outs:outs,backs:backs,pairs:ps};
+}
+// the first n, plus the longest stay at every other count of nights
+function pick(ps,n){
+  var shown=ps.slice(0,n),best={};
+  ps.forEach(function(p){if(!(p.nights in best))best[p.nights]=p;});
+  Object.keys(best).forEach(function(k){if(shown.indexOf(best[k])<0)shown.push(best[k]);});
+  return shown;
+}
+// a cached fare for this leg: same airports, airline and departure; F = data.fares
+function fresh(F,now){return !!F&&(now-Date.parse(F.asof+'T00:00:00+07:00'))/864e5<F.max+1;}
+function price(F,P,x,back){
+  var o=back?x.f.ap:P.from,d=back?P.from:x.f.ap;
+  return F&&F.thb[o+'>'+d+' '+x.f.al+' '+x.day+'T'+x.f.dep]||0;
+}
+return {legs:legs,nights:nights,pairs:pairs,pick:pick,addDays:addDays,fresh:fresh,price:price};
+})();
+"""
+
+TRIP_UI = """
+(function(){
+var S=document.getElementById('trip');if(!S||!window.mdTrip)return;
+var D=JSON.parse(document.getElementById('tripdata').textContent),T=window.mdTrip;
+var F=T.fresh(D.fares,Date.now())?D.fares:null;
+var TD=['จ.','อ.','พ.','พฤ.','ศ.','ส.','อา.'],ED=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+var TM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+var EM=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function bi(th,en){return '<span class="bi"><span class="th" lang="th">'+th+'</span><span class="en" lang="en">'+en+'</span></span>';}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function icon(n){return window.mdIcon?window.mdIcon(n,16):'';}
+function q(c){return S.querySelector(c);}
+var st={from:'CNX',all:false},sel=q('.tto'),out=q('.tout');
+// next Saturday (today if it is Saturday), Bangkok time
+var now=new Date(Date.now()+7*36e5),today=now.toISOString().slice(0,10);
+var sat=T.addDays(today,(6-now.getUTCDay()+7)%7),sun=T.addDays(sat,1),mon=T.addDays(sat,2);
+q('.ol').value=sat+'T16:00';q('.oh').value=sun+'T11:00';q('.bl').value=sun+'T18:00';q('.bh').value=mon+'T11:00';
+function places(){
+  var cur=sel.value;sel.innerHTML='';
+  D.places.forEach(function(p){if(p.from!==st.from)return;var o=document.createElement('option');
+    o.value=p.k;o.textContent=p.th+' · '+p.en+' ('+p.aps.join(' + ')+')';sel.appendChild(o);});
+  if(cur&&[].some.call(sel.options,function(o){return o.value===cur;}))sel.value=cur;
+}
+function dlabel(iso){var t=new Date(iso+'T00:00:00Z'),w=(t.getUTCDay()+6)%7;
+  return [TD[w]+' '+t.getUTCDate()+' '+TM[t.getUTCMonth()],ED[w]+' '+t.getUTCDate()+' '+EM[t.getUTCMonth()]];}
+function hrs(h){var m=Math.round(h*60),H=Math.floor(m/60),M=m%60;
+  return [(H?H+' ชม. ':'')+(M?M+' นาที':''),H+'h '+(M<10?'0':'')+M+'m'];}
+function fare(org,dst,iso){
+  return D.aff.host+'/search/'+org+iso.slice(8,10)+iso.slice(5,7)+dst+'1?marker='+encodeURIComponent(D.aff.marker);}
+function al(c){return D.al[c]||[c,c];}
+function baht(n){return '฿'+n.toLocaleString('en-US');}
+function leg(x,P,back){
+  var f=x.f,a=al(f.al),d=dlabel(x.day),home=P.from,org=back?f.ap:home,dst=back?home:f.ap;
+  var plus=x.aday!==x.day?'<sup>+1</sup>':'',thb=T.price(F,P,x,back);
+  return '<div class="tleg'+(back?' back':'')+'">'+icon('i-plane')+
+    '<span class="tt1">'+bi(d[0],d[1])+' '+esc(f.dep)+'</span>'+
+    '<span>'+esc(org)+' → '+esc(dst)+' '+esc(f.arr)+plus+'</span>'+
+    '<span>'+bi(esc(a[0]),esc(a[1]))+(f.no?' '+esc(f.no):'')+'</span>'+
+    (f.seen?'<span class="tseen">'+bi('เวลาที่เห็นในหน้าจองตั๋ววันนั้น','time seen on a booking page for that day')+'</span>':'')+
+    '<a class="fare" href="'+esc(fare(org,dst,x.day))+'" rel="nofollow sponsored noopener" target="_blank">'+
+    (thb?'<b class="tthb">'+baht(thb)+'</b> ':'')+bi('ราคาตั๋ว','Fares')+' →</a></div>';
+}
+function paint(){
+  var P=null;D.places.forEach(function(p){if(p.k===sel.value)P=p;});if(!P){out.innerHTML='';return;}
+  var Q={outLo:q('.ol').value,outHi:q('.oh').value,backLo:q('.bl').value,backHi:q('.bh').value,
+    min:+q('.tmin').value||0,max:+q('.tmax').value||1e9};
+  if(!(Q.outLo&&Q.outHi&&Q.backLo&&Q.backHi)){out.innerHTML='';return;}
+  var R=T.pairs(P,Q),shown=st.all?R.pairs:T.pick(R.pairs,9),h='';
+  h+='<p class="tsum">'+bi('ขาไป '+R.outs.length+' เที่ยว × ขากลับ '+R.backs.length+' เที่ยว → '+R.pairs.length+' คู่ที่เข้าเงื่อนไข',
+    R.outs.length+' out × '+R.backs.length+' back → '+R.pairs.length+' pairs fit')+'</p>';
+  if(shown.length){
+    h+='<div class="tpairs">'+shown.map(function(p){var g=hrs(p.ground),n=p.nights,
+        a=T.price(F,P,p.out,false),b=T.price(F,P,p.back,true);
+      return '<div class="tpair"><div class="tph"><b>'+bi(g[0]+' ที่'+esc(P.th),g[1]+' in '+esc(P.en))+'</b>'+
+        '<span class="tnights">'+icon('i-bed')+' '+(n?bi('ค้าง '+n+' คืน',n+' hotel night'+(n>1?'s':'')):bi('ไม่ต้องค้างคืน','no hotel night'))+'</span>'+
+        (a&&b?'<span class="tboth">'+bi('ไป–กลับ '+baht(a+b),baht(a+b)+' both flights')+'</span>':'')+'</div>'+
+        leg(p.out,P,false)+leg(p.back,P,true)+'</div>';}).join('')+'</div>';
+    if(!st.all&&shown.length<R.pairs.length)
+      h+='<button type="button" class="tmore">'+bi('ดูทั้งหมด '+R.pairs.length+' คู่','Show all '+R.pairs.length+' pairs')+'</button>';
+  }else{
+    var ol=Q.outLo.slice(0,10),bl=Q.backLo.slice(0,10),a=dlabel(ol),b=dlabel(bl);
+    h+='<p>'+bi('ไม่มีคู่เที่ยวบินในตารางที่เรามีที่เข้ากับช่วงเวลานี้ ลองขยายช่วงเวลา หรือค้นราคาตั๋วตามวัน:',
+      'No pair in our rows fits these windows. Widen a window, or search fares by day:')+'</p>'+
+      '<p class="trow"><a class="fare" href="'+esc(fare(P.from,P.aps[0],ol))+'" rel="nofollow sponsored noopener" target="_blank">'+bi('ขาไป '+a[0],'Out '+a[1])+' →</a>'+
+      '<a class="fare" href="'+esc(fare(P.aps[0],P.from,bl))+'" rel="nofollow sponsored noopener" target="_blank">'+bi('ขากลับ '+b[0],'Back '+b[1])+' →</a></p>';
+  }
+  if(F&&shown.length){var s=dlabel(F.asof);
+    h+='<p class="tgap">'+bi('ราคา ฿ จากแคชการค้นหาของ Aviasales เห็นเมื่อ '+s[0]+' ผู้ใหญ่หนึ่งคน มีเฉพาะบางเที่ยว ราคาวันนี้อยู่ในปุ่มราคาตั๋ว',
+      '฿ prices are from Aviasales’ search cache, seen '+s[1]+', one adult, for some flights only; the fare link shows today’s price.')+'</p>';}
+  if(P.gap.length)
+    h+='<p class="tgap">'+bi('บินเส้นนี้ด้วย แต่เวลายังไม่อยู่ในตารางที่เรามีครบ: '+P.gap.map(function(c){return esc(al(c)[0]);}).join(', ')+' ปุ่มราคาตั๋วค้นทุกสายการบิน',
+      'Also on this route, times not fully in our rows: '+P.gap.map(function(c){return esc(al(c)[1]);}).join(', ')+'. The fare links search every airline.')+'</p>';
+  out.innerHTML=h;
+}
+S.addEventListener('click',function(e){
+  var b=e.target.closest('.seg button');
+  if(b){b.parentNode.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
+    st.from=b.dataset.v;st.all=false;places();paint();return;}
+  if(e.target.closest('.tmore')){st.all=true;paint();}});
+S.addEventListener('input',function(){st.all=false;paint();});
+S.addEventListener('change',function(){st.all=false;paint();});
+places();S.classList.add('js');q('.tform').hidden=false;paint();
+})();
+"""
+
+
 # -------------------------------------------------------------------- emit
 
 def emit(g, data=None):
     docs = g["DOCS"]
     (docs / "flights.css").write_text(CSS)
-    (docs / "flights.js").write_text(JS)
+    (docs / "flights.js").write_text(JS + TRIP_CORE + TRIP_UI)
     (docs / "flights.html").write_text(build_board(g))
     (docs / "widgets").mkdir(exist_ok=True)
     (docs / "widgets" / "flights.html").write_text(build_widget(g))
