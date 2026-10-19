@@ -784,8 +784,11 @@ def main():
     young = safety.uploaded_since(dest, env, run, gone, since)
     # And files deploy.py --files put up after the source, which the build
     # would overwrite as well as delete (safety.direct_uploads_since).
-    young = sorted(set(young) | set(
-        safety.direct_uploads_since(os.environ.get("MD_DIRECT_UPLOADS"), since)))
+    # The server's walk names the ledger; a walk started by the previous
+    # round's copy of server_walk.sh may not yet, so its path is the default
+    # (absent on the laptop: nothing held).
+    young = sorted(set(young) | set(safety.direct_uploads_since(
+        os.environ.get("MD_DIRECT_UPLOADS") or safety.DIRECT_UPLOADS_PATH, since)))
     keep_list = None
     # Held back this round (tools/holdback.py, Nan 2026-10-11): a page or site
     # a gate failed on keeps its live version — not uploaded, not deleted.
