@@ -428,6 +428,62 @@ def uploaded_since(dest, env, run, keys, since):
     return sorted(young)
 
 
+# Where deploy.py --files writes what it uploaded while the site builds on
+# motdang-server (cache/build-on-server), and where the server reads it.
+DIRECT_UPLOADS_HOST = "nan@motdang-server"
+DIRECT_UPLOADS_PATH = "/srv/state/direct-uploads.tsv"
+
+
+def direct_upload_lines(keys, when):
+    """The ledger lines for `keys` uploaded at `when`: "<utc iso>\\t<key>"."""
+    import datetime
+    t = when.astimezone(datetime.timezone.utc).isoformat(timespec="seconds")
+    return "".join("%s\t%s\n" % (t, k) for k in keys)
+
+
+def direct_uploads_since(path, since):
+    """The keys the ledger at `path` says were uploaded by deploy.py --files
+    at or after `since` (less SOURCE_GRACE_S).
+
+    WHY — 2026-10-19. The roadworks bounty stepped ฿10 → ฿5 and publish-site
+    put it live at 08:20. At 09:22 a server round whose source was sent at
+    07:03 published its ฿10 copies over it. uploaded_since keeps such files
+    only when the build would delete them; a build that would overwrite them
+    went ahead. This ledger covers both. It is a ledger, not the bucket's
+    upload times, because the server's own previous publish finishes after
+    the next round's source is taken: by modtime every file the last round
+    changed would look newer than the build, and none would go up.
+
+    A missing or unreadable ledger holds nothing back. A line whose time does
+    not parse is skipped.
+    """
+    import datetime
+    if not path:
+        return []
+    try:
+        text = Path(path).read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return []
+    cut = since - datetime.timedelta(seconds=SOURCE_GRACE_S)
+    keys = set()
+    for line in text.splitlines():
+        when, _, key = line.partition("\t")
+        key = key.strip()
+        if not key:
+            continue
+        w = when.strip()
+        w = w[:-1] + "+00:00" if w[-1:] in "Zz" else w
+        try:
+            t = datetime.datetime.fromisoformat(w)
+        except ValueError:
+            continue
+        if not t.tzinfo:
+            t = t.replace(tzinfo=datetime.timezone.utc)
+        if t >= cut:
+            keys.add(key)
+    return sorted(keys)
+
+
 # ---------------------------------------------------------------------------
 # 2b. DELETIONS THE CHANGE SAID WERE COMING
 # ---------------------------------------------------------------------------

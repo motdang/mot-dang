@@ -42,8 +42,9 @@ step() {
 }
 step claims      python3 importers/sync_claims.py
 step suggestions python3 importers/sync_suggestions.py
-step bounty      python3 importers/bounty_ask.py   # a roadworks change → one go line in QUEUE A
-step scout       python3 importers/roadworks_scout.py   # Mondays: news leads for /roadworks → one go line in QUEUE A
+# bounty_ask.py and roadworks_scout.py write QUEUE.txt on the Desktop, which macOS refuses
+# to zsh; they run at 08:25 as net.motdang.queue-asks (importers/queue_asks.py).
+step botlist     ~/.claude/bin/botlist sync   # bot senders → candidates on the contributor-bot list
 step payouts     python3 importers/payout_shoup.py publish --live --monday   # Mondays: bounty amount by Shoup, wall of bots
 step misses      python3 importers/box_misses.py --days 14
 
