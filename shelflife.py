@@ -28,6 +28,7 @@ MAX_DAYS = {
     "showtimes": 3,   # data/showtimes.json generated
     "fx": 6,          # data/finance.json fx.date
     "gold": 6,        # data/finance.json gold.asOf
+    "fares": 3,       # data/flight_prices.json generated (flights_layer weekend finder)
 }
 
 BKK = datetime.timezone(datetime.timedelta(hours=7))
