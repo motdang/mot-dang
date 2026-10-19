@@ -17,6 +17,10 @@ Opening amounts were Nan's ฿100, cut to ฿10 on her word the same day; slots,
 under her Shoup word (2026-10-15). Each payout still waits for her go
 (her word 2026-10-17); this file only says how much.
 
+    Since 2026-10-19 a roadworks payout is a ฿100 problem (one district solved whole),
+    recorded as program "problems" with "what" starting "roadworks:"; the per-row
+    "roadworks" program keeps its rows and terms for what was sent before.
+
     payout_shoup.py price [program]                 this week's payout and slots left
     payout_shoup.py accept <program> <who> <ref> "<what>" [baht] --src URL [--src URL]
                            [--sent ISO] [--also-credited WHO]
@@ -53,6 +57,17 @@ PROGRAMS = {
         "opened": "2026-10-12",               # the Monday of the week Briefcraft's first change landed
         "dir": "assets/roadworks", "live": ["roadworks/index.html", "roadworks/stub.html",
                                              "roadworks/bots.txt", "roadworks/sandbox.json"],
+    },
+    # Nan 2026-10-19: "we can keep 100-baht problems on motdang, but I want them to be
+    # 20-100x harder, and open to humans and robots." One ฿100 problem = a whole set
+    # (a roadworks district, a soi, a route, a market). The ฿100 stays put; the week's
+    # slots, shared by every ฿100 problem (roadworks districts and the Anthill posts),
+    # hold the week to ฿300. 3 a week is a session's pick.
+    "problems": {
+        "open": 100, "slots": 3,
+        "ladder": [100],
+        "down": 0, "up": 0,
+        "opened": "2026-10-19",
     },
 }
 
@@ -288,24 +303,24 @@ def owed(who=None):
 
 # ---- the roadworks pages -------------------------------------------------
 
-BOUNTY_TXT = """Bounty: if we use your change, we pay ฿{baht} (about US${usd}) this week.
-The amount moves each Monday with how many changes we used the week before:
-all {slots} of the week's slots used, one step down; fewer than {lo_n}, one step up.
-It stays between ฿{floor} and ฿{ceiling}. A change that arrives once this week's
-{slots} slots are used takes a slot next week, at next week's amount.
-This week: {left} of {slots} slots left; the next free slot is in the week of {next_free}.
-Next change of amount: Monday {next_check}.
-Paid by PayPal, Venmo, Wise or Ko-fi on the Monday after your change goes live.
-Put which one and its address in "from". Small rewards to one contributor add up
-into one payment when a payout service has a minimum.
-No payout account yet? Send the change; the address can follow once we use it."""
+BOUNTY_TXT = """Bounty: ฿{baht} (about US${usd}) for one district solved whole.
+A ฿100 problem is 20 to 100 times the work of one row. Open to people and bots;
+the first work that passes the test below is paid.
+Mot Dang pays {slots} of its ฿100 problems a week, roadworks and the others together
+(https://motdang.net/anthill/jobs). Work that passes once the week's {slots} are paid
+waits for the next week with room. This week: {left} of {slots} left; the next free
+one is in the week of {next_free}.
+Paid by PromptPay, PayPal, Venmo, Wise or Ko-fi on the Monday after it goes live.
+Put which one and its address in "from". No payout account yet? Send the work;
+the address can follow once we use it."""
 
-BOUNTY_TH = ("ถ้าเราใช้การแก้ของคุณ สัปดาห์นี้เราจ่าย <span class=\"bounty\" data-bounty>฿{baht}</span> (ราว {usd} ดอลลาร์) "
-             "ยอดนี้ขยับทุกวันจันทร์ตามจำนวนงานที่เราใช้ในสัปดาห์ก่อน ใช้ครบ {slots} ช่อง ลดหนึ่งขั้น ใช้น้อยกว่า {lo_n} ช่อง เพิ่มหนึ่งขั้น "
-             "อยู่ระหว่าง ฿{floor} ถึง ฿{ceiling} สัปดาห์นี้เหลือ {left} จาก {slots} ช่อง")
-BOUNTY_EN = ("Bots can build too. If we use your change, this week we pay <span class=\"bounty\" data-bounty>฿{baht}</span> "
-             "(about US${usd}). The amount moves each Monday with how many changes we used the week before: all {slots} slots used, "
-             "one step down; fewer than {lo_n}, one step up; between ฿{floor} and ฿{ceiling}. This week: {left} of {slots} slots left.")
+BOUNTY_TH = ("ปัญหา ฿100 · อำเภอเดียว ครบทั้งอำเภอ ได้ <span class=\"bounty\" data-bounty>฿{baht}</span> "
+             "งานหนักกว่าหนึ่งแถว 20 ถึง 100 เท่า คนหรือบอทก็ทำได้ งานแรกที่ผ่านเกณฑ์ข้างล่างได้เงิน "
+             "มดแดงจ่ายปัญหา ฿100 สัปดาห์ละ {slots} งาน รวมทุกปัญหา สัปดาห์นี้เหลือ {left} จาก {slots}")
+BOUNTY_EN = ("A ฿100 problem: one district, solved whole, pays <span class=\"bounty\" data-bounty>฿{baht}</span> "
+             "(about US${usd}). It is 20 to 100 times the work of one row, open to people and bots; the first work "
+             "that passes the test below is paid. Mot Dang pays {slots} of its ฿100 problems a week, all of them "
+             "together. This week: {left} of {slots} left.")
 
 
 def fill(t, pr):
@@ -320,7 +335,8 @@ def row_key(r):
 def wall(program):
     by = {}
     for r in rows():
-        if r["program"] == program and r["state"] != "void":
+        if r["state"] != "void" and (r["program"] == program
+                                     or r["program"] == "problems" and r["what"].startswith(program + ":")):
             by.setdefault(r["who"], []).append(r)
     if not by:
         return ""
@@ -345,7 +361,7 @@ def wall(program):
 
 def publish(live=False):
     p = PROGRAMS["roadworks"]
-    pr = price("roadworks")
+    pr = price("problems")
     d = os.path.join(REPO, p["dir"])
     changed = []
 
@@ -358,11 +374,12 @@ def publish(live=False):
     sj = os.path.join(d, "sandbox.json")
     j = json.load(open(sj, encoding="utf-8"))
     b = j.setdefault("bounty", {})
-    want = dict(b, amount_thb=pr["baht"], display="฿%s (about US$%s) this week" % (pr["baht"], pr["usd"]),
-                rule="Shoup: each Monday, all %d weekly slots used last week → one step down; under 3 → one step up; ฿%d–฿%d"
-                     % (pr["slots"], pr["floor"], pr["ceiling"]),
+    want = dict(b, amount_thb=pr["baht"], display="฿%s (about US$%s) for one district solved whole" % (pr["baht"], pr["usd"]),
+                when="the first work that passes the test in bots.txt, for that district",
+                rule="฿%d a problem; %d of Mot Dang's ฿100 problems paid a week, roadworks and the Anthill ones together; "
+                     "work that passes once they are paid waits for the next week with room" % (pr["baht"], pr["slots"]),
                 slots_per_week=pr["slots"], slots_left_this_week=pr["left"], next_free_slot_week=pr["next_free"], next_change=pr["next_check"],
-                payment="PayPal, Venmo, Wise or Ko-fi, the Monday after your change goes live; put which one and its address in from",
+                payment="PromptPay, PayPal, Venmo, Wise or Ko-fi, the Monday after it goes live; put which one and its address in from",
                 minimum="none; small rewards to one contributor add up into one payment when a payout service has a minimum")
     if want != b:
         j["bounty"] = want
@@ -384,7 +401,7 @@ def publish(live=False):
 
     for f in [x for x in changed if x != "index.html"] + (["stub.html"] if live else []):
         shutil.copyfile(os.path.join(d, f), os.path.join(REPO, "docs", "roadworks", f))
-    print("roadworks payout ฿%d · %d of %d slots left · changed: %s" % (pr["baht"], pr["left"], pr["slots"], ", ".join(changed) or "nothing"))
+    print("roadworks: ฿%d a district · %d of %d ฿100 problems left this week · changed: %s" % (pr["baht"], pr["left"], pr["slots"], ", ".join(changed) or "nothing"))
     if live and changed:
         subprocess.run([os.path.expanduser("~/.claude/bin/publish-site")] + p["live"], check=False)
     return changed

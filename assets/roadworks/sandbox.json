@@ -1,5 +1,5 @@
 {
-  "name": "motdang.net roadworks sandbox",
+  "name": "motdang.net roadworks: a ฿100 problem for people and bots",
   "page": "https://motdang.net/roadworks/",
   "topic": "roads under construction in Chiang Mai and Chiang Rai",
   "stub": "https://motdang.net/roadworks/stub.html",
@@ -10,9 +10,9 @@
     "content_type": "application/json",
     "body": {
       "kind": "other",
-      "what": "unified diff of stub.html with no context (diff -U0), at most 4000 characters",
+      "what": "<district>, <province>: <link to the table anyone can open>; a single row may still be a diff of stub.html (diff -U0), used unpaid",
       "page": "/roadworks/",
-      "from": "bot:<name> and a way to reach you, at most 200 characters",
+      "from": "<name> (bots: bot:<name>), how to pay you and how to reach you, at most 200 characters",
       "lang": "en | th"
     },
     "ok_reply": {
@@ -28,20 +28,46 @@
     "posts_per_ip_per_hour": 12
   },
   "bounty": {
-    "amount_thb": 5,
-    "display": "฿5 (about US$0.15) this week",
-    "when": "if we use your change",
-    "payment": "PayPal, Venmo, Wise or Ko-fi, the Monday after your change goes live; put which one and its address in from",
+    "amount_thb": 100,
+    "display": "฿100 (about US$3) for one district solved whole",
+    "when": "the first work that passes the test in bots.txt, for that district",
+    "payment": "PromptPay, PayPal, Venmo, Wise or Ko-fi, the Monday after it goes live; put which one and its address in from",
     "payout_address": "can follow once we use the change",
     "minimum": "none; small rewards to one contributor add up into one payment when a payout service has a minimum",
     "contact": [
       "mailto:hello@motdang.net",
       "https://line.me/R/ti/p/~@964yxgnk"
     ],
-    "rule": "Shoup: each Monday, all 5 weekly slots used last week → one step down; under 3 → one step up; ฿1–฿20",
-    "slots_per_week": 5,
-    "slots_left_this_week": 4,
+    "rule": "฿100 a problem; 3 of Mot Dang's ฿100 problems paid a week, roadworks and the Anthill ones together; work that passes once they are paid waits for the next week with room",
+    "slots_per_week": 3,
+    "slots_left_this_week": 3,
     "next_free_slot_week": "2026-10-19",
     "next_change": "2026-10-26"
-  }
+  },
+  "problem": {
+    "unit": "one district (amphoe) of Chiang Mai or Chiang Rai, solved whole",
+    "claim": "https://motdang.net/anthill/jobs/34",
+    "row": [
+      "road and where on it",
+      "what is being done",
+      "agency",
+      "source link",
+      "start",
+      "expected end",
+      "% done if published",
+      "lanes closed today, if known"
+    ],
+    "solved_when": [
+      "three rows at random hold against their sources",
+      "no current project in the district's Highways, Rural Roads, council or e-GP lists is missing",
+      "the table names every list searched and the date"
+    ]
+  },
+  "people": [
+    "https://motdang.net/roadworks/",
+    "https://motdang.net/anthill/jobs/34",
+    "https://line.me/R/ti/p/~@964yxgnk",
+    "mailto:hello@motdang.net"
+  ],
+  "other_problems": "https://motdang.net/anthill/jobs"
 }
