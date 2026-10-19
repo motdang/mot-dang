@@ -570,6 +570,44 @@ MIRRORED = ("brief", "field", "ghost", "logo", "loop", "markets", "muay-thai",
             "chiang-rai")
 
 
+def keep_young(young, gone, places):
+    """Keep the live copies of `young`: (exclude globs, gone, places) with
+    them neither uploaded over, deleted, nor sent by the place round."""
+    # --exclude-from reads globs; escape so a key matches only itself.
+    globs = ["/" + re.sub(r"([*?\[\]{}\\])", r"\\\1", k) for k in young]
+    kept = set(young)
+    gone = [k for k in gone if k not in kept]
+    if places:
+        places = (places[0], [k for k in places[1] if k not in kept])
+    return globs, gone, places
+
+
+def record_direct_uploads(keys, when):
+    """Tell motdang-server what --files just uploaded, so a round building
+    from an older source keeps these live copies (safety.direct_uploads_since
+    says why). Only while the site builds there (cache/build-on-server). A
+    ledger that cannot be written is said, never a failed publish."""
+    if not (ROOT / "cache" / "build-on-server").exists():
+        return
+    dest = safety.DIRECT_UPLOADS_PATH
+    try:
+        p = subprocess.run(
+            ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
+             safety.DIRECT_UPLOADS_HOST,
+             "mkdir -p %s && cat >> %s" % (os.path.dirname(dest), dest)],
+            input=safety.direct_upload_lines(keys, when), text=True,
+            capture_output=True, timeout=30)
+        ok, why = p.returncode == 0, (p.stderr or "").strip()[-200:]
+    except (OSError, subprocess.TimeoutExpired) as e:
+        ok, why = False, str(e)
+    if ok:
+        note("  %d upload(s) noted in %s:%s" % (len(keys), safety.DIRECT_UPLOADS_HOST, dest))
+    else:
+        note("  NOT NOTED in %s:%s (%s): a server round building now puts its older "
+             "copies back; publish these again once it has published"
+             % (safety.DIRECT_UPLOADS_HOST, dest, why or "no reason given"))
+
+
 def in_source(rel):
     """False for a file under a MIRRORED folder whose site is not in assets/.
 
@@ -640,7 +678,9 @@ def main():
             print("\n  DRY RUN — nothing will change. Add --yes to do it.\n")
             run(cmd + ["--dry-run"], env)
             return
+        sent_at = datetime.datetime.now(datetime.timezone.utc)
         run(cmd, env)
+        record_direct_uploads(files, sent_at)
         print("\n  asking the live site…")
         bad = safety.smoke(say=note)
         if bad:
@@ -742,6 +782,10 @@ def main():
     # build: it keeps its hands off them (safety.uploaded_since says why).
     since, how = safety.source_time()
     young = safety.uploaded_since(dest, env, run, gone, since)
+    # And files deploy.py --files put up after the source, which the build
+    # would overwrite as well as delete (safety.direct_uploads_since).
+    young = sorted(set(young) | set(
+        safety.direct_uploads_since(os.environ.get("MD_DIRECT_UPLOADS"), since)))
     keep_list = None
     # Held back this round (tools/holdback.py, Nan 2026-10-11): a page or site
     # a gate failed on keeps its live version — not uploaded, not deleted.
@@ -767,10 +811,8 @@ def main():
              "(%s, %s): %s%s"
              % (len(young), since.isoformat(timespec="seconds"), how,
                 ", ".join(young[:5]), " …" if len(young) > 5 else ""))
-        # --exclude-from reads globs; escape so a key matches only itself.
-        hold += ["/" + re.sub(r"([*?\[\]{}\\])", r"\\\1", k) for k in young]
-        kept = set(young)
-        gone = [k for k in gone if k not in kept]
+        globs, gone, places = keep_young(young, gone, places)
+        hold += globs
     if hold:
         keep_list = Path(tempfile.mkstemp(suffix=".txt")[1])
         atexit.register(keep_list.unlink, missing_ok=True)
