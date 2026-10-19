@@ -69,6 +69,15 @@ PROGRAMS = {
         "down": 0, "up": 0,
         "opened": "2026-10-19",
     },
+    # Nan 2026-10-19, the same day: "We should also have a set of 10-baht problems. they
+    # should be 2-3x harder than the last set you wrote." One Anthill post of five, each
+    # two to three ฿100 problems' work. 10 paid a week is a session's pick (฿100 a week at most).
+    "problems10": {
+        "open": 10, "slots": 10,
+        "ladder": [10],
+        "down": 0, "up": 0,
+        "opened": "2026-10-19",
+    },
 }
 
 
