@@ -202,15 +202,17 @@ function seen(lat,lng,fly,zoom){
   if(fly){m.easeTo({center:[lng,lat],zoom:zoom||Math.max(m.getZoom(),16.5),offset:[0,-cover/2]});return;}
   if(p.y>free-30||p.y<30)m.panBy([0,p.y-(free/2)]);
 }
+var showSeq=0;
 function show(it,opt){
-  opt=opt||{};
+  opt=opt||{};var mine=++showSeq;
   if(window.MDSENSE)MDSENSE.tell('open',{k:it.plan,lat:it.lat,lng:it.lng,z:window.MDX&&MDX.map.getZoom()});
   if(!sheet)mk();
   open('<h2>'+E(it.name)+'</h2><p class="mfsub">'+E(it.sub||'')+'</p><p class="quiet">…</p>');
   setTimeout(function(){seen(it.lat,it.lng,opt.fly);},380);
   if(!it.json){render(it,{});return;}
-  fetch(it.json).then(function(r){return r.json();}).then(function(d){render(it,d);})
-    .catch(function(){render(it,{});});
+  /* only the card asked for last is drawn: an earlier one that answers late is dropped */
+  fetch(it.json).then(function(r){return r.json();}).then(function(d){if(mine===showSeq)render(it,d);})
+    .catch(function(){if(mine===showSeq)render(it,{});});
 }
 function render(it,d){
   var lat=d.lat!=null?d.lat:it.lat,lng=d.lng!=null?d.lng:it.lng;
@@ -246,7 +248,7 @@ window.MDMAPSHEET={show:show,point:function(lat,lng,t){showPoint(lat,lng,t);}};
 /* ---- a point: pasted, or a dropped pin --------------------------------- */
 var ptMark=null;
 function showPoint(lat,lng,title,pinIdx){
-  if(!sheet)mk();
+  if(!sheet)mk();++showSeq;
   var h='<h2>'+E(title||'จุดนี้ · This point')+'</h2>';
   if(pinIdx!=null){
     h+='<label>ชื่อหมุด · Name this pin<input class="mfname" id="mfpname" value="'+E(S.pins[pinIdx].n||'')+'" maxlength="60"></label>'+
