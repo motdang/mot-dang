@@ -681,6 +681,14 @@ export function refineFacets(rows, qwords) {
  * its province (api.js liftProvince). What the page adds AFTER ranking — the
  * landmark, the tag routes, the shelf lift, the rail — stays on the page; the
  * page asks this first and repaints over it when its own index has landed. */
+/* A name folded for comparison: lower case, letters and digits, one space,
+ * and a leading or trailing kind word (restaurant, cafe, ร้าน …) taken off. */
+const KIND_WORD = /^(restaurant|cafe|café|coffee|shop|store|bar|hotel|hostel|resort|spa|clinic|ร้าน|ร้านอาหาร|คาเฟ่|โรงแรม)$/;
+export function nameKey(s) {
+  return String(s || "").normalize("NFKC").toLowerCase().replace(/[^\p{L}\p{M}\p{N}]+/gu, " ").trim()
+    .split(" ").filter((w, i, a) => w && !((i === 0 || i === a.length - 1) && a.length > 1 && KIND_WORD.test(w))).join(" ");
+}
+
 export async function searchHandler(env, ix, sp, now = new Date()) {
   const raw = sp.get("q") || "";
   const p = parseQuery(sp);
@@ -735,6 +743,20 @@ export async function searchHandler(env, ix, sp, now = new Date()) {
       const d = rowMatches(row, p, schedules, minute);
       if (d === false) continue;
       rows.push([row, d, h.score, h.tier]);
+    }
+    /* A place whose name is the words comes first, then one whose name holds
+     * them as whole words; the engine's order stands inside each (gemba 2,
+     * 2026-10-20: a place's own name came first 43 of 60 times here against
+     * 51 on /find). Near-sorts keep their order. */
+    if (!p.near) {
+      const fq = nameKey(q);
+      const tierOf = (r) => {
+        const ks = [r.name, r.nameEn].filter(Boolean).map(nameKey);
+        if (ks.includes(fq)) return 0;
+        return ks.some((k) => (" " + k + " ").includes(" " + fq + " ")) ? 1 : 2;
+      };
+      rows = rows.map((r, i) => [r, tierOf(r[0]), i])
+        .sort((a, b) => a[1] - b[1] || a[2] - b[2]).map((x) => x[0]);
     }
   } else {
     rows = [];
