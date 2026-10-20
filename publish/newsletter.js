@@ -131,7 +131,7 @@ async function handleSend(request, env, url) {
         .bind(issue.issue, rc.email)));
     }
   }
-  return json({ ok: failed.length === 0, live, issue: issue.issue, confirmed: rows.length,
+  return json({ ok: failed.length === 0 && !(line && line.error), live, issue: issue.issue, confirmed: rows.length,
                 already: to.length - todo.length, sent, failed, line });
 }
 

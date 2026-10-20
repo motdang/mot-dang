@@ -47,7 +47,7 @@ function botStub(friend = true) {
   return { LINEBOT, calls, state };
 }
 async function setup(friend = true) {
-  const acc = d1(mig("0006_accounts.sql") + mig("0007_me.sql"));
+  const acc = d1(mig("0006_accounts.sql") + mig("0007_me.sql") + mig("0008_gold_grants.sql"));
   acc.db.prepare("INSERT INTO users (line_sub, name) VALUES (?, 'NaN')").run(UID);
   acc.db.prepare("INSERT INTO sessions (hash, user_id, expires) VALUES (?, 1, datetime('now', '+1 day'))").run(await sha256("tok"));
   const pages = d1(PAGES_SQL);
@@ -145,6 +145,18 @@ test("export has the account and its saves; delete takes them all and asks the L
   for (const t of ["users", "sessions", "saved"]) assert.equal(acc.db.prepare(`SELECT COUNT(*) n FROM ${t}`).get().n, 0, t);
   assert.ok(bot.calls.some((c) => c[0] === "forget" && c[1] === UID));
   assert.equal((await call(env, "/api/me/more")).status, 401);
+});
+
+test("delete and sign in again: the same Gold code, not a second one", async () => {
+  const { env, acc, pages } = await setup(true);
+  const first = (await (await call(env, "/api/me/weekly", { on: true })).json()).gold.code;
+  await call(env, "/api/me/delete", { confirm: true });
+  acc.db.prepare("INSERT INTO users (line_sub, name) VALUES (?, 'NaN')").run(UID);
+  const id = acc.db.prepare("SELECT id FROM users").get().id;
+  acc.db.prepare("INSERT INTO sessions (hash, user_id, expires) VALUES (?, ?, datetime('now', '+1 day'))").run(await sha256("tok"), id);
+  const again = (await (await call(env, "/api/me/weekly", { on: true })).json()).gold.code;
+  assert.equal(again, first);
+  assert.equal(pages.db.prepare("SELECT COUNT(*) n FROM gift").get().n, 1);
 });
 
 test("the weekly issue on LINE: test IDs only until NEWSLETTER_LINE_LIVE, then everyone who said yes", async () => {

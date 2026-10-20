@@ -174,7 +174,7 @@ function box(){var b=document.getElementById('md-acct');chip();if(!b||!ME||!ME.l
   var nm=el('b',null,(ME.name||'LINE'));who.appendChild(nm);
   var o=btn('ma-b',B('ออกจากระบบ','Sign out'));who.appendChild(o);
   var q=new URLSearchParams(location.search),back=q.get('back');
-  if(back&&/^\/(?!\/)/.test(back))who.appendChild(lnk('ma-b',B('← กลับไปหน้าเดิม','← back where you were'),back));
+  if(back&&/^\/(?!\/)[^\s\\]*$/.test(back)&&back.length<400)who.appendChild(lnk('ma-b',B('← กลับไปหน้าเดิม','← back where you were'),back));
   b.appendChild(who);
   /* sign-out only after the account holds the latest; otherwise stay signed in and say so */
   o.addEventListener('click',function(){clearTimeout(T);o.disabled=true;sync().then(function(ok){

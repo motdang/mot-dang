@@ -18,7 +18,7 @@
  * code is a row in motdang-pages' gift table (PAGES_DB), months = 1, redeemed
  * at sites.motdang.net/g/<code> like a founder's. */
 
-import { whoIs } from "./accounts.js";
+import { whoIs, sha256 } from "./accounts.js";
 
 export const OA = "https://line.me/R/ti/p/@964yxgnk";
 const GOLD_MONTHS = 1;
@@ -50,14 +50,25 @@ export function giftCode() {
   return Array.from(b, (x) => a[x % a.length]).join("");
 }
 
+/* One Gold month per LINE account, ever: gold_grants outlives a deleted account
+ * (a hash of the LINE user ID, the code), so delete-and-rejoin gets the same code. */
 async function goldFor(env, u) {
   if (u.gold_code) return u.gold_code;
   if (!env.PAGES_DB) return null;
+  const mark = await sha256("gold:" + u.line_sub);
+  const had = await env.ACCOUNTS.prepare("SELECT code FROM gold_grants WHERE mark = ?").bind(mark).first();
+  if (had) {
+    await env.ACCOUNTS.prepare("UPDATE users SET gold_code = ? WHERE id = ? AND gold_code IS NULL").bind(had.code, u.id).run();
+    return had.code;
+  }
   const code = giftCode();
   await env.PAGES_DB.prepare("INSERT INTO gift (code, founder, made, months, source) VALUES (?, '', ?, ?, 'line')")
     .bind(code, new Date().toISOString(), GOLD_MONTHS).run();
   const set = await env.ACCOUNTS.prepare("UPDATE users SET gold_code = ? WHERE id = ? AND gold_code IS NULL").bind(code, u.id).run();
-  if (set.meta && set.meta.changes) return code;
+  if (set.meta && set.meta.changes) {
+    await env.ACCOUNTS.prepare("INSERT OR IGNORE INTO gold_grants (mark, code) VALUES (?, ?)").bind(mark, code).run();
+    return code;
+  }
   /* a second tab got there first: theirs stands, this one goes */
   await env.PAGES_DB.prepare("DELETE FROM gift WHERE code = ? AND used IS NULL").bind(code).run();
   return (await env.ACCOUNTS.prepare("SELECT gold_code FROM users WHERE id = ?").bind(u.id).first())?.gold_code || null;
