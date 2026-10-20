@@ -121,7 +121,9 @@ function mk(){
   document.body.appendChild(sheet);body=sheet.querySelector('.mfbody');
   sheet.querySelector('.mfx').addEventListener('click',close);
   sheet.addEventListener('click',function(e){
-    var sd=e.target.closest('.mfsend');
+    /* only the Send this spot button: the LINE / Share / Copy link row beside it
+       carries no point, and reading one from it sent 0,0 (Nan, 2026-10-20) */
+    var sd=e.target.closest('button.mfsend');
     if(sd&&window.MDSHAREPOINT){window.MDSHAREPOINT(+sd.getAttribute('data-lat'),+sd.getAttribute('data-lng'),{name:sd.getAttribute('data-n')||'',kind:'map'});return;}
     var c=e.target.closest('.mfcopy');if(c)copy(c.getAttribute('data-c'),c);});
 }
@@ -173,15 +175,15 @@ function wireNear(){body.querySelectorAll('[data-near]').forEach(function(b){
    or other map apps, just like any placeid". A place travels as its MD- code,
    a point as its Plus Code; both open on this map through ?go=, and the
    sheet there carries the open-in links for every other map app. */
-function goLink(id){return location.origin+location.pathname+'?go='+encodeURIComponent(id);}
+function goLink(id,n){return location.origin+location.pathname+'?go='+encodeURIComponent(id)+(n?'&n='+encodeURIComponent(n):'');}
 function plusOf(lat,lng){
   if(!window.MDCOORDS)return lat.toFixed(6)+','+lng.toFixed(6);
   var f=MDCOORDS.format(lat,lng).filter(function(x){return x.kind==='pluscode'||x.kind==='olc';})[0];
   return f?f.text:lat.toFixed(6)+','+lng.toFixed(6);
 }
-function sendRow(what,id){
-  var link=goLink(id),msg=what+' '+link;
-  return '<div class="mfbtns mfsend"><a class="go line" href="https://line.me/R/share?text='+encodeURIComponent(msg)+
+function sendRow(what,id,n){
+  var link=goLink(id,n),msg=what+' '+link;
+  return '<div class="mfbtns mfsendrow"><a class="go line" href="https://line.me/R/share?text='+encodeURIComponent(msg)+
     '" rel="noopener">'+ic('i-share',18)+'ส่งทาง LINE · Send in LINE</a>'+
     (navigator.share?'<button type="button" data-share="'+E(link)+'" data-t="'+E(what)+'">'+ic('i-share',18)+'แชร์ · Share</button>':'')+
     '<button type="button" class="mfcopy" data-c="'+E(link)+'">คัดลอกลิงก์ · Copy link</button></div>';
@@ -254,7 +256,7 @@ function showPoint(lat,lng,title,pinIdx){
     h+='<div class="mfbtns"><button type="button" id="mfpinpt">'+ic('i-pin',18)+'ปักหมุดที่นี่ · Pin it</button>'+
        (window.MDSAVED&&MDSAVED.has({lat:lat,lng:lng})?'<button type="button" id="mfunsave">'+ic('i-x',18)+'เลิกบันทึก · Unsave</button>':'')+'</div>';
   }
-  h+=sendRow((title||'จุดนี้ · This point')+' · มดแดง',plusOf(lat,lng));
+  h+=sendRow((title||'จุดนี้ · This point')+' · มดแดง',plusOf(lat,lng),title?String(title).slice(0,60):'');
   h+=coordsHtml(lat,lng,title,true)+nearHtml({lat:lat,lng:lng,plan:''});
   open(h);wireNear();setTimeout(function(){seen(lat,lng,false);},380);
   var nmI=$('mfpname');if(nmI)nmI.addEventListener('input',function(){S.pins[pinIdx].n=nmI.value;drawPins();save();
@@ -369,8 +371,21 @@ function fromLinkText(u){
     S.q=(name||t).slice(0,80);runSearch(true);save();
   });
 }
-function submit(t){
-  t=(t||'').trim();
+/* A Google place link carries its name and its point (/maps/place/<name>/@lat,lng): the Mot Dang place
+   of that name within ~300 m opens with everything known about it, not a bare point (Nan, 2026-10-20,
+   TULOU Restaurant: the point opened 6 m from its own record). */
+function placeAt(name,c,miss){
+  fetch(R()+'api/v1/search?q='+encodeURIComponent(name)+'&limit=8').then(function(r){return r.json();}).then(function(d){
+    var h=(d.results||[]).filter(function(x){return x.lat!=null&&far({lat:x.lat,lng:x.lng},c)<0.003&&
+      Math.max(overlap(name,x.name),overlap(name,x.nameEn))>=0.6;});
+    h.sort(function(a,b){return far({lat:a.lat,lng:a.lng},c)-far({lat:b.lat,lng:b.lng},c);});
+    var pm=h[0]&&h[0].url.match(/\/(cm|cr)\/p\/([^\/?#]+?)\.html/);
+    if(pm){openPath(pm[1]+'/'+decodeURIComponent(pm[2]));return;}
+    miss();
+  },miss);
+}
+function submit(t,label){
+  t=(t||'').trim();label=(label||'').slice(0,60);
   if(!t){clearQ();return;}
   /* a Google short link (maps.app.goo.gl, often pasted inside LINE's share text) is opened out by /api/resolve
      first; the long address it leads to carries the point (Nan, 2026-10-03) */
@@ -389,8 +404,10 @@ function submit(t){
     if(c.kind==='w3w'){say('what3words (///'+c.words+') แปลงไม่ได้ ต้องมีบัญชีกับบริษัท what3words · what3words needs an account with their company; paste the same spot as a Plus Code, coordinates or a map link');return;}
     if(c.kind==='mdcode'){lookupCode(c.code);return;}
     if(c.kind==='mdplace'){openPath(c.prov+'/'+c.slug);return;}
-    if(c.lat!=null){clearQ(true);say((c.label||c.kind)+' → '+c.lat.toFixed(5)+', '+c.lng.toFixed(5));
-      gotoPoint(c.lat,c.lng,c.zoom,c.label||null);return;}
+    if(c.lat!=null){clearQ(true);say((label||c.label||c.kind)+' → '+c.lat.toFixed(5)+', '+c.lng.toFixed(5));
+      var gn=/google\.|maps\.app/i.test(t)?linkText(t):'';
+      if(gn&&!/^-?\d/.test(gn)){placeAt(gn,c,function(){gotoPoint(c.lat,c.lng,c.zoom,label||c.label||gn);});return;}
+      gotoPoint(c.lat,c.lng,c.zoom,label||c.label||null);return;}
   }
   if(/^https?:\/\/(?:[a-z]+\.)?google\.[a-z.]+\/maps|^https?:\/\/maps\.google\./i.test(t)){fromLinkText(t);return;}
   S.q=t.slice(0,80);runSearch(true);save();
@@ -436,8 +453,23 @@ function runSearch(first){
     paintQ(rs);
     var tot=Math.max(d.total||0,rs.length);
     say(tot+' ที่ในจอนี้ · '+tot+' in view for "'+S.q+'"'+(tot>rs.length?' — '+rs.length+' ขึ้นแผนที่ · '+rs.length+' drawn, zoom in for the rest':''));
-    if(first&&rs.length===1)show(qItem(rs[0]));
+    if(first&&rs.length===1){show(qItem(rs[0]));return;}
+    /* the words are a place's whole name: open it, in view or not (Nan, 2026-10-20: "tulou" drew 339 dots) */
+    if(first){var hit=named(S.q,rs);
+      if(hit){show(qItem(hit),{fly:true});return;}
+      fetch(R()+'api/v1/search?q='+encodeURIComponent(S.q)+'&limit=5').then(function(r){return r.json();}).then(function(w){
+        if(my!==seq)return;var h2=named(S.q,(w.results||[]).filter(function(r){return r.lat!=null;}));
+        if(h2)show(qItem(h2),{fly:true});},function(){});}
   }).catch(function(){say('ค้นไม่ได้ตอนนี้ · search is not answering');});
+}
+/* The one place whose name is the words, give or take a word like restaurant or ร้าน; none when two share it. */
+var KIND=/^(restaurant|cafe|café|coffee|shop|store|bar|hotel|hostel|resort|spa|clinic|ร้าน|ร้านอาหาร|คาเฟ่|โรงแรม)$/;
+function bare(n){return wordsOf(n).filter(function(w){return !KIND.test(w);}).join(' ');}
+function named(q,rs){
+  var fq=bare(q);if(!fq)return null;
+  var h=rs.filter(function(r){return [r.name,r.nameEn].some(function(n){return n&&bare(n)===fq;});});
+  var u={};h.forEach(function(r){u[r.url]=1;});
+  return Object.keys(u).length===1?h[0]:null;
 }
 function clearQ(keepSay){S.q='';seq++;if(window.MDX&&MDX.map.getSource('mf-q'))paintQ([]);if(!keepSay)say('');save();}
 
@@ -473,7 +505,7 @@ function boot(){
     if(window.MDSAVED)MDSAVED.add(S.pins.map(function(q){return {lat:q.lat,lng:q.lng,n:q.n};}));}
   if(x.q){S.q=x.q.slice(0,80);if(inp)inp.value=S.q;runSearch(false);}
   /* a place ID or point handed in by link: map.html?go=MD-XXXXX */
-  var go=new URLSearchParams(location.search).get('go');if(go)submit(go);
+  var sp=new URLSearchParams(location.search),go=sp.get('go');if(go)submit(go,sp.get('n')||'');
 }
 if(window.MDX)boot();else document.addEventListener('mdx-ready',boot);
 })();

@@ -745,6 +745,7 @@ const RANK_WIN = 200;
 const NEAR_FREE = 0.002;      // degrees², ~5 km
 const NEAR_HALF = 0.07;       // degrees², the weight halves ~30 km out
 const NEAR_BONUS = 1.6;       // a pinned row within ~5 km, against an unpinned one
+const GUESS_FLOOR = 0.5;      // under a network guess, the least a pinned row keeps
 
 const COLS = "p.id, k.site, k.host, p.url, p.title, p.abstract, k.lastmod, p.kb, k.lat, k.lon," +
              " k.kind, k.has, k.sk, k.evn, k.evu, p.crumbs, p.thumb, p.rich";
@@ -759,7 +760,19 @@ function rankScore(o, names, tb) {
     for (const nm of names) tb.push(nm);
   }
   if (o.pin) {
-    sc += ` * (CASE WHEN k.lat IS NULL THEN 1.0 ELSE ${NEAR_BONUS} / (1.0 + max(0.0, ${nearSql(o.pin, "k")} - ${NEAR_FREE}) / ${NEAR_HALF}) END)`;
+    /* Distance never sinks a page whose title carries the words: a place
+     * asked for by name is the answer wherever the reader stands. And a
+     * network guess (pin.exact false) can be a province off — on 2026-10-20 it
+     * put a Chiang Mai connection in Phayao, 150 km out, and "tulou" ranked
+     * Tulou Restaurant 15th of 15 under list pages with no pin — so under a
+     * guess a pinned row keeps at least GUESS_FLOOR of an unpinned one. */
+    const d = `${NEAR_BONUS} / (1.0 + max(0.0, ${nearSql(o.pin, "k")} - ${NEAR_FREE}) / ${NEAR_HALF})`;
+    let dist = o.pin.exact ? d : `max(${GUESS_FLOOR}, ${d})`;
+    if (names.length) {
+      dist = `(CASE WHEN ${names.map(() => "instr(lower(k.title), ?) > 0").join(" OR ")} THEN max(1.0, ${d}) ELSE ${dist} END)`;
+      for (const nm of names) tb.push(nm);
+    }
+    sc += ` * (CASE WHEN k.lat IS NULL THEN 1.0 ELSE ${dist} END)`;
   }
   for (const c of preferConds(o.prefer, "w.id", "k", "pf", tb)) sc += ` * (CASE WHEN ${c} THEN ${PREFER} ELSE 1.0 END)`;
   if ((o.prefer || []).some((g) => g.score)) sc += " * (1.0 + 0.06 * min(k.score, 10))";
