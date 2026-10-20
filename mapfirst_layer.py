@@ -260,6 +260,9 @@ function showPoint(lat,lng,title,pinIdx){
   h+=coordsHtml(lat,lng,title,true)+nearHtml({lat:lat,lng:lng,plan:''});
   open(h);wireNear();setTimeout(function(){seen(lat,lng,false);},380);
   var nmI=$('mfpname');if(nmI)nmI.addEventListener('input',function(){S.pins[pinIdx].n=nmI.value;drawPins();save();
+    /* the send row carries the name: redraw it with the new one */
+    var row=body.querySelector('.mfsendrow'),nn=nmI.value.slice(0,60);
+    if(row){var w=document.createElement('div');w.innerHTML=sendRow((nn||'จุดนี้ · This point')+' · มดแดง',plusOf(lat,lng),nn);row.replaceWith(w.firstChild);}
     if(window.MDSAVED)MDSAVED.add({lat:lat,lng:lng,n:nmI.value.slice(0,60)});});
   var us=$('mfunsave');if(us)us.addEventListener('click',function(){MDSAVED.forget({lat:lat,lng:lng});us.remove();
     if(window.MDSENSE)MDSENSE.tell('unsave',{lat:lat,lng:lng});});
@@ -436,6 +439,11 @@ function paintQ(rs){
 var QR=[];
 function runSearch(first){
   var m=MDX.map,b=m.getBounds(),my=++seq;
+  /* the words are one place's whole name: open it, in view or not (Nan, 2026-10-20: "tulou" drew 339 dots).
+     Judged on the whole match list, so a second place of that name anywhere leaves both on the map. */
+  if(first)fetch(R()+'api/v1/search?q='+encodeURIComponent(S.q)+'&limit=200').then(function(r){return r.json();}).then(function(w){
+    if(my!==seq)return;var hit=named(S.q,(w.results||[]).filter(function(r){return r.lat!=null;}));
+    if(hit)show(qItem(hit),{fly:true});},function(){});
   var bb=[b.getWest(),b.getSouth(),b.getEast(),b.getNorth()].map(function(x){return x.toFixed(5);}).join(',');
   say('กำลังค้น · searching…');
   fetch(R()+'api/v1/search?q='+encodeURIComponent(S.q)+'&bbox='+bb+'&limit=200').then(function(r){return r.json();}).then(function(d){
@@ -453,13 +461,7 @@ function runSearch(first){
     paintQ(rs);
     var tot=Math.max(d.total||0,rs.length);
     say(tot+' ที่ในจอนี้ · '+tot+' in view for "'+S.q+'"'+(tot>rs.length?' — '+rs.length+' ขึ้นแผนที่ · '+rs.length+' drawn, zoom in for the rest':''));
-    if(first&&rs.length===1){show(qItem(rs[0]));return;}
-    /* the words are a place's whole name: open it, in view or not (Nan, 2026-10-20: "tulou" drew 339 dots) */
-    if(first){var hit=named(S.q,rs);
-      if(hit){show(qItem(hit),{fly:true});return;}
-      fetch(R()+'api/v1/search?q='+encodeURIComponent(S.q)+'&limit=5').then(function(r){return r.json();}).then(function(w){
-        if(my!==seq)return;var h2=named(S.q,(w.results||[]).filter(function(r){return r.lat!=null;}));
-        if(h2)show(qItem(h2),{fly:true});},function(){});}
+    if(first&&rs.length===1&&!named(S.q,rs))show(qItem(rs[0]));
   }).catch(function(){say('ค้นไม่ได้ตอนนี้ · search is not answering');});
 }
 /* The one place whose name is the words, give or take a word like restaurant or ร้าน; none when two share it. */

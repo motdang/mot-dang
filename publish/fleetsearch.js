@@ -752,6 +752,8 @@ const COLS = "p.id, k.site, k.host, p.url, p.title, p.abstract, k.lastmod, p.kb,
 
 function rankScore(o, names, tb) {
   let sc = "w.rank * (1.0 + 0.05 * min(k.evc, 10))";
+  /* compared against lower(k.title), so folded the same way */
+  names = names.map((nm) => String(nm).toLowerCase());
   if (names.length) {
     const piece = names.map(() => "instr(' · ' || replace(lower(k.title), ' — ', ' · ') || ' · ', ?) > 0").join(" OR ");
     const has = names.map(() => "instr(lower(k.title), ?) > 0").join(" OR ");
