@@ -687,6 +687,16 @@ function orderBy(sort, o, keys, rows) {
  * named in `except` — a facet counts its own options with every OTHER filter
  * applied. `today` and `open` (the schedule ids open this minute) come from
  * the handler; every value that is not a number travels as a bind. */
+/* bbox=west,south,east,north → [w, s, e, n], or null. The city map asks for
+ * the places in view (Nan, 2026-10-20, gemba 2: its old engine took 5–17 s). */
+export function bboxOf(v) {
+  const b = String(v || "").split(",").map(Number);
+  if (b.length !== 4 || !b.every(Number.isFinite)) return null;
+  const [w, s, e, n] = b;
+  if (s < -90 || n > 90 || w < -180 || e > 180 || s >= n || w >= e) return null;
+  return b;
+}
+
 export function keyFilters(o, except) {
   const x = except || {};
   const where = [], binds = [];
@@ -695,6 +705,10 @@ export function keyFilters(o, except) {
     if (o.to) { where.push("q.lastmod <= ?"); binds.push(o.to); }
   }
   if (!x.kind && o.kind) { where.push("q.kind = ?"); binds.push(o.kind); }
+  if (!x.bbox && o.bbox) {
+    where.push("q.lat BETWEEN ? AND ? AND q.lon BETWEEN ? AND ?");
+    binds.push(o.bbox[1], o.bbox[3], o.bbox[0], o.bbox[2]);
+  }
   if (!x.sec && o.sec) { where.push("q.sec = ?"); binds.push(o.sec); }
   if (!x.has) {
     let mask = 0;
@@ -2145,7 +2159,11 @@ async function answer(request, env, url, ctx, coreP, now) {
     from: since ? new Date(today.getTime() - SINCE[since][2] * 86400000).toISOString().slice(0, 10)
                 : day("from"),
     to: day("to"),
-    n: PER_PAGE.includes(Number(sp.get("n"))) ? Number(sp.get("n")) : 10,
+    /* 200 for a JSON answer only: the city map draws a search's places as dots
+     * (mapfirst_layer.py), up to 200 in view. */
+    n: PER_PAGE.includes(Number(sp.get("n"))) || (sp.get("fmt") === "json" && Number(sp.get("n")) === 200)
+      ? Number(sp.get("n")) : 10,
+    bbox: bboxOf(sp.get("bbox")),
     pin: readerPin(sp, request),
     kind: KINDS[sp.get("kind")] ? sp.get("kind") : "",
     sec: clean(sp.get("sec") || "").slice(0, 160),
@@ -2255,7 +2273,7 @@ async function answer(request, env, url, ctx, coreP, now) {
   const opts = { sites, qsites: pl.sites, name: pl.name || "", names: pl.names || [], in: st.in, fields: pl.fields,
                  sort: st.sort, pin: st.pin, drop: true,
                  from: st.from, to: st.to, n: st.n, offset: (page - 1) * st.n,
-                 kind: st.kind, sec: st.sec, has: st.has, today: when.today,
+                 kind: st.kind, sec: st.sec, has: st.has, bbox: st.bbox, today: when.today,
                  open: openIds(ax.scheds, when.minute), learn, pins: adv ? new Map() : pinsFor(q),
                  prefer: adv ? [] : preferOf(intent.heard, { phrase, seg, scheds: ax.scheds, openAt }),
                  sem: semBoost(meaning) };

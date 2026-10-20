@@ -59,7 +59,7 @@ import { cachedGet } from "./r2cache.js";
  * (advanced.html → search.html?tag=…&su=…) keeps its address: any other
  * parameter falls through to the static file as before. */
 const FLEET_PARAMS = new Set(["q", "adv", "lucky", "p", "n", "site", "from", "to", "fmt",
-                              "sort", "in", "since", "near", "kind", "sec", "has"]);
+                              "sort", "in", "since", "near", "kind", "sec", "has", "bbox"]);
 function fleetOwns(url) {
   const p = url.pathname;
   if (p === "/find" || p === "/find/" || p === "/find.html" || p === "/search") return true;
@@ -523,8 +523,23 @@ async function revalidateIndex(env) {
 let EDGE_P = null;
 let CORE_P = null;
 
-function edgeLoader(env) {
-  return async (rel) => { const o = await env.SITE.get(rel); return o ? o.json() : null; };
+/* The engine's files through the data centre's cache (r2cache.js). Measured
+ * 2026-10-20 from Chiang Mai: a "tulou" query on a fresh isolate made 28
+ * bucket reads at ~2.6 s each, 8–17 s an answer, and traffic is light enough
+ * that most answers start on a fresh isolate. The copies are named by
+ * meta.json's etag, so a rebuilt index is read whole and new, never mixed. */
+const R2N = { n: 0, ms: 0 };   // bucket reads by the engine, for server-timing
+function edgeLoader(env, base = "api/v1/edge/") {
+  let verP = null;
+  const ver = () => verP || (verP = env.SITE.head(base + "meta.json")
+    .then((h) => (h ? h.httpEtag : "")).catch(() => ""));
+  return async (rel) => {
+    const t = Date.now();
+    const v = rel === base + "meta.json" ? "" : await ver();
+    const o = v ? await cachedGet(env, rel, 86400, v) : await env.SITE.get(rel);
+    const j = o ? await o.json() : null;
+    R2N.n++; R2N.ms += Date.now() - t; return j;
+  };
 }
 
 function edgeCore(env) {
@@ -737,9 +752,12 @@ function dice(env) {
 function loadIndex(env) {
   if (!INDEX_P) {
     INDEX_P = (async () => {
-      const obj = await env.SITE.get("api/v1/index.json");
+      /* through the colo cache, named by etag (edgeLoader says why) */
+      const head = await env.SITE.head("api/v1/index.json");
+      if (!head) throw new Error("api index not deployed");
+      const obj = await cachedGet(env, "api/v1/index.json", 86400, head.httpEtag);
       if (!obj) throw new Error("api index not deployed");
-      INDEX_ETAG = obj.httpEtag;
+      INDEX_ETAG = head.httpEtag;
       return JSON.parse(await obj.text());
     })().catch((e) => { INDEX_P = null; INDEX_ETAG = null; throw e; });
   }
@@ -997,11 +1015,15 @@ async function api(request, env, url, path, ctx) {
   }
 
   let ix;
+  /* What a cold isolate pays, said in the answer (gemba 2, 2026-10-20: the
+   * search took 5–14 s a query). */
+  const coldIx = !INDEX_P, coldEdge = !EDGE_P, tIx = Date.now();
   try {
     ix = await loadIndex(env);
   } catch (e) {
     return apiError(503, "index unavailable", String(e.message));
   }
+  const msIx = Date.now() - tIx;
 
   if (path === "/places") {
     const res = apiJson(queryPlaces(ix, url.searchParams));
@@ -1015,8 +1037,12 @@ async function api(request, env, url, path, ctx) {
 
   if (path === "/search") {
     try {
+      const tS = Date.now(); const r0 = { ...R2N };
       const body = await searchHandler(env, ix, url.searchParams);
       const res = apiJson(body);
+      res.headers.set("server-timing", `index;dur=${msIx};desc="${coldIx ? "cold" : "warm"}", ` +
+        `engine;dur=${Date.now() - tS};desc="${coldEdge ? "cold" : "warm"}", ` +
+        `reads;dur=${R2N.ms - r0.ms};desc="${R2N.n - r0.n} bucket reads"`);
       /* How many answered, for the counter (record(): a search that found
        * nothing keeps its words there). Set before the clone so a cached copy
        * carries it too. */

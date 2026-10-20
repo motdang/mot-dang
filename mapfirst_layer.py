@@ -358,7 +358,7 @@ function fromLinkText(u){
   function geocode(ps){if(!ps.length)return Promise.resolve(null);
     return fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=th&accept-language=en&q='+encodeURIComponent(ps.join(', ')))
       .then(function(r){return r.json();}).then(function(a){return a&&a[0]?{lat:+a[0].lat,lng:+a[0].lon,used:ps.join(', ')}:geocode(ps.slice(1));},function(){return null;});}
-  var hits=name?fetch(R()+'api/v1/search?q='+encodeURIComponent(name)+'&limit=8').then(function(r){return r.json();}).then(function(d){
+  var hits=name?places(name,'n=20').then(function(d){
       return (d.results||[]).filter(function(x){return x.lat!=null&&Math.max(overlap(name,x.name),overlap(name,x.nameEn))>=0.6;});},function(){return [];}):Promise.resolve([]);
   Promise.all([geocode(parts),hits]).then(function(v){
     var g=v[0],h=v[1];
@@ -380,7 +380,7 @@ function fromLinkText(u){
    of that name within ~300 m opens with everything known about it, not a bare point (Nan, 2026-10-20,
    TULOU Restaurant: the point opened 6 m from its own record). */
 function placeAt(name,c,miss){
-  fetch(R()+'api/v1/search?q='+encodeURIComponent(name)+'&limit=8').then(function(r){return r.json();}).then(function(d){
+  places(name,'n=20').then(function(d){
     var h=(d.results||[]).filter(function(x){return x.lat!=null&&far({lat:x.lat,lng:x.lng},c)<0.003&&
       Math.max(overlap(name,x.name),overlap(name,x.nameEn))>=0.6;});
     h.sort(function(a,b){return far({lat:a.lat,lng:a.lng},c)-far({lat:b.lat,lng:b.lng},c);});
@@ -439,20 +439,29 @@ function paintQ(rs){
     m.on('mouseleave','mf-q-dot',function(){m.getCanvas().style.cursor='';});}
 }
 var QR=[];
+/* The map asks /find: the site's own search index and ranking (gemba 2, 2026-10-20: the places API took
+   5–17 s a query and ranked a place's own name lower). Each place row comes back in the shape the map uses. */
+function places(q,extra){
+  return fetch(R()+'find?q='+encodeURIComponent(q)+'&fmt=json&kind=place&'+extra).then(function(r){return r.json();}).then(function(d){
+    var rs=(d.results||[]).filter(function(r){return /^https:\/\/motdang\.net\/(cm|cr)\/p\//.test(r.url||'');}).map(function(r){
+      var t=String(r.title||'').replace(/\s+—\s+.*$/,'').replace(/\s*·\s*มดแดง.*$/,''),p=t.split(' · ');
+      return {name:p[0]||t,nameEn:p[1]||'',url:r.url,lat:r.lat,lng:r.lon,province:r.url.indexOf('/cr/')>0?'cr':'cm'};});
+    return {results:rs,total:d.total||rs.length};});
+}
 function runSearch(first){
   var m=MDX.map,b=m.getBounds(),my=++seq,namedOpen=false;
   /* the words are one place's whole name: open it, in view or not (Nan, 2026-10-20: "tulou" drew 339 dots).
      Judged on the whole match list, so a second place of that name anywhere leaves both on the map. */
-  if(first)fetch(R()+'api/v1/search?q='+encodeURIComponent(S.q)+'&limit=200').then(function(r){return r.json();}).then(function(w){
+  if(first)places(S.q,'n=50').then(function(w){
     if(my!==seq)return;var hit=named(S.q,(w.results||[]).filter(function(r){return r.lat!=null;}));
     if(hit){namedOpen=true;show(qItem(hit),{fly:true});}},function(){});
   var bb=[b.getWest(),b.getSouth(),b.getEast(),b.getNorth()].map(function(x){return x.toFixed(5);}).join(',');
   say('กำลังค้น · searching…');
-  fetch(R()+'api/v1/search?q='+encodeURIComponent(S.q)+'&bbox='+bb+'&limit=200').then(function(r){return r.json();}).then(function(d){
+  places(S.q,'n=200&bbox='+bb).then(function(d){
     if(my!==seq)return;
     var rs=d.results||[];
     if(!rs.length&&first){
-      return fetch(R()+'api/v1/search?q='+encodeURIComponent(S.q)+'&limit=200').then(function(r){return r.json();}).then(function(w){
+      return places(S.q,'n=50').then(function(w){
         if(my!==seq)return;var all=(w.results||[]).filter(function(r){return r.lat!=null;});
         if(!all.length){paintQ([]);say('ไม่พบ "'+S.q+'" · nothing found');return;}
         var lo=[Math.min.apply(null,all.map(function(r){return r.lng;})),Math.min.apply(null,all.map(function(r){return r.lat;}))],
