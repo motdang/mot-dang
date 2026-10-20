@@ -27,6 +27,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.error
 import urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -90,20 +91,29 @@ def main():
             if chk.returncode:
                 sys.exit("NOT PUBLISHED — %s does not parse:\n%s" % (n, chk.stderr[-800:]))
             hashes[n] = hashlib.md5(f.read_bytes()).hexdigest()[:10]
+        # the live list, kept whole; only a list not yet published (404) starts empty
         try:
             av = json.loads(fetch(SITE + "/data/asset-versions.json"))
-            if not isinstance(av, dict):
-                av = {}
-        except Exception:
+        except urllib.error.HTTPError as e:
+            if e.code != 404:
+                sys.exit("NOT PUBLISHED — the live data/asset-versions.json did not answer (%d)" % e.code)
             av = {}
+        except Exception as e:
+            sys.exit("NOT PUBLISHED — the live data/asset-versions.json could not be read: %s" % e)
+        if not isinstance(av, dict):
+            sys.exit("NOT PUBLISHED — the live data/asset-versions.json is not a list of hashes")
         changed = [n for n in names if av.get(n) != hashes[n]]
         av.update(hashes)
         (tmp / "data" / "asset-versions.json").write_text(json.dumps(av, sort_keys=True, separators=(",", ":")))
         if dry:
             print("checks pass: %s (%s)" % (", ".join(names), ", ".join("%s %s" % (n, hashes[n]) for n in names)))
             return 0
-        if upload(tmp, names + ["data/asset-versions.json"]):
+        # the scripts first, the list that names them after
+        if upload(tmp, names):
             print("upload FAILED — the live site is unchanged")
+            return 1
+        if upload(tmp, ["data/asset-versions.json"]):
+            print("the scripts went up; their hashes did not — pages load them unversioned until the next round")
             return 1
     live = {}
     for n in names:

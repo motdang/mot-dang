@@ -151,21 +151,23 @@ const CASES = {
 /* ---- run ------------------------------------------------------------------ */
 const only = process.argv.includes("--only") ? process.argv[process.argv.indexOf("--only") + 1] : null;
 const names = Object.keys(CASES).filter((k) => !only || k === only);
-const b = await browser();
 const fails = [];
+let b = null;
+try { b = await browser(); } catch (e) { fails.push(`chrome: did not start — ${String(e.message || e).slice(0, 120)}`); console.log("FAIL " + fails[0]); }
 try {
   for (const k of names) {
+    if (!b && CASES[k].length) continue;          // a case that needs the browser waits for one
     let why;
     try { why = await CASES[k](b); } catch (e) { why = `threw: ${String(e.message || e).slice(0, 160)}`; }
     console.log(`${why ? "FAIL" : "ok  "} ${k}${why ? " — " + why : ""}`);
     if (why) fails.push(`${k}: ${why}`);
   }
-} finally { b.close(); }
+} finally { if (b) b.close(); }
 
 const stamp = new Date().toISOString().slice(0, 16).replace("T", " ");
 try {
   if (!existsSync(TSV)) writeFileSync(TSV, "when\tok\tfailed\n");
-  appendFileSync(TSV, `${stamp}\t${names.length - fails.length}/${names.length}\t${fails.join(" | ")}\n`);
+  appendFileSync(TSV, `${stamp}\t${Math.max(0, names.length - fails.length)}/${names.length}\t${fails.join(" | ")}\n`);
   if (!only) {
     if (fails.length) writeFileSync(RED, `motdang round trip ${stamp}: ${fails.length} broken — ${fails[0]} (node tools/roundtrip.mjs)\n`);
     else if (existsSync(RED)) unlinkSync(RED);

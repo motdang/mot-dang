@@ -2271,12 +2271,23 @@ async function answer(request, env, url, ctx, coreP, now) {
    * became ปฐม, and the shop was not found). A run of the words that holds a
    * lifted word and is itself in some page's title keeps the query whole. */
   if (!adv && intent.said.length) {
-    const runs = q.split(/\s+/).filter((t) => intent.said.some((w) => t !== w && t.includes(w)));
+    const lc = (x) => String(x).toLowerCase();
+    const runs = q.split(/\s+/).filter((t) => intent.said.some((w) => lc(t) !== lc(w) && lc(t).includes(lc(w))));
     const m = runs.map((t) => phrase(t, seg)).filter(Boolean).map((p) => `title_s : ${p}`).join(" OR ");
     if (m) {
       try {
         const hit = await lap("name", db.prepare("SELECT rowid FROM fts WHERE fts MATCH ? LIMIT 1").bind(m).first());
-        if (hit) { intent = liftIntent(""); qm = q; boolQ = isBoolean(qm); }
+        if (hit) {
+          /* the name runs stand in as placeholders while the rest is read
+           * again, so "ปฐมเจ ใกล้ฉัน" keeps its near-me */
+          let masked = ` ${q} `;
+          runs.forEach((t, i) => { masked = masked.split(t).join(` zqxname${i} `); });
+          intent = liftIntent(masked.trim());
+          let back = intent.q;
+          runs.forEach((t, i) => { back = back.split(`zqxname${i}`).join(t); });
+          intent.q = back.replace(/\s+/g, " ").trim();
+          qm = intent.q; boolQ = isBoolean(qm);
+        }
       } catch { /* lifted as before */ }
     }
   }

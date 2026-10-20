@@ -807,12 +807,13 @@ function dice(env) {
 function loadIndex(env) {
   if (!INDEX_P) {
     INDEX_P = (async () => {
-      /* through the colo cache, named by etag (edgeLoader says why) */
-      const head = await env.SITE.head("api/v1/index.json");
-      if (!head) throw new Error("api index not deployed");
-      const obj = await cachedGet(env, "api/v1/index.json", 86400, head.httpEtag);
+      /* Read straight from the bucket: through the colo cache the whole
+       * 69 MB was held twice over before the parse, against a 128 MB
+       * isolate (review of PR #24, 2026-10-20; the 2026-09-10 note at
+       * cacheFor measured hand-caching big bodies slower too). */
+      const obj = await env.SITE.get("api/v1/index.json");
       if (!obj) throw new Error("api index not deployed");
-      INDEX_ETAG = head.httpEtag;
+      INDEX_ETAG = obj.httpEtag;
       return JSON.parse(await obj.text());
     })().catch((e) => { INDEX_P = null; INDEX_ETAG = null; throw e; });
   }
@@ -1441,10 +1442,15 @@ export default {
     try { await assetVersions(env); } catch { /* pages go out unversioned */ }
     /* The one thing that matters. Nothing below this line can fail it. */
     const response = finish(toHttps(request) || sendToRules(request) || askCrawler(request, env) || await serve(request, env, ctx), request.url);
-    /* a script or stylesheet asked for by its content hash never changes */
+    /* A script or stylesheet asked for by its content hash is kept for good —
+     * when the bytes served are the ones the hash names. The bucket's etag of
+     * a small file is its md5, so a ?v= that arrives before its file (or for a
+     * file a round kept at its live copy) is served with the ordinary rule. */
     try {
       const u = new URL(request.url);
-      if (response.status === 200 && u.searchParams.has("v") && /\.(js|css)$/.test(u.pathname))
+      const v = u.searchParams.get("v") || "";
+      const et = (response.headers.get("etag") || "").replace(/^W\//, "").replace(/"/g, "");
+      if (response.status === 200 && v.length >= 8 && /\.(js|css)$/.test(u.pathname) && et.startsWith(v))
         response.headers.set("cache-control", "public, max-age=31536000, immutable");
     } catch { /* headers as they were */ }
 
