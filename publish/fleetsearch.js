@@ -2183,7 +2183,13 @@ async function answer(request, env, url, ctx, coreP, now) {
   let cache = null, ckey = null;
   try {
     cache = caches.default;
-    ckey = new Request(url.toString(), { method: "GET" });
+    /* A page built from the network's guess (no near= in the address) is
+     * kept per ~10 km of that guess: by address alone, the next reader at
+     * this data centre got the last reader's distances, order and city
+     * (Nan, 2026-10-20, gemba 2). */
+    const ku = new URL(url.toString());
+    if (st.pin && !st.pin.exact) ku.searchParams.set("__g", `${st.pin.lat.toFixed(1)},${st.pin.lon.toFixed(1)}`);
+    ckey = new Request(ku.toString(), { method: "GET" });
     const hit = await cache.match(ckey);
     if (hit) {
       const r = new Response(hit.body, hit);
