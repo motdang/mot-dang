@@ -79,14 +79,16 @@ function me(){
   try{var c=JSON.parse(sessionStorage.getItem('md-me'));if(c&&Date.now()-c.at<3e5)return Promise.resolve(c.me);}catch(e){}
   return fetch('/api/me',{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(m){
     try{sessionStorage.setItem('md-me',JSON.stringify({at:Date.now(),me:m}));}catch(e){}return m;});}
+/* read, merge, send; a send refused as stale (another device wrote first) reads and merges again */
 function sync(){
   if(BUSY||!ME||!ME.signedIn)return Promise.resolve();BUSY=true;
-  return fetch('/api/me/saved',{credentials:'same-origin'}).then(function(r){return r.ok?r.json():null;}).then(function(srv){
-    if(!srv)return;var m=merge(local(),srv.data||{});apply(m);
-    if(JSON.stringify(m)!==JSON.stringify(srv.data||{}))
+  function round(n){
+    return fetch('/api/me/saved',{credentials:'same-origin'}).then(function(r){return r.ok?r.json():null;}).then(function(srv){
+      if(!srv)return;var m=merge(local(),srv.data||{});apply(m);
+      if(JSON.stringify(m)===JSON.stringify(srv.data||{}))return;
       return fetch('/api/me/saved',{method:'PUT',credentials:'same-origin',headers:{'content-type':'application/json'},
-        body:JSON.stringify({data:m})});
-  }).catch(function(){}).then(function(){BUSY=false;});}
+        body:JSON.stringify({data:m,ver:srv.ver||0})}).then(function(r){if(r.status===409&&n<3)return round(n+1);});});}
+  return round(0).catch(function(){}).then(function(){BUSY=false;});}
 
 /* the box on my.html */
 function bi(th,en){return th+' · '+en;}
@@ -94,6 +96,7 @@ function box(){var b=document.getElementById('md-acct');if(!b||!ME||!ME.line)ret
   b.textContent='';
   if(!ME.signedIn){
     var a=document.createElement('a');a.href='/auth/line?back='+encodeURIComponent(location.pathname+location.search);
+    a.addEventListener('click',function(){try{sessionStorage.removeItem('md-me');}catch(e){}});
     a.className='md-line-in';a.textContent=bi('เข้าสู่ระบบด้วย LINE','Sign in with LINE');
     a.style.cssText='display:inline-block;padding:.55em 1em;border-radius:99px;background:#06c755;color:#fff;font-weight:bold;text-decoration:none';
     var p=document.createElement('p');p.style.cssText='margin:.4em 0 0;font-size:.92em';

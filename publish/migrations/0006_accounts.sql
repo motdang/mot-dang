@@ -20,5 +20,6 @@ CREATE INDEX IF NOT EXISTS sessions_user ON sessions(user_id);
 CREATE TABLE IF NOT EXISTS saved (
   user_id   INTEGER PRIMARY KEY,
   data      TEXT NOT NULL DEFAULT '{}',   -- JSON: {keys: {name: {v, t}}, saved: [...], gone: [...]}
-  at        TEXT NOT NULL DEFAULT (datetime('now'))
+  at        TEXT NOT NULL DEFAULT (datetime('now')),
+  ver       INTEGER NOT NULL DEFAULT 0    -- +1 a write; a write from an older read is refused
 );

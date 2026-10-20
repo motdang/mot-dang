@@ -103,6 +103,7 @@ export async function accounts(request, env, url) {
     if (!on) return page("การเข้าสู่ระบบด้วย LINE ยังไม่เปิด", "Sign in with LINE is not switched on yet", "/my.html", 503);
     let pend = null;
     try { pend = JSON.parse(cookies(request)[PENDING] || "null"); } catch { pend = null; }
+    if (pend) pend.back = safeBack(pend.back);     // the cookie came back from the browser: checked again
     const clear = setCookie(PENDING, "", 0, "/auth");
     const fail = (th, en) => { const r = page(th, en, pend ? pend.back : "/my.html", 400); r.headers.append("set-cookie", clear); return r; };
     if (url.searchParams.get("error")) return fail("ยกเลิกการเข้าสู่ระบบ", "Sign-in was cancelled");
@@ -154,10 +155,10 @@ export async function accounts(request, env, url) {
     if (!u) return json({ error: "not signed in" }, 401);
     const db = env.ACCOUNTS;
     if (request.method === "GET") {
-      const r = await db.prepare("SELECT data, at FROM saved WHERE user_id = ?").bind(u.id).first();
+      const r = await db.prepare("SELECT data, at, ver FROM saved WHERE user_id = ?").bind(u.id).first();
       let data = {};
       try { data = r ? JSON.parse(r.data) : {}; } catch { data = {}; }
-      return json({ data, at: r ? r.at : null });
+      return json({ data, at: r ? r.at : null, ver: r ? r.ver : 0 });
     }
     if (request.method === "PUT") {
       if (!sameSite(request, url)) return json({ error: "from a motdang.net page" }, 403);
@@ -165,11 +166,22 @@ export async function accounts(request, env, url) {
       if (text.length > SAVED_MAX) return json({ error: "too big", max: SAVED_MAX }, 413);
       let d;
       try { d = JSON.parse(text); } catch { return json({ error: "not JSON" }, 400); }
-      if (!d || typeof d !== "object" || Array.isArray(d) || typeof d.data !== "object" || Array.isArray(d.data))
-        return json({ error: "{ data: {...} }" }, 400);
-      await db.prepare(`INSERT INTO saved(user_id, data, at) VALUES (?, ?, datetime('now'))
-        ON CONFLICT(user_id) DO UPDATE SET data = excluded.data, at = excluded.at`).bind(u.id, JSON.stringify(d.data)).run();
-      return json({ ok: true });
+      if (!d || typeof d !== "object" || Array.isArray(d) || typeof d.data !== "object" || Array.isArray(d.data)
+          || !Number.isInteger(d.ver) || d.ver < 0)
+        return json({ error: "{ data: {...}, ver: <the ver it was merged from> }" }, 400);
+      /* A copy merged from an older read is refused, so two devices saving at
+       * once cannot overwrite each other: the second reads again and merges. */
+      const body = JSON.stringify(d.data);
+      const up = await db.prepare(`UPDATE saved SET data = ?, at = datetime('now'), ver = ver + 1
+                                   WHERE user_id = ? AND ver = ?`).bind(body, u.id, d.ver).run();
+      if (!(up.meta && up.meta.changes) && d.ver === 0) {
+        const ins = await db.prepare(`INSERT OR IGNORE INTO saved(user_id, data, at, ver) VALUES (?, ?, datetime('now'), 1)`)
+          .bind(u.id, body).run();
+        if (ins.meta && ins.meta.changes) return json({ ok: true, ver: 1 });
+      } else if (up.meta && up.meta.changes) {
+        return json({ ok: true, ver: d.ver + 1 });
+      }
+      return json({ error: "stale", hint: "read again, merge, send" }, 409);
     }
     return json({ error: "GET or PUT" }, 405);
   }

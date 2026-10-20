@@ -15,7 +15,7 @@ function d1() {
     return {
       bind(...b) { binds = b; return this; },
       async first() { return db.prepare(text).get(...binds) ?? null; },
-      async run() { db.prepare(text).run(...binds); return { success: true }; },
+      async run() { const r = db.prepare(text).run(...binds); return { success: true, meta: { changes: r.changes } }; },
       async all() { return { results: db.prepare(text).all(...binds) }; },
     };
   };
@@ -86,12 +86,20 @@ test("sign in, save, read back, sign out", async () => {
     assert.equal(me.name, "Nan");
 
     const data = { keys: { "md-city": { v: "cm", t: 1 } }, saved: [{ k: "cm:tulou-restaurant-405600680", t: 2 }], gone: [] };
-    const cross = await call(env, "/api/me/saved", { method: "PUT", headers: { ...ck, "sec-fetch-site": "cross-site" }, body: JSON.stringify({ data }) });
+    const same = { ...ck, "sec-fetch-site": "same-origin" };
+    const cross = await call(env, "/api/me/saved", { method: "PUT", headers: { ...ck, "sec-fetch-site": "cross-site" }, body: JSON.stringify({ data, ver: 0 }) });
     assert.equal(cross.status, 403);
-    const put = await call(env, "/api/me/saved", { method: "PUT", headers: { ...ck, "sec-fetch-site": "same-origin" }, body: JSON.stringify({ data }) });
+    const put = await call(env, "/api/me/saved", { method: "PUT", headers: same, body: JSON.stringify({ data, ver: 0 }) });
     assert.equal(put.status, 200);
+    assert.equal((await put.json()).ver, 1);
     const got = await (await call(env, "/api/me/saved", { headers: ck })).json();
     assert.deepEqual(got.data, data);
+    assert.equal(got.ver, 1);
+    // a second device merged from the same empty read: refused, reads again
+    const stale = await call(env, "/api/me/saved", { method: "PUT", headers: same, body: JSON.stringify({ data: { keys: {} }, ver: 0 }) });
+    assert.equal(stale.status, 409);
+    const next = await call(env, "/api/me/saved", { method: "PUT", headers: same, body: JSON.stringify({ data, ver: 1 }) });
+    assert.equal((await next.json()).ver, 2);
 
     const anon = await call(env, "/api/me/saved", {});
     assert.equal(anon.status, 401);
@@ -110,6 +118,10 @@ test("a wrong state, or a token for another channel, signs nobody in", async () 
   const pending = cookieOf(start, "md-la"), pend = JSON.parse(pending);
   const bad = await call(env, `/auth/line/callback?code=abc&state=nope`, { headers: { cookie: `md-la=${encodeURIComponent(pending)}` } });
   assert.equal(bad.status, 400);
+  // a back address forged into the cookie goes back to my.html
+  const forged = JSON.stringify({ ...pend, back: "//evil.example/x" });
+  const fb = await call(env, `/auth/line/callback?error=access_denied`, { headers: { cookie: `md-la=${encodeURIComponent(forged)}` } });
+  assert.doesNotMatch(await fb.text(), /evil\.example/);
   const realFetch = globalThis.fetch;
   globalThis.fetch = async (u) => String(u).endsWith("/token")
     ? new Response(JSON.stringify({ id_token: "idtok" }))
