@@ -2222,9 +2222,9 @@ async function answer(request, env, url, ctx, coreP, now) {
     try { return await p; } finally { T[k] = (T[k] || 0) + Date.now() - s; }
   };
   /* Intent first: the constraint words leave the match (liftIntent). */
-  const intent = liftIntent(adv ? "" : q);
-  const qm = adv ? q : intent.q;
-  const boolQ = adv || isBoolean(qm);
+  let intent = liftIntent(adv ? "" : q);
+  let qm = adv ? q : intent.q;
+  let boolQ = adv || isBoolean(qm);
   /* The dictionary and thesaurus cost one R2 read per isolate. Every simple
    * query reads the thesaurus now, since other spellings join the first step;
    * the boolean door needs only the segmenter, and only for Thai. The
@@ -2264,6 +2264,20 @@ async function answer(request, env, url, ctx, coreP, now) {
     for (const r of register) {
       const th = norm(r.th || "").replace(/\s+/g, "");
       if (/^[฀-๿]{3,}$/.test(th) && seg.split(th).length > 1) keep.add(th);
+    }
+  }
+  /* A word read as an intent inside a name stays in the name (gemba 2,
+   * 2026-10-20: เจ, "vegetarian", was lifted out of the shop ปฐมเจ, the match
+   * became ปฐม, and the shop was not found). A run of the words that holds a
+   * lifted word and is itself in some page's title keeps the query whole. */
+  if (!adv && intent.said.length) {
+    const runs = q.split(/\s+/).filter((t) => intent.said.some((w) => t !== w && t.includes(w)));
+    const m = runs.map((t) => phrase(t, seg)).filter(Boolean).map((p) => `title_s : ${p}`).join(" OR ");
+    if (m) {
+      try {
+        const hit = await lap("name", db.prepare("SELECT rowid FROM fts WHERE fts MATCH ? LIMIT 1").bind(m).first());
+        if (hit) { intent = liftIntent(""); qm = q; boolQ = isBoolean(qm); }
+      } catch { /* lifted as before */ }
     }
   }
   const common = boolQ ? new Set() : await lap("common", commonWords(db, qm, seg));
