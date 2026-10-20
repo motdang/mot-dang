@@ -1,0 +1,1511 @@
+{
+ "cards": {
+  "/": {
+   "img": "home.jpg",
+   "alt": "Card: มดแดง · เชียงใหม่และเชียงรายตอนนี้ · Chiang Mai and Chiang Rai right now, over a photograph of a blue naga at a Chiang Rai temple gate",
+   "w": 1200,
+   "h": 630,
+   "title": "มดแดง Mot Dang — เชียงใหม่ · เชียงราย ตอนนี้"
+  },
+  "/add.html": {
+   "img": "add.jpg",
+   "alt": "Card: เพิ่มข้อมูล · Add something",
+   "w": 1200,
+   "h": 630,
+   "title": "เพิ่มข้อมูล"
+  },
+  "/adhd.html": {
+   "img": "adhd.jpg",
+   "alt": "Card: สมาธิสั้น เชียงใหม่ · ADHD medicine and care, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "สมาธิสั้น เชียงใหม่ · ADHD medicine and care, Chiang Mai"
+  },
+  "/advanced.html": {
+   "img": "advanced.jpg",
+   "alt": "Card: ค้นหาขั้นสูง · Advanced search",
+   "w": 1200,
+   "h": 630,
+   "title": "ค้นหาขั้นสูง · Advanced search"
+  },
+  "/advertise.html": {
+   "img": "advertise.jpg",
+   "alt": "Card: ลงโฆษณา · Advertise with Mot Dang",
+   "w": 1200,
+   "h": 630,
+   "title": "ลงโฆษณา"
+  },
+  "/ahead.html": {
+   "img": "ahead.jpg",
+   "alt": "Card: ข้างหน้า · Ahead",
+   "w": 1200,
+   "h": 630,
+   "title": "ข้างหน้า · Ahead — มดแดง"
+  },
+  "/all.html": {
+   "img": "all.jpg",
+   "alt": "Card: ทุกชั้น ทุกหมวด · Every shelf",
+   "w": 1200,
+   "h": 630,
+   "title": "ทุกชั้น ทุกหมวด · Every shelf"
+  },
+  "/app.html": {
+   "img": "app.jpg",
+   "alt": "Card: แอปห้องน้ำใกล้ฉัน · The nearest-toilet app",
+   "w": 1200,
+   "h": 630,
+   "title": "แอปห้องน้ำใกล้ฉัน"
+  },
+  "/asked.html": {
+   "img": "asked.jpg",
+   "alt": "Card: ถามมด · คำถามที่คนถามจริง เชียงใหม่ เชียงราย",
+   "w": 1200,
+   "h": 630,
+   "title": "ถามมด — คำถามที่คนถามจริง เชียงใหม่ เชียงราย"
+  },
+  "/bpo.html": {
+   "img": "bpo.jpg",
+   "alt": "Card: รับจ้างงานธุรกิจ (BPO) เชียงใหม่ · Business process outsourcing, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "รับจ้างงานธุรกิจ (BPO) เชียงใหม่ · Business process outsourcing, Chiang Mai"
+  },
+  "/calendar.html": {
+   "img": "calendar.jpg",
+   "alt": "Card: ปฏิทิน · The Mot Dang calendar, over a photograph of a sunset sky over trees",
+   "w": 1200,
+   "h": 630,
+   "title": "ปฏิทิน · The Mot Dang calendar"
+  },
+  "/care.html": {
+   "img": "care.jpg",
+   "alt": "Card: ดูแลต่อเนื่อง เชียงใหม่ · Ongoing care, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "ดูแลต่อเนื่อง เชียงใหม่ · Ongoing care, Chiang Mai"
+  },
+  "/chart.html": {
+   "img": "chart.jpg",
+   "alt": "Card: ดวงจีนสี่เสา · Your Four Pillars",
+   "w": 1200,
+   "h": 630,
+   "title": "ดวงจีนสี่เสา"
+  },
+  "/chiang-rai/credits/": {
+   "img": "chiang-rai-credits.jpg",
+   "alt": "Card: Credits · Photo credits and sources.",
+   "w": 1200,
+   "h": 630,
+   "title": "Credits · Chiang Rai, Slowly"
+  },
+  "/chiang-rai/golden-triangle/": {
+   "img": "chiang-rai-golden-triangle.jpg",
+   "alt": "Card: The Golden Triangle · Sop Ruak, the golden Buddha, the Hall of Opium, the glass walkway and Chiang Saen — the highlight…",
+   "w": 1200,
+   "h": 630,
+   "title": "The Golden Triangle · Chiang Rai, Slowly"
+  },
+  "/chiang-rai/lanterns/": {
+   "img": "chiang-rai-lanterns.jpg",
+   "alt": "Card: Lantern Night",
+   "w": 1200,
+   "h": 630,
+   "title": "Lantern Night · Chiang Rai, Slowly"
+  },
+  "/chiang-rai/roll/": {
+   "img": "chiang-rai-roll.jpg",
+   "alt": "Card: NaN's Roll · Chiang Rai and the Golden Triangle from NaN's camera roll.",
+   "w": 1200,
+   "h": 630,
+   "title": "NaN's Roll · Chiang Rai, Slowly"
+  },
+  "/chiang-rai/see/": {
+   "img": "chiang-rai-see.jpg",
+   "alt": "Card: The Headliners · The White Temple, the Blue Temple, the Black House, the golden clock tower and the mountains of…",
+   "w": 1200,
+   "h": 630,
+   "title": "The Headliners · Chiang Rai, Slowly"
+  },
+  "/chiang-rai/sidequests/": {
+   "img": "chiang-rai-sidequests.jpg",
+   "alt": "Card: Sidequests · Chiang Rai's small wonders — vanilla farm, bus-station murals, hot-spring eggs, a warm waterfall…",
+   "w": 1200,
+   "h": 630,
+   "title": "Sidequests · Chiang Rai, Slowly"
+  },
+  "/chiang-rai/slow-boat/": {
+   "img": "chiang-rai-slow-boat.jpg",
+   "alt": "Card: The Slow Boat",
+   "w": 1200,
+   "h": 630,
+   "title": "The Slow Boat · Chiang Rai, Slowly"
+  },
+  "/chiang-rai/th/": {
+   "img": "chiang-rai-th.jpg",
+   "alt": "Card: แอ่วเชียงราย ค่อย ๆ ไปเน้อ · แอ่วเชียงรายและสามเหลี่ยมทองคำ วัด แม่น้ำโขง ที่เที่ยวนอกเส้นทาง และเรือช้าไปลาว กับไลลากรุ๊ป",
+   "w": 1200,
+   "h": 630,
+   "title": "แอ่วเชียงราย ค่อย ๆ ไปเน้อ"
+  },
+  "/chiang-rai/with-laila/": {
+   "img": "chiang-rai-with-laila.jpg",
+   "alt": "Card: Laila Group · Laila Group, Chiang Rai: slow boats and trains to Laos, day trips, cars and scooters, visas, and…",
+   "w": 1200,
+   "h": 630,
+   "title": "Laila Group · Chiang Rai, Slowly"
+  },
+  "/chuai.html": {
+   "img": "chuai.jpg",
+   "alt": "Card: ช่วย · เบอร์ฉุกเฉิน โรงพยาบาล ร้านยา ปั๊ม น้ำดื่ม ที่ใกล้ที่สุด",
+   "w": 1200,
+   "h": 630,
+   "title": "ช่วย — เบอร์ฉุกเฉิน โรงพยาบาล ร้านยา ปั๊ม น้ำดื่ม ที่ใกล้ที่สุด"
+  },
+  "/claim.html": {
+   "img": "claim.jpg",
+   "alt": "Card: ยืนยันร้านของคุณ · Claim your place",
+   "w": 1200,
+   "h": 630,
+   "title": "ยืนยันร้านของคุณ"
+  },
+  "/compare-cm-cr.html": {
+   "img": "compare-cm-cr.jpg",
+   "alt": "Card: เชียงใหม่ กับ เชียงราย ต่างกันยังไง เด่นเรื่องอะไร · เทียบจากจำนวนจริง",
+   "w": 1200,
+   "h": 630,
+   "title": "เชียงใหม่ กับ เชียงราย ต่างกันยังไง เด่นเรื่องอะไร — เทียบจากจำนวนจริง"
+  },
+  "/contacts.html": {
+   "img": "contacts.jpg",
+   "alt": "Card: ช่วยเติมข้อมูลติดต่อ · Help fill in the contacts",
+   "w": 1200,
+   "h": 630,
+   "title": "ช่วยเติมข้อมูลติดต่อ"
+  },
+  "/cost-of-living-and-safety.html": {
+   "img": "cost-of-living-and-safety.jpg",
+   "alt": "Card: ค่าครองชีพเชียงใหม่แพงไหม เชียงรายปลอดภัยไหม ที่ไหนน่าไป · คำตอบพร้อมที่มา",
+   "w": 1200,
+   "h": 630,
+   "title": "ค่าครองชีพเชียงใหม่แพงไหม เชียงรายปลอดภัยไหม ที่ไหนน่าไป — คำตอบพร้อมที่มา"
+  },
+  "/counselling.html": {
+   "img": "counselling.jpg",
+   "alt": "Card: ปรึกษาสุขภาพจิต เชียงใหม่ · Counselling and therapy, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "ปรึกษาสุขภาพจิต เชียงใหม่ · Counselling and therapy, Chiang Mai"
+  },
+  "/crawl-request.html": {
+   "img": "crawl-request.jpg",
+   "alt": "Card: ส่งมดไปสำรวจ · Request a crawl",
+   "w": 1200,
+   "h": 630,
+   "title": "ส่งมดไปสำรวจ"
+  },
+  "/credits.html": {
+   "img": "credits.jpg",
+   "alt": "Card: เครดิต · Credits",
+   "w": 1200,
+   "h": 630,
+   "title": "เครดิต"
+  },
+  "/dementia.html": {
+   "img": "dementia.jpg",
+   "alt": "Card: สมองเสื่อมและความจำ เชียงใหม่ · Dementia and memory care, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "สมองเสื่อมและความจำ เชียงใหม่ · Dementia and memory care, Chiang Mai"
+  },
+  "/dialysis.html": {
+   "img": "dialysis.jpg",
+   "alt": "Card: ฟอกไต เชียงใหม่ · Dialysis, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "ฟอกไต เชียงใหม่ · Dialysis, Chiang Mai"
+  },
+  "/driving.html": {
+   "img": "driving.jpg",
+   "alt": "Card: ใบขับขี่ เชียงใหม่ · The Thai driving licence, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "ใบขับขี่ เชียงใหม่ · The Thai driving licence, Chiang Mai"
+  },
+  "/elsewhere.html": {
+   "img": "elsewhere.jpg",
+   "alt": "Card: ที่อื่นของเรา · Elsewhere from the same workshop",
+   "w": 1200,
+   "h": 630,
+   "title": "ที่อื่นของเรา · Elsewhere from the same workshop"
+  },
+  "/events.html": {
+   "img": "events.jpg",
+   "alt": "Card: งานในเมือง เชียงใหม่ · What is on",
+   "w": 1200,
+   "h": 630,
+   "title": "งานในเมือง เชียงใหม่"
+  },
+  "/eyecare.html": {
+   "img": "eyecare.jpg",
+   "alt": "Card: ตาและร้านแว่น เชียงใหม่ · Eyes and opticians, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "ตาและร้านแว่น เชียงใหม่ · Eyes and opticians, Chiang Mai"
+  },
+  "/festivals.html": {
+   "img": "festivals.jpg",
+   "alt": "Card: เทศกาล-ฤดูกาล เชียงใหม่-เชียงราย · Festivals & Seasons",
+   "w": 1200,
+   "h": 630,
+   "title": "เทศกาล-ฤดูกาล เชียงใหม่-เชียงราย"
+  },
+  "/field/": {
+   "img": "field.jpg",
+   "alt": "Card: ภาคสนาม · Field · Street-level capture for Mot Dang, over a photograph of a street scene photographed in the field",
+   "w": 1200,
+   "h": 630,
+   "title": "Field — ภาคสนาม · Field"
+  },
+  "/films.html": {
+   "img": "films.jpg",
+   "alt": "Card: หนัง · Films",
+   "w": 1200,
+   "h": 630,
+   "title": "หนัง · Films — รอบฉายเชียงใหม่ เชียงราย"
+  },
+  "/fixed.html": {
+   "img": "fixed.jpg",
+   "alt": "Card: บันทึกแก้ตามแจ้ง · Fixed, as reported",
+   "w": 1200,
+   "h": 630,
+   "title": "บันทึกแก้ตามแจ้ง"
+  },
+  "/foon.html": {
+   "img": "foon.jpg",
+   "alt": "Card: ฝุ่น · ห้องปลอดฝุ่นใกล้ฉัน เชียงใหม่ เชียงราย ค่า PM2.5 แปลว่าอะไร",
+   "w": 1200,
+   "h": 630,
+   "title": "ฝุ่น — ห้องปลอดฝุ่นใกล้ฉัน เชียงใหม่ เชียงราย ค่า PM2.5 แปลว่าอะไร"
+  },
+  "/full-moon/": {
+   "img": "full-moon.jpg",
+   "alt": "Card: วันเพ็ญที่วัด · The full moon at the wat, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "วันเพ็ญที่วัด · The full moon at the wat — Mot Dang"
+  },
+  "/full-moon/2026-01-03/": {
+   "img": "full-moon-2026-01-03.jpg",
+   "alt": "Card: สี่เป็ง 3 มกราคม 2569 · New rice, and fires to warm the Buddha, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "สี่เป็ง 3 มกราคม 2569 · New rice, and fires to warm the Buddha — Mot Dang"
+  },
+  "/full-moon/2026-02-02/": {
+   "img": "full-moon-2026-02-02.jpg",
+   "alt": "Card: ห้าเป็ง 2 กุมภาพันธ์ 2569 · An ordinary full-moon wan phra, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "ห้าเป็ง 2 กุมภาพันธ์ 2569 · An ordinary full-moon wan phra — Mot Dang"
+  },
+  "/full-moon/2026-03-03/": {
+   "img": "full-moon-2026-03-03.jpg",
+   "alt": "Card: หกเป็ง 3 มีนาคม 2569 · Makha Bucha, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "หกเป็ง 3 มีนาคม 2569 · Makha Bucha · Six Peng — the Doi Tung relic climb — Mot Dang"
+  },
+  "/full-moon/2026-04-02/": {
+   "img": "full-moon-2026-04-02.jpg",
+   "alt": "Card: เจ็ดเป็ง 2 เมษายน 2569 · An ordinary full-moon wan phra, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "เจ็ดเป็ง 2 เมษายน 2569 · An ordinary full-moon wan phra — Mot Dang"
+  },
+  "/full-moon/2026-05-01/": {
+   "img": "full-moon-2026-05-01.jpg",
+   "alt": "Card: แปดเป็ง 1 พฤษภาคม 2569 · An ordinary full-moon wan phra, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "แปดเป็ง 1 พฤษภาคม 2569 · An ordinary full-moon wan phra · Eight Peng — bathing the Haripunchai relic (Lamphun) — Mot Dang"
+  },
+  "/full-moon/2026-05-31/": {
+   "img": "full-moon-2026-05-31.jpg",
+   "alt": "Card: เก้าเป็ง 31 พฤษภาคม 2569 · Visakha Bucha, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "เก้าเป็ง 31 พฤษภาคม 2569 · Visakha Bucha — Mot Dang"
+  },
+  "/full-moon/2026-06-29/": {
+   "img": "full-moon-2026-06-29.jpg",
+   "alt": "Card: สิบเป็ง 29 มิถุนายน 2569 · An ordinary full-moon wan phra, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "สิบเป็ง 29 มิถุนายน 2569 · An ordinary full-moon wan phra — Mot Dang"
+  },
+  "/full-moon/2026-07-29/": {
+   "img": "full-moon-2026-07-29.jpg",
+   "alt": "Card: สิบเป็ง (หลัง) 29 กรกฎาคม 2569 · Asanha Bucha, then the rains retreat, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "สิบเป็ง (หลัง) 29 กรกฎาคม 2569 · Asanha Bucha, then the rains retreat — Mot Dang"
+  },
+  "/full-moon/2026-08-28/": {
+   "img": "full-moon-2026-08-28.jpg",
+   "alt": "Card: สิบเอ็ดเป็ง 28 สิงหาคม 2569 · An ordinary full-moon wan phra, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "สิบเอ็ดเป็ง 28 สิงหาคม 2569 · An ordinary full-moon wan phra — Mot Dang"
+  },
+  "/full-moon/2026-09-26/": {
+   "img": "full-moon-2026-09-26.jpg",
+   "alt": "Card: สิบสองเป็ง 26 กันยายน 2569 · Twelve Peng, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "สิบสองเป็ง 26 กันยายน 2569 · Twelve Peng — salak baskets — Mot Dang"
+  },
+  "/full-moon/2026-10-26/": {
+   "img": "full-moon-2026-10-26.jpg",
+   "alt": "Card: เดือนเกี๋ยงเป็ง 26 ตุลาคม 2569 · Ok Phansa, then Tak Bat Thewo, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "เดือนเกี๋ยงเป็ง 26 ตุลาคม 2569 · Ok Phansa, then Tak Bat Thewo — Mot Dang"
+  },
+  "/full-moon/2026-11-24/": {
+   "img": "full-moon-2026-11-24.jpg",
+   "alt": "Card: ยี่เป็ง 24 พฤศจิกายน 2569 · Yi Peng, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "ยี่เป็ง 24 พฤศจิกายน 2569 · Yi Peng — Loi Krathong — Mot Dang"
+  },
+  "/full-moon/2026-12-24/": {
+   "img": "full-moon-2026-12-24.jpg",
+   "alt": "Card: สามเป็ง 24 ธันวาคม 2569 · An ordinary full-moon wan phra, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "สามเป็ง 24 ธันวาคม 2569 · An ordinary full-moon wan phra — Mot Dang"
+  },
+  "/full-moon/2027-01-22/": {
+   "img": "full-moon-2027-01-22.jpg",
+   "alt": "Card: สี่เป็ง 22 มกราคม 2570 · New rice, and fires to warm the Buddha, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "สี่เป็ง 22 มกราคม 2570 · New rice, and fires to warm the Buddha — Mot Dang"
+  },
+  "/full-moon/2027-02-21/": {
+   "img": "full-moon-2027-02-21.jpg",
+   "alt": "Card: ห้าเป็ง 21 กุมภาพันธ์ 2570 · Makha Bucha, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "ห้าเป็ง 21 กุมภาพันธ์ 2570 · Makha Bucha — Mot Dang"
+  },
+  "/full-moon/2027-03-22/": {
+   "img": "full-moon-2027-03-22.jpg",
+   "alt": "Card: หกเป็ง 22 มีนาคม 2570 · Six Peng, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "หกเป็ง 22 มีนาคม 2570 · Six Peng — the Doi Tung relic climb — Mot Dang"
+  },
+  "/full-moon/2027-04-21/": {
+   "img": "full-moon-2027-04-21.jpg",
+   "alt": "Card: เจ็ดเป็ง 21 เมษายน 2570 · An ordinary full-moon wan phra, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "เจ็ดเป็ง 21 เมษายน 2570 · An ordinary full-moon wan phra — Mot Dang"
+  },
+  "/full-moon/2027-05-20/": {
+   "img": "full-moon-2027-05-20.jpg",
+   "alt": "Card: แปดเป็ง 20 พฤษภาคม 2570 · Visakha Bucha, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "แปดเป็ง 20 พฤษภาคม 2570 · Visakha Bucha · Eight Peng — bathing the Haripunchai relic (Lamphun) — Mot Dang"
+  },
+  "/full-moon/2027-06-19/": {
+   "img": "full-moon-2027-06-19.jpg",
+   "alt": "Card: เก้าเป็ง 19 มิถุนายน 2570 · An ordinary full-moon wan phra, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "เก้าเป็ง 19 มิถุนายน 2570 · An ordinary full-moon wan phra — Mot Dang"
+  },
+  "/full-moon/2027-07-18/": {
+   "img": "full-moon-2027-07-18.jpg",
+   "alt": "Card: สิบเป็ง 18 กรกฎาคม 2570 · Asanha Bucha, then the rains retreat, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "สิบเป็ง 18 กรกฎาคม 2570 · Asanha Bucha, then the rains retreat — Mot Dang"
+  },
+  "/full-moon/2027-08-17/": {
+   "img": "full-moon-2027-08-17.jpg",
+   "alt": "Card: สิบเอ็ดเป็ง 17 สิงหาคม 2570 · An ordinary full-moon wan phra, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "สิบเอ็ดเป็ง 17 สิงหาคม 2570 · An ordinary full-moon wan phra — Mot Dang"
+  },
+  "/full-moon/2027-09-15/": {
+   "img": "full-moon-2027-09-15.jpg",
+   "alt": "Card: สิบสองเป็ง 15 กันยายน 2570 · Twelve Peng, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "สิบสองเป็ง 15 กันยายน 2570 · Twelve Peng — salak baskets — Mot Dang"
+  },
+  "/full-moon/2027-10-15/": {
+   "img": "full-moon-2027-10-15.jpg",
+   "alt": "Card: เดือนเกี๋ยงเป็ง 15 ตุลาคม 2570 · Ok Phansa, then Tak Bat Thewo, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "เดือนเกี๋ยงเป็ง 15 ตุลาคม 2570 · Ok Phansa, then Tak Bat Thewo — Mot Dang"
+  },
+  "/full-moon/2027-11-13/": {
+   "img": "full-moon-2027-11-13.jpg",
+   "alt": "Card: ยี่เป็ง 13 พฤศจิกายน 2570 · Yi Peng, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "ยี่เป็ง 13 พฤศจิกายน 2570 · Yi Peng — Loi Krathong — Mot Dang"
+  },
+  "/full-moon/2027-12-13/": {
+   "img": "full-moon-2027-12-13.jpg",
+   "alt": "Card: สามเป็ง 13 ธันวาคม 2570 · An ordinary full-moon wan phra, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "สามเป็ง 13 ธันวาคม 2570 · An ordinary full-moon wan phra — Mot Dang"
+  },
+  "/full-moon/how/": {
+   "img": "full-moon-how.jpg",
+   "alt": "Card: ไปวัดวันพระ · At the wat on a full-moon day, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "ไปวัดวันพระ · At the wat on a full-moon day — Mot Dang"
+  },
+  "/full-moon/wats/": {
+   "img": "full-moon-wats.jpg",
+   "alt": "Card: วัดที่จัดงานวันเพ็ญ · Wats that keep the full moon, over a photograph of a wat courtyard at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "วัดที่จัดงานวันเพ็ญ · Wats that keep the full moon — Mot Dang"
+  },
+  "/funerals.html": {
+   "img": "funerals.jpg",
+   "alt": "Card: งานศพในเชียงใหม่ · Funerals in Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "งานศพในเชียงใหม่ · Funerals in Chiang Mai"
+  },
+  "/get.html": {
+   "img": "get.jpg",
+   "alt": "Card: ของเล่น · Toys",
+   "w": 1200,
+   "h": 630,
+   "title": "ของเล่น"
+  },
+  "/ghost/": {
+   "img": "ghost.jpg",
+   "alt": "Card: Ghost Chiang Mai · A self-guided tour of the city's dead, on foot, by bicycle or with a driver",
+   "w": 1200,
+   "h": 630,
+   "title": "Ghost Chiang Mai — a self-guided tour"
+  },
+  "/ghost/drive/": {
+   "img": "ghost-drive.jpg",
+   "alt": "Card: With a driver · Four of these are up a mountain or across a river and none of them are walkable. This is the day…",
+   "w": 1200,
+   "h": 630,
+   "title": "With a driver — Ghost Chiang Mai"
+  },
+  "/ghost/lore/": {
+   "img": "ghost-lore.jpg",
+   "alt": "Card: The rest of them · The northern dead that are not attached to a place: the ones a household feeds, the ones it keeps…",
+   "w": 1200,
+   "h": 630,
+   "title": "The rest of them — Ghost Chiang Mai"
+  },
+  "/ghost/merit/": {
+   "img": "ghost-merit.jpg",
+   "alt": "Card: Making merit · A self-guided tour of the city's dead, on foot, by bicycle, or with a driver — and what to do at…",
+   "w": 1200,
+   "h": 630,
+   "title": "Making merit — Ghost Chiang Mai"
+  },
+  "/ghost/pictures/": {
+   "img": "ghost-pictures.jpg",
+   "alt": "Card: Your pictures · A self-guided tour of the city's dead, on foot, by bicycle, or with a driver — and what to do at…",
+   "w": 1200,
+   "h": 630,
+   "title": "Your pictures — Ghost Chiang Mai"
+  },
+  "/ghost/ride/": {
+   "img": "ghost-ride.jpg",
+   "alt": "Card: By bicycle · The dead were kept outside the wall. On a bicycle you can reach all of it and be back by dark.",
+   "w": 1200,
+   "h": 630,
+   "title": "By bicycle — Ghost Chiang Mai"
+  },
+  "/ghost/scoot/": {
+   "img": "ghost-scoot.jpg",
+   "alt": "Card: On a scooter · A scooter reaches the mountain, the giants' shrine and the buried capital in one day, which nothing…",
+   "w": 1200,
+   "h": 630,
+   "title": "On a scooter — Ghost Chiang Mai"
+  },
+  "/ghost/sources/": {
+   "img": "ghost-sources.jpg",
+   "alt": "Card: Sources · A self-guided tour of the city's dead, on foot, by bicycle, or with a driver — and what to do at…",
+   "w": 1200,
+   "h": 630,
+   "title": "Sources — Ghost Chiang Mai"
+  },
+  "/ghost/stops/": {
+   "img": "ghost-stops.jpg",
+   "alt": "Card: Every stop · A self-guided tour of the city's dead, on foot, by bicycle, or with a driver — and what to do at…",
+   "w": 1200,
+   "h": 630,
+   "title": "Every stop — Ghost Chiang Mai"
+  },
+  "/ghost/walk/": {
+   "img": "ghost-walk.jpg",
+   "alt": "Card: On foot",
+   "w": 1200,
+   "h": 630,
+   "title": "On foot — Ghost Chiang Mai"
+  },
+  "/hearing.html": {
+   "img": "hearing.jpg",
+   "alt": "Card: การได้ยินและเครื่องช่วยฟัง เชียงใหม่ · Hearing and hearing aids, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "การได้ยินและเครื่องช่วยฟัง เชียงใหม่ · Hearing and hearing aids, Chiang Mai"
+  },
+  "/here.html": {
+   "img": "here.jpg",
+   "alt": "Card: ตรงนี้ · Here",
+   "w": 1200,
+   "h": 630,
+   "title": "ตรงนี้ · Here"
+  },
+  "/hom.html": {
+   "img": "hom.jpg",
+   "alt": "Card: หม้อห้อม · Mo hom",
+   "w": 1200,
+   "h": 630,
+   "title": "หม้อห้อม · Mo hom — indigo"
+  },
+  "/horoscope.html": {
+   "img": "horoscope.jpg",
+   "alt": "Card: ดวงประจำวัน · The day, divided by sign",
+   "w": 1200,
+   "h": 630,
+   "title": "ดวงประจำวัน"
+  },
+  "/landmarks.html": {
+   "img": "landmarks.jpg",
+   "alt": "Card: ที่หมายตา · Landmarks",
+   "w": 1200,
+   "h": 630,
+   "title": "ที่หมายตา · Landmarks"
+  },
+  "/list-your-event.html": {
+   "img": "list-your-event.jpg",
+   "alt": "Card: ลงงานของคุณ · List your event",
+   "w": 1200,
+   "h": 630,
+   "title": "ลงงานของคุณ"
+  },
+  "/listings/": {
+   "img": "listings.jpg",
+   "alt": "Card: The Listing Sheet · Chiang Mai & Chiang Rai",
+   "w": 1200,
+   "h": 630,
+   "title": "The Listing Sheet — Chiang Mai & Chiang Rai"
+  },
+  "/longcare.html": {
+   "img": "longcare.jpg",
+   "alt": "Card: ดูแลระยะยาว เชียงใหม่ · Long-term care, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "ดูแลระยะยาว เชียงใหม่ · Long-term care, Chiang Mai"
+  },
+  "/lottery.html": {
+   "img": "lottery.jpg",
+   "alt": "Card: สลากกินแบ่งรัฐบาล · Thai government lottery",
+   "w": 1200,
+   "h": 630,
+   "title": "สลากกินแบ่งรัฐบาล งวด 16 ต.ค. 2569 · Thai government lottery, 16 Oct 2026"
+  },
+  "/map.html": {
+   "img": "map.jpg",
+   "alt": "Card: แผนที่เมือง · The city map",
+   "w": 1200,
+   "h": 630,
+   "title": "แผนที่เมือง"
+  },
+  "/medicine-airport.html": {
+   "img": "medicine-airport.jpg",
+   "alt": "Card: ยาข้ามพรมแดน · Medicine through Thai airports",
+   "w": 1200,
+   "h": 630,
+   "title": "ยาข้ามพรมแดน — พกยาผ่านสนามบิน · Medicine through Thai airports"
+  },
+  "/mending.html": {
+   "img": "mending.jpg",
+   "alt": "Card: ซ่อมของในเชียงใหม่ · Getting things mended, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "ซ่อมของในเชียงใหม่ · Getting things mended, Chiang Mai"
+  },
+  "/my.html": {
+   "img": "my.jpg",
+   "alt": "Card: หน้าแรกของฉัน · My page",
+   "w": 1200,
+   "h": 630,
+   "title": "หน้าแรกของฉัน"
+  },
+  "/nam.html": {
+   "img": "nam.jpg",
+   "alt": "Card: น้ำ · ระดับน้ำแม่น้ำปิง สะพานนวรัฐ P.1 ตอนนี้ เทียบระดับเตือนภัย",
+   "w": 1200,
+   "h": 630,
+   "title": "น้ำ — ระดับน้ำแม่น้ำปิง สะพานนวรัฐ P.1 ตอนนี้ เทียบระดับเตือนภัย"
+  },
+  "/ot.html": {
+   "img": "ot.jpg",
+   "alt": "Card: กิจกรรมบำบัด เชียงใหม่ · Occupational therapy, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "กิจกรรมบำบัด เชียงใหม่ · Occupational therapy, Chiang Mai"
+  },
+  "/partners.html": {
+   "img": "partners.jpg",
+   "alt": "Card: แลกฟีดกับสื่อท้องถิ่น · A cross-promotion for local publications",
+   "w": 1200,
+   "h": 630,
+   "title": "แลกฟีดกับสื่อท้องถิ่น"
+  },
+  "/pictures.html": {
+   "img": "pictures.jpg",
+   "alt": "Card: ภาพประกอบ · Pictures",
+   "w": 1200,
+   "h": 630,
+   "title": "ภาพประกอบ · Pictures"
+  },
+  "/pins.html": {
+   "img": "pins.jpg",
+   "alt": "Card: ตามหาหมุด · The pin hunt",
+   "w": 1200,
+   "h": 630,
+   "title": "ตามหาหมุด"
+  },
+  "/plan.html": {
+   "img": "plan.jpg",
+   "alt": "Card: วางแผนเดินทาง · Plan your route",
+   "w": 1200,
+   "h": 630,
+   "title": "วางแผนเดินทาง"
+  },
+  "/privacy.html": {
+   "img": "privacy.jpg",
+   "alt": "Card: ความเป็นส่วนตัว · Privacy",
+   "w": 1200,
+   "h": 630,
+   "title": "ความเป็นส่วนตัว"
+  },
+  "/prosthetics.html": {
+   "img": "prosthetics.jpg",
+   "alt": "Card: กายอุปกรณ์และขาเทียม เชียงใหม่ · Prosthetics and orthotics, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "กายอุปกรณ์และขาเทียม เชียงใหม่ · Prosthetics and orthotics, Chiang Mai"
+  },
+  "/search.html": {
+   "img": "search.jpg",
+   "alt": "Card: ค้นหา · Search",
+   "w": 1200,
+   "h": 630,
+   "title": "ค้นหา · Search",
+   "desc": "ค้นหา · Search — ตรรกะ · Boolean"
+  },
+  "/served/": {
+   "img": "served.jpg",
+   "alt": "Card: Robots, mostly. · มดแดง",
+   "w": 1200,
+   "h": 630,
+   "title": "มดแดง · Over 26 million served"
+  },
+  "/seven.html": {
+   "img": "seven.jpg",
+   "alt": "Card: เซเว่นทุกซอย · A seven in every soi",
+   "w": 1200,
+   "h": 630,
+   "title": "เซเว่นทุกซอย — ร้านสะดวกซื้อทั้งเมือง · A seven in every soi"
+  },
+  "/sites/": {
+   "img": "sites.jpg",
+   "alt": "Card: ทุกเว็บ · Every site",
+   "w": 1200,
+   "h": 630,
+   "title": "ทุกเว็บ · Every site"
+  },
+  "/sites/best-krapow/th/": {
+   "img": "sites-best-krapow-th.jpg",
+   "alt": "Card: กะเพราที่ดีที่สุดในเชียงใหม่ ค้นเน็ตไม่เจอหรอก",
+   "w": 1200,
+   "h": 630,
+   "title": "กะเพราที่ดีที่สุดในเชียงใหม่ ค้นเน็ตไม่เจอหรอก"
+  },
+  "/sites/bike-rentals/th/": {
+   "img": "sites-bike-rentals-th.jpg",
+   "alt": "Card: เช่ามอเตอร์ไซค์ เชียงใหม่ เชียงราย",
+   "w": 1200,
+   "h": 630,
+   "title": "เช่ามอเตอร์ไซค์ เชียงใหม่ เชียงราย"
+  },
+  "/sites/cm-to-cr/th/": {
+   "img": "sites-cm-to-cr-th.jpg",
+   "alt": "Card: เชียงใหม่ ไป เชียงราย",
+   "w": 1200,
+   "h": 630,
+   "title": "เชียงใหม่ ไป เชียงราย"
+  },
+  "/sites/dropshipping/th/": {
+   "img": "sites-dropshipping-th.jpg",
+   "alt": "Card: ดรอปชิป วาดให้ดู · ขายของออนไลน์จากเมืองไทย ให้ผู้ขายส่งส่งของถึงลูกค้าโดยตรง ต้องรู้อะไรบ้าง: eBay, โรงงานข้ามทะเล…",
+   "w": 1200,
+   "h": 630,
+   "title": "ดรอปชิป วาดให้ดู"
+  },
+  "/sites/khom-loi/th/": {
+   "img": "sites-khom-loi-th.jpg",
+   "alt": "Card: โคมลอย วาดด้วยคณิต · ทำไมโคมลอยยี่เป็งถึงลอยขึ้น ลอยได้สูงแค่ไหน นานเท่าไร และลมพาไปตกที่ไหนในเชียงใหม่…",
+   "w": 1200,
+   "h": 630,
+   "title": "โคมลอย วาดด้วยคณิต"
+  },
+  "/sites/kin-jay/th/": {
+   "img": "sites-kin-jay-th.jpg",
+   "alt": "Card: กินเจ",
+   "w": 1200,
+   "h": 630,
+   "title": "กินเจ"
+  },
+  "/sites/kranok/th/": {
+   "img": "sites-kranok-th.jpg",
+   "alt": "Card: กนก วาดด้วยคณิต · กระหนก เปลวไฟแห่งลายไทย วาดด้วยคณิต ตั้งแต่คำ ตัวเหงา กราฟเดียวที่ดัดเปลวทั้งตัว กนกสามตัว…",
+   "w": 1200,
+   "h": 630,
+   "title": "กนก วาดด้วยคณิต"
+  },
+  "/sites/krathong/th/": {
+   "img": "sites-krathong-th.jpg",
+   "alt": "Card: กระทง วาดด้วยคณิต · กระทงพับจากใบตองอย่างไร ทำไมลอยน้ำได้และไม่คว่ำ แล้วแม่น้ำปิงพาไปไหนหลังคืนลอยกระทง วาดด้วยคณิต",
+   "w": 1200,
+   "h": 630,
+   "title": "กระทง วาดด้วยคณิต"
+  },
+  "/sites/lanna-craft/th/": {
+   "img": "sites-lanna-craft-th.jpg",
+   "alt": "Card: ช่างล้านนา · นาค หน้าบัน และลายคำ",
+   "w": 1200,
+   "h": 630,
+   "title": "ช่างล้านนา · นาค หน้าบัน และลายคำ"
+  },
+  "/sites/long-stay/th/": {
+   "img": "sites-long-stay-th.jpg",
+   "alt": "Card: อยู่ยาว · ทุกทางที่ชาวต่างชาติอยู่เมืองไทยได้ วาดเป็นภาพ ตั้งแต่ตราประทับฟรี วีซ่า DTV วีซ่าเกษียณ…",
+   "w": 1200,
+   "h": 630,
+   "title": "อยู่ยาว"
+  },
+  "/sites/many-hands/th/": {
+   "img": "sites-many-hands-th.jpg",
+   "alt": "Card: หลายมือ · แม่บ้าน คนสวน ร้านซักรีดรับส่ง และช่างซ่อมบ้าน ในเชียงใหม่และเชียงราย ลงชื่อเองบนกระดานของมดแดง…",
+   "w": 1200,
+   "h": 630,
+   "title": "หลายมือ"
+  },
+  "/sites/paid-in-clothes/": {
+   "img": "sites-paid-in-clothes.jpg",
+   "alt": "Card: Paid in Clothes · จ่ายเป็นเสื้อผ้า",
+   "w": 1200,
+   "h": 630,
+   "title": "Paid in Clothes · จ่ายเป็นเสื้อผ้า"
+  },
+  "/sites/paid-in-costumes/": {
+   "img": "sites-paid-in-costumes.jpg",
+   "alt": "Card: Paid in Costumes · จ่ายเป็นชุด",
+   "w": 1200,
+   "h": 630,
+   "title": "Paid in Costumes · จ่ายเป็นชุด"
+  },
+  "/sites/paid-in-lessons/": {
+   "img": "sites-paid-in-lessons.jpg",
+   "alt": "Card: Paid in Lessons · จ่ายเป็นคลาส",
+   "w": 1200,
+   "h": 630,
+   "title": "Paid in Lessons · จ่ายเป็นคลาส"
+  },
+  "/sites/paid-in-meals/": {
+   "img": "sites-paid-in-meals.jpg",
+   "alt": "Card: Paid in Meals · จ่ายเป็นอาหาร",
+   "w": 1200,
+   "h": 630,
+   "title": "Paid in Meals · จ่ายเป็นอาหาร"
+  },
+  "/sites/paid-in-nights/": {
+   "img": "sites-paid-in-nights.jpg",
+   "alt": "Card: Paid in Nights · จ่ายเป็นห้องพัก",
+   "w": 1200,
+   "h": 630,
+   "title": "Paid in Nights · จ่ายเป็นห้องพัก"
+  },
+  "/sites/paid-in-posts/": {
+   "img": "sites-paid-in-posts.jpg",
+   "alt": "Card: Paid in Posts · จ่ายเป็นโพสต์",
+   "w": 1200,
+   "h": 630,
+   "title": "Paid in Posts · จ่ายเป็นโพสต์"
+  },
+  "/sites/paid-in-print/": {
+   "img": "sites-paid-in-print.jpg",
+   "alt": "Card: Paid in Print · จ่ายเป็นงานพิมพ์",
+   "w": 1200,
+   "h": 630,
+   "title": "Paid in Print · จ่ายเป็นงานพิมพ์"
+  },
+  "/sites/paid-in-repairs/": {
+   "img": "sites-paid-in-repairs.jpg",
+   "alt": "Card: Paid in Repairs · จ่ายเป็นงานซ่อม",
+   "w": 1200,
+   "h": 630,
+   "title": "Paid in Repairs · จ่ายเป็นงานซ่อม"
+  },
+  "/sites/paid-in-rides/": {
+   "img": "sites-paid-in-rides.jpg",
+   "alt": "Card: Paid in Rides · จ่ายเป็นการเดินทาง",
+   "w": 1200,
+   "h": 630,
+   "title": "Paid in Rides · จ่ายเป็นการเดินทาง"
+  },
+  "/sites/paid-in-treatments/": {
+   "img": "sites-paid-in-treatments.jpg",
+   "alt": "Card: Paid in Treatments · จ่ายเป็นทรีตเมนต์",
+   "w": 1200,
+   "h": 630,
+   "title": "Paid in Treatments · จ่ายเป็นทรีตเมนต์"
+  },
+  "/sites/pathum-thani/th/": {
+   "img": "sites-pathum-thani-th.jpg",
+   "alt": "Card: ปทุมธานี · เมืองดอกบัว",
+   "w": 1200,
+   "h": 630,
+   "title": "ปทุมธานี · เมืองดอกบัว"
+  },
+  "/sites/phnom-penh/km/": {
+   "img": "sites-phnom-penh-km.jpg",
+   "alt": "Card: ភ្នំពេញ · ចតុមុខ",
+   "w": 1200,
+   "h": 630,
+   "title": "ភ្នំពេញ · ចតុមុខ"
+  },
+  "/sites/phnom-penh/th/": {
+   "img": "sites-phnom-penh-th.jpg",
+   "alt": "Card: พนมเปญ · จตุมุข",
+   "w": 1200,
+   "h": 630,
+   "title": "พนมเปญ · จตุมุข"
+  },
+  "/sites/retrace/th/": {
+   "img": "sites-retrace-th.jpg",
+   "alt": "Card: ย้อนรอย · ตามหาถนนที่จำได้",
+   "w": 1200,
+   "h": 630,
+   "title": "ย้อนรอย · ตามหาถนนที่จำได้"
+  },
+  "/sites/roofs-of-the-north/th/": {
+   "img": "sites-roofs-of-the-north-th.jpg",
+   "alt": "Card: หลังคาเมืองเหนือ",
+   "w": 1200,
+   "h": 630,
+   "title": "หลังคาเมืองเหนือ"
+  },
+  "/sites/ship-to-thailand/th/": {
+   "img": "sites-ship-to-thailand-th.jpg",
+   "alt": "Card: ย้ายบ้านข้ามทะเล · ส่งของใช้ส่วนตัวจากอเมริกากลับไทยแบบรวมตู้ ราคาของ Send2Thai เครื่องคิดค่าส่ง ขั้นตอน…",
+   "w": 1200,
+   "h": 630,
+   "title": "ย้ายบ้านข้ามทะเล"
+  },
+  "/sites/smoky-season/th/": {
+   "img": "sites-smoky-season-th.jpg",
+   "alt": "Card: ฤดูหมอกควัน · The Smoky Season",
+   "w": 1200,
+   "h": 630,
+   "title": "ฤดูหมอกควัน · The Smoky Season"
+  },
+  "/sites/spirit-house/th/": {
+   "img": "sites-spirit-house-th.jpg",
+   "alt": "Card: คู่มือศาลพระภูมิ · The Spirit House Manual",
+   "w": 1200,
+   "h": 630,
+   "title": "คู่มือศาลพระภูมิ · The Spirit House Manual"
+  },
+  "/sites/touch-grass/th/": {
+   "img": "sites-touch-grass-th.jpg",
+   "alt": "Card: ไปแตะหญ้า · ที่สุดของเชียงใหม่",
+   "w": 1200,
+   "h": 630,
+   "title": "ไปแตะหญ้า · ที่สุดของเชียงใหม่"
+  },
+  "/sites/translators/": {
+   "img": "sites-translators.jpg",
+   "alt": "Card: Translators · นักแปล",
+   "w": 1200,
+   "h": 630,
+   "title": "Translators · นักแปล"
+  },
+  "/skin.html": {
+   "img": "skin.jpg",
+   "alt": "Card: โรคผิวหนัง หมอผิวหนัง เชียงใหม่ · Skin and dermatologists, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "โรคผิวหนัง หมอผิวหนัง เชียงใหม่ · Skin and dermatologists, Chiang Mai"
+  },
+  "/soi.html": {
+   "img": "soi.jpg",
+   "alt": "Card: ถนนและซอย · Roads & sois",
+   "w": 1200,
+   "h": 630,
+   "title": "ถนนและซอย"
+  },
+  "/specialed.html": {
+   "img": "specialed.jpg",
+   "alt": "Card: โรงเรียนเฉพาะความพิการ เชียงใหม่-เชียงราย · Special schools, Chiang Mai and Chiang Rai",
+   "w": 1200,
+   "h": 630,
+   "title": "โรงเรียนเฉพาะความพิการ เชียงใหม่-เชียงราย · Special schools, Chiang Mai and Chiang Rai"
+  },
+  "/speech.html": {
+   "img": "speech.jpg",
+   "alt": "Card: แก้ไขการพูด เชียงใหม่ · Speech therapy, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "แก้ไขการพูด เชียงใหม่ · Speech therapy, Chiang Mai"
+  },
+  "/stats.html": {
+   "img": "stats.jpg",
+   "alt": "Card: สถิติมดแดง · Mot Dang by the Numbers",
+   "w": 1200,
+   "h": 630,
+   "title": "สถิติมดแดง"
+  },
+  "/stroke.html": {
+   "img": "stroke.jpg",
+   "alt": "Card: โรคหลอดเลือดสมองและการฟื้นฟู เชียงใหม่ · Stroke and rehabilitation, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "โรคหลอดเลือดสมองและการฟื้นฟู เชียงใหม่ · Stroke and rehabilitation, Chiang Mai"
+  },
+  "/suggest.html": {
+   "img": "suggest.jpg",
+   "alt": "Card: แนะนำร้าน · Add your place",
+   "w": 1200,
+   "h": 630,
+   "title": "แนะนำร้าน"
+  },
+  "/tags.html": {
+   "img": "tags.jpg",
+   "alt": "Card: ป้ายกำกับ · Tags",
+   "w": 1200,
+   "h": 630,
+   "title": "ป้ายกำกับ"
+  },
+  "/tawai.html": {
+   "img": "tawai.jpg",
+   "alt": "Card: ไม้แกะสลักบ้านถวาย · Ban Tawai",
+   "w": 1200,
+   "h": 630,
+   "title": "ไม้แกะสลักบ้านถวาย · Ban Tawai — the carving village"
+  },
+  "/terms.html": {
+   "img": "terms.jpg",
+   "alt": "Card: เงื่อนไขการใช้ข้อมูล · Terms of use",
+   "w": 1200,
+   "h": 630,
+   "title": "เงื่อนไขการใช้ข้อมูล"
+  },
+  "/trades.html": {
+   "img": "trades.jpg",
+   "alt": "Card: คำบนป้าย · Words on the signs",
+   "w": 1200,
+   "h": 630,
+   "title": "คำบนป้าย"
+  },
+  "/trans-health.html": {
+   "img": "trans-health.jpg",
+   "alt": "Card: สุขภาพคนข้ามเพศ เชียงใหม่ · Trans health, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "สุขภาพคนข้ามเพศ เชียงใหม่ · Trans health, Chiang Mai"
+  },
+  "/transport.html": {
+   "img": "transport.jpg",
+   "alt": "Card: รถ-เดินทาง · Getting around",
+   "w": 1200,
+   "h": 630,
+   "title": "รถ-เดินทาง"
+  },
+  "/vaccines.html": {
+   "img": "vaccines.jpg",
+   "alt": "Card: วัคซีนและเวชศาสตร์การเดินทาง เชียงใหม่ · Vaccines and travel medicine, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "วัคซีนและเวชศาสตร์การเดินทาง เชียงใหม่ · Vaccines and travel medicine, Chiang Mai"
+  },
+  "/watnames.html": {
+   "img": "watnames.jpg",
+   "alt": "Card: ชื่อวัดบอกภูมิประเทศ · A wat’s name tells the landscape",
+   "w": 1200,
+   "h": 630,
+   "title": "ชื่อวัดบอกภูมิประเทศ"
+  },
+  "/wats/": {
+   "img": "wats.jpg",
+   "alt": "Card: ไหว้พระ ๙ วัด · Nine wats, one round",
+   "w": 1200,
+   "h": 630,
+   "title": "ไหว้พระ ๙ วัด"
+  },
+  "/who.html": {
+   "img": "who.jpg",
+   "alt": "Card: ใครทำมดแดง · Who makes Mot Dang",
+   "w": 1200,
+   "h": 630,
+   "title": "ใครทำมดแดง"
+  },
+  "/widgets.html": {
+   "img": "widgets.jpg",
+   "alt": "Card: วิดเจ็ต · Widgets",
+   "w": 1200,
+   "h": 630,
+   "title": "วิดเจ็ต"
+  },
+  "/womens-health.html": {
+   "img": "womens-health.jpg",
+   "alt": "Card: สุขภาพผู้หญิง เชียงใหม่ · Women's health, Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "สุขภาพผู้หญิง เชียงใหม่ · Women's health, Chiang Mai"
+  },
+  "/beauty.html": {
+   "alt": "Card: เสริมสวย-ทำผม, Beauty & Hair, a Mot Dang shelf with its sub-shelves listed",
+   "w": 1200,
+   "h": 630,
+   "title": "เสริมสวย-ตัดผม เชียงใหม่ — คำที่ต้องพูด ร้านตัดผมชาย ร้านเสริมสวย · Hair in Chiang Mai — the word to ask for"
+  },
+  "/chang.html": {
+   "alt": "Card: ช้าง, Elephants, a Mot Dang shelf with its sub-shelves listed",
+   "w": 1200,
+   "h": 630,
+   "title": "ช้าง — ปางช้างเชียงใหม่ บอกเองว่าอะไร · Elephant camps, Chiang Mai — what each states"
+  },
+  "/chiang-rai/": {
+   "alt": "Card: Chiang Rai, Slowly, a woman in a sun hat in a framed portrait over a view of the Mekong at the Golden Triangle",
+   "w": 1200,
+   "h": 630,
+   "title": "Chiang Rai, Slowly"
+  },
+  "/cooking.html": {
+   "alt": "Card: เรียนทำอาหารไทย, Thai Cooking Classes, a Mot Dang shelf with its sub-shelves listed",
+   "w": 1200,
+   "h": 630,
+   "title": "เรียนทำอาหารไทย — คลาสวันนี้ เชียงใหม่ · Thai cooking classes, Chiang Mai"
+  },
+  "/doi.html": {
+   "alt": "Card: ดอย, a relief map and cross-section profile of the Chiang Mai and Chiang Rai basin, with its highest peak noted",
+   "w": 1200,
+   "h": 630,
+   "title": "ดอย — แผ่นดินเชียงใหม่ · เชียงราย · The doi — the shape of the land"
+  },
+  "/doodles/": {
+   "alt": "ดูเดิล · Doodles",
+   "w": 1200,
+   "h": 630,
+   "title": "ดูเดิล · Doodles"
+  },
+  "/festival-dates.html": {
+   "alt": "Card: เทศกาลวันไหน, festival dates 2026 to 2027 in a ring chart beside the title",
+   "w": 1200,
+   "h": 630,
+   "title": "วันเทศกาลปี 2569-2570 เชียงใหม่-เชียงราย ยี่เป็ง สงกรานต์ วันพระใหญ่"
+  },
+  "/flights.html": {
+   "alt": "Card: กระดานเที่ยวบิน, a flights board of nonstop routes from Chiang Mai, beside a timetable panel",
+   "w": 1200,
+   "h": 630,
+   "title": "กระดานเที่ยวบิน"
+  },
+  "/loop/": {
+   "alt": "The Mae Hong Son Loop",
+   "w": 1200,
+   "h": 630,
+   "title": "The Mae Hong Son Loop"
+  },
+  "/markets/": {
+   "alt": "Card: ตลาดและห้าง, Markets and malls, over a dark map of Chiang Mai and Chiang Rai with glowing dots",
+   "w": 1200,
+   "h": 630,
+   "title": "ตลาดและห้าง เชียงใหม่ เชียงราย · Markets and malls of Chiang Mai and Chiang Rai"
+  },
+  "/markets/cm/": {
+   "alt": "Card: ตลาดและห้าง เชียงใหม่, Markets and malls of Chiang Mai, over a dark map with glowing dots",
+   "w": 1200,
+   "h": 630,
+   "title": "ตลาดและห้าง เชียงใหม่ · Markets and malls of Chiang Mai"
+  },
+  "/markets/cr/": {
+   "alt": "Card: ตลาดและห้าง เชียงราย, Markets and malls of Chiang Rai, over a dark map with glowing dots",
+   "w": 1200,
+   "h": 630,
+   "title": "ตลาดและห้าง เชียงราย · Markets and malls of Chiang Rai"
+  },
+  "/moat.html": {
+   "alt": "Card: ในเวียง หรือนอกเวียง?, inside the moat or out, with a dark map of the old city square",
+   "w": 1200,
+   "h": 630,
+   "title": "ในเวียงหรือนอกเวียง · Inside or outside the moat"
+  },
+  "/muay-thai/": {
+   "alt": "Muay Thai",
+   "w": 1200,
+   "h": 630,
+   "title": "Muay Thai"
+  },
+  "/muaythai.html": {
+   "alt": "Card: มวยไทย, Muay Thai, a Mot Dang shelf with its sub-shelves listed",
+   "w": 1200,
+   "h": 630,
+   "title": "มวยไทย — ดูมวยคืนนี้ เชียงใหม่ · Muay Thai in Chiang Mai — tonight's fights"
+  },
+  "/namphuron.html": {
+   "alt": "Card: น้ำพุร้อน, Hot Springs, a Mot Dang shelf with its sub-shelves listed",
+   "w": 1200,
+   "h": 630,
+   "title": "น้ำพุร้อนภาคเหนือ — ทะเบียนทุกบ่อ ทุกจังหวัด · Hot springs of northern Thailand"
+  },
+  "/nitnoy.html": {
+   "alt": "Card: เมืองหลับนิดหน่อย, the city that sleeps a little, beside a night map of lamps",
+   "w": 1200,
+   "h": 630,
+   "title": "เมืองหลับนิดหน่อย"
+  },
+  "/open-now.html": {
+   "alt": "Card: ตอนนี้เปิดอะไร, what is open in Chiang Mai hour by hour, beside an amber heat grid",
+   "w": 1200,
+   "h": 630,
+   "title": "ตอนนี้เปิดอะไร เชียงใหม่ — เช้ามืด หลังเที่ยงคืน เปิด 24 ชม."
+  },
+  "/reach.html": {
+   "alt": "Card: ลิงก์ที่เปิดไม่ได้, links that do not open, as a grid of coloured dots",
+   "w": 1200,
+   "h": 630,
+   "title": "ลิงก์ไหนยังเปิดได้จริง · Which official links still answer"
+  },
+  "/realestate.html": {
+   "alt": "Card: อสังหาฯ-คอนโด, Real Estate & Condos, a Mot Dang shelf with its sub-shelves listed",
+   "w": 1200,
+   "h": 630,
+   "title": "อสังหาฯ เชียงใหม่-เชียงราย — คอนโด อพาร์ตเมนต์ หอพัก คำที่ใช้ถามก่อนวางมัดจำ · Real estate in Chiang Mai & Chiang Rai — condos, apartments, dorms"
+  },
+  "/roads/": {
+   "alt": "Roads of Chiang Mai",
+   "w": 1200,
+   "h": 630,
+   "title": "Roads of Chiang Mai"
+  },
+  "/roadworks/san-klang/": {
+   "alt": "Card: ขัวสันกลาง, San Klang Bridge, a drawing of a bridge over a road under a sun",
+   "w": 1200,
+   "h": 630,
+   "title": "ขัวสันกลาง · San Klang Bridge"
+  },
+  "/san.html": {
+   "alt": "Card: ศาลเจ้า-ศาลหลักเมือง, Shrines & City Pillars, a Mot Dang shelf with its sub-shelves listed",
+   "w": 1200,
+   "h": 630,
+   "title": "ศาล ศาลเจ้า หลักเมือง เชียงใหม่-เชียงราย — ทะเบียนพร้อมที่มา · Shrines & city pillars of Chiang Mai & Chiang Rai"
+  },
+  "/sites/ban-sabai/": {
+   "alt": "Card: บ้านสบาย วิลเลจ, Ban Sabai Village, a drawn ring of small red-roofed houses around a pond",
+   "w": 1200,
+   "h": 630,
+   "title": "บ้านสบาย วิลเลจ · Ban Sabai Village"
+  },
+  "/sites/best-krapow/": {
+   "alt": "NaN and Beer, a glowing plate of pad krapow with a fried egg, and a search box",
+   "w": 1200,
+   "h": 630,
+   "title": "One Does Not Simply Search for the Best Pad Krapow"
+  },
+  "/sites/bike-rentals/": {
+   "alt": "Card: Bike rentals, เช่ามอเตอร์ไซค์, a blue map of Chiang Mai and Chiang Rai with dots for rental shops",
+   "w": 1200,
+   "h": 630,
+   "title": "Bike rentals in Chiang Mai and Chiang Rai"
+  },
+  "/sites/bum-gun/": {
+   "alt": "A drawn Thai bathroom: tiled wall, toilet, a bum gun on its hook, a pink dipper in the water tub and a gecko on the wall",
+   "w": 1200,
+   "h": 630,
+   "title": "How to Use a Bum Gun · ใช้สายฉีดชำระ"
+  },
+  "/sites/city-live/": {
+   "alt": "Card: The city, live, a dark night map of Chiang Mai lit with points of light, with a clock",
+   "w": 1200,
+   "h": 630,
+   "title": "เมืองตอนนี้ · The City, Live"
+  },
+  "/sites/cm-to-cr/": {
+   "alt": "NaN beside the steaming ring at Mae Khachan hot spring, hills and blue sky behind",
+   "w": 1200,
+   "h": 630,
+   "title": "Chiang Mai to Chiang Rai"
+  },
+  "/sites/doodle-chiang-rai/": {
+   "alt": "Card: Chiang Rai, Doodled, a hand-drawn style street map with pictured landmarks",
+   "w": 1200,
+   "h": 630,
+   "title": "เชียงราย วาดเล่น · Chiang Rai, Doodled"
+  },
+  "/sites/doodle-map/": {
+   "alt": "Card: Chiang Mai, Doodled, a hand-drawn style street map of the old city with a blue walking route",
+   "w": 1200,
+   "h": 630,
+   "title": "เชียงใหม่ วาดเล่น · Chiang Mai, Doodled"
+  },
+  "/sites/doodle-north/": {
+   "alt": "Card: ภาคเหนือ, northern Thailand doodled, a relief-style map with pictured landmarks",
+   "w": 1200,
+   "h": 630,
+   "title": "ภาคเหนือ วาดเล่น · The North, Doodled"
+  },
+  "/sites/doodle-pathum-thani/": {
+   "alt": "Card: Pathum Thani, Doodled, a hand-drawn style street map",
+   "w": 1200,
+   "h": 630,
+   "title": "ปทุมธานี วาดเล่น · Pathum Thani, Doodled"
+  },
+  "/sites/doodle-phnom-penh/": {
+   "alt": "Card: Phnom Penh, Doodled, a hand-drawn style street map beside the rivers",
+   "w": 1200,
+   "h": 630,
+   "title": "พนมเปญ วาดเล่น · Phnom Penh, Doodled"
+  },
+  "/sites/dropshipping/": {
+   "alt": "Card: Dropshipping, Drawn, a drawing of a box flying from an overseas house over the sea to the buyer",
+   "w": 1200,
+   "h": 630,
+   "title": "Dropshipping, Drawn"
+  },
+  "/sites/garden-loikroh/": {
+   "alt": "Card: การ์เด้น, Garden Restaurant & Guest House, gold lettering over a night garden hung with red lanterns",
+   "w": 1200,
+   "h": 630,
+   "title": "Garden Restaurant & Guest House · การ์เด้น ร้านอาหารและเกสต์เฮาส์"
+  },
+  "/sites/gas-and-diesel/": {
+   "alt": "Card: Gas and Diesel in Thailand, เติมน้ำมันในไทย, a photographed fuel sign beside the title",
+   "w": 1200,
+   "h": 630,
+   "title": "Gas and Diesel in Thailand · เติมน้ำมันในไทย"
+  },
+  "/sites/gc-ms/": {
+   "alt": "Card: จีซี-เอ็มเอส ใครตรวจได้บ้าง, GC-MS: who tests it, a chromatogram line on dark blue",
+   "w": 1200,
+   "h": 630,
+   "title": "จีซี-เอ็มเอส ใครตรวจได้บ้าง · GC-MS: Who Tests It"
+  },
+  "/sites/ghosts-drawn/index.html": {
+   "alt": "Card: Ghosts, Drawn, a cartoon ghost in a pink dress beside a stilt house under a half moon",
+   "w": 1200,
+   "h": 630,
+   "title": "Ghosts, Drawn · ผีเหนือ ผีไทย"
+  },
+  "/sites/khom-loi/": {
+   "alt": "Paper lanterns rising over the Ping River under a full moon, drawn with math",
+   "w": 1200,
+   "h": 630,
+   "title": "Khom Loi, Drawn"
+  },
+  "/sites/kin-jay/": {
+   "alt": "Yellow jay flags with the red character 齋 strung across a street at dusk, steam rising from woks",
+   "w": 1200,
+   "h": 630,
+   "title": "Kin Jay"
+  },
+  "/sites/kranok/": {
+   "alt": "Gold kranok flames and a coiled scroll on black lacquer",
+   "w": 1200,
+   "h": 630,
+   "title": "Kranok, Drawn"
+  },
+  "/sites/krathong/": {
+   "alt": "Krathongs with candles drifting down the Ping River at night under a full moon, drawn with math",
+   "w": 1200,
+   "h": 630,
+   "title": "Krathong, Drawn"
+  },
+  "/sites/lanna-craft/": {
+   "alt": "A Lanna viharn drawn by arithmetic at dusk, nagas riding its barge boards",
+   "w": 1200,
+   "h": 630,
+   "title": "Lanna Craft · nagas, gables and gold"
+  },
+  "/sites/long-stay/": {
+   "alt": "Card: The Long Stay, a scatter of visa routes on dark blue",
+   "w": 1200,
+   "h": 630,
+   "title": "The Long Stay"
+  },
+  "/sites/many-hands/": {
+   "alt": "Card: Many Hands, four drawn tiles of housekeeping, gardening, laundry and handyman work",
+   "w": 1200,
+   "h": 630,
+   "title": "Many Hands"
+  },
+  "/sites/melodies-and-motifs/": {
+   "alt": "Card: ทำนองและลวดลายบนดอย, Melodies and Motifs in the Mountains, strings of beads above the exhibition dates",
+   "w": 1200,
+   "h": 630,
+   "title": "ทำนองและลวดลายบนดอย · Melodies and Motifs in the Mountains"
+  },
+  "/sites/motdang/": {
+   "alt": "Card: บริษัท มดแดง เน็ท จำกัด, Chiang Rai, a photograph of two shopfronts beside a red panel",
+   "w": 1200,
+   "h": 630,
+   "title": "บริษัท มดแดง.เน็ท จำกัด · motdang.net Co., Ltd. · CHIANG RAI"
+  },
+  "/sites/paid-in-art/": {
+   "alt": "Paid in Art · จ่ายเป็นผลงาน, over Van Gogh's The Starry Night, with a photograph of Jo van Gogh-Bonger",
+   "w": 1200,
+   "h": 630,
+   "title": "Paid in Art · จ่ายเป็นผลงาน"
+  },
+  "/sites/pathum-thani/": {
+   "alt": "A lotus pond",
+   "w": 1200,
+   "h": 630,
+   "title": "Pathum Thani · City of Lotus"
+  },
+  "/sites/phnom-penh/": {
+   "alt": "The four rivers meeting at Phnom Penh, drawn",
+   "w": 1200,
+   "h": 630,
+   "title": "Phnom Penh · Four Faces"
+  },
+  "/sites/phra-maha-pongthep/": {
+   "alt": "Card: ๑๒ ปริญญา, a tree with spreading roots beside a Thai numeral on brown",
+   "w": 1200,
+   "h": 630,
+   "title": "สาธุ! ๑๒ ปริญญา · Twelve degrees and counting"
+  },
+  "/sites/pump-filter-drain/": {
+   "alt": "Card: ปั๊ม กรอง ท่อ, Pump, Filter, Drain, a drawn water tank, pump and pipe",
+   "w": 1200,
+   "h": 630,
+   "title": "ปั๊ม กรอง ท่อ · Pump, Filter, Drain"
+  },
+  "/sites/retrace/": {
+   "alt": "A map of the old city of Chiang Mai with three numbered wats joined by a marigold band, beside the word Retrace.",
+   "w": 1200,
+   "h": 630,
+   "title": "Retrace · find the street you remember"
+  },
+  "/sites/roofs-of-the-north/": {
+   "alt": "Card: Roofs of the North, a constellation map of building dots",
+   "w": 1200,
+   "h": 630,
+   "title": "Roofs of the North"
+  },
+  "/sites/safety/": {
+   "alt": "Card: ปลอดภัยไว้ก่อน, Safety First, four emergency numbers on dark blue",
+   "w": 1200,
+   "h": 630,
+   "title": "ปลอดภัยไว้ก่อน · Safety First"
+  },
+  "/sites/ship-to-thailand/": {
+   "alt": "Card: The whole house, by sea, a network of ports and routes from the United States to Thailand",
+   "w": 1200,
+   "h": 630,
+   "title": "The Whole House, by Sea"
+  },
+  "/sites/smoky-season/": {
+   "alt": "The mountains of northern Thailand drawn in slices, fading into March smoke under a red sun",
+   "w": 1200,
+   "h": 630,
+   "title": "The Smoky Season · ฤดูหมอกควัน"
+  },
+  "/sites/spirit-house/": {
+   "alt": "Card: คู่มือศาลพระภูมิ, The Spirit House Manual, a golden spirit house with a red roof",
+   "w": 1200,
+   "h": 630,
+   "title": "The Spirit House Manual · คู่มือศาลพระภูมิ"
+  },
+  "/sites/touch-grass/": {
+   "alt": "Card: Touch Grass, tall green grass under a blue sky",
+   "w": 1200,
+   "h": 630,
+   "title": "Touch Grass · Best of Chiang Mai"
+  },
+  "/sites/wave-at-home/": {
+   "alt": "Card: เวฟที่บ้าน, Wave It at Home, a keypad and a time of 1:30 to 2:00 on green",
+   "w": 1200,
+   "h": 630,
+   "title": "เวฟที่บ้าน · Wave It at Home"
+  },
+  "/souvenir.html": {
+   "alt": "Card: ช้อปปิ้ง-ของฝาก, Shopping & Gifts, a Mot Dang shelf with its sub-shelves listed",
+   "w": 1200,
+   "h": 630,
+   "title": "ของฝากที่เดินทางได้ · Souvenirs that travel well"
+  },
+  "/taste.html": {
+   "alt": "Card: รสเมือง, the taste of the town, beside a night map of kitchens as dots",
+   "w": 1200,
+   "h": 630,
+   "title": "รสเมือง"
+  },
+  "/the-plan/": {
+   "alt": "A business plan for an audience of robots. 299 humans, 1,950,000 robots in one week. motdang.net/the-plan",
+   "w": 1200,
+   "h": 630,
+   "title": "Mot Dang — the plan · แผนมดแดง"
+  },
+  "/toilets.html": {
+   "alt": "Card: ห้องน้ำใกล้ฉัน, toilets near you, mapped as amber dots on a dark map",
+   "w": 1200,
+   "h": 630,
+   "title": "ห้องน้ำใกล้ฉัน · Toilets near me, Chiang Mai"
+  },
+  "/traffic.html": {
+   "alt": "Card: รถติด, Chiang Mai traffic as a weekday-by-hour colour grid",
+   "w": 1200,
+   "h": 630,
+   "title": "รถติด"
+  },
+  "/walk.html": {
+   "alt": "Card: แผนที่ระยะเดิน, the city at walking pace, beside a sepia street map",
+   "w": 1200,
+   "h": 630,
+   "title": "แผนที่ระยะเดิน"
+  },
+  "/what.html": {
+   "alt": "Card: มดแดงคืออะไร, What Mot Dang is, beside screenshots of its pages",
+   "w": 1200,
+   "h": 630,
+   "title": "มดแดงคืออะไร"
+  },
+  "/parking/": {
+   "alt": "A yellow P on red: ที่จอดรถ · Parking — full now, covered, where did I leave my bike",
+   "w": 1200,
+   "h": 630,
+   "title": "ที่จอดรถ · Parking — มดแดง"
+  }
+ }
+}

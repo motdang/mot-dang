@@ -24576,6 +24576,10 @@ coordinates, channels and ant rank, no markup to strip. {len(all_recs):,} lines.
     # /roads, /markets, listings): share_layer.py, Nan 2026-10-03.
     import share_layer as _share_layer
     layers.run("share.inject", lambda: print(f"  share: /locshare.js put on {_share_layer.inject(DOCS)} pages without md.js"))
+    # A share card of its own for each main page, stamped last so it survives whatever wrote the
+    # page (sharecards_layer.py, data/curated/sharecards.json, assets/og/p/; Nan 2026-10-20).
+    import sharecards_layer
+    layers.run("sharecards.emit", lambda: print("  share cards: %d pages stamped" % sharecards_layer.emit(DOCS)[0]))
     (DOCS / "net.json").write_text(json.dumps(
         sitenet_layer.net_json(DOCS), ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(f"  sitenet: {_sn_pages} pages carry the net; served elsewhere: {', '.join(_sn_off)}")
