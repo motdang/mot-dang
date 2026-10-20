@@ -315,7 +315,7 @@ function share(){
 }
 
 /* ---- the box: a place ID, a point in any system, or words --------------- */
-function openPath(path){
+function openPath(path,miss){
   var pr=path.split('/')[0],slug=path.split('/')[1];
   var it={name:'',sub:(pr==='cr'?'เชียงราย · Chiang Rai':'เชียงใหม่ · Chiang Mai'),
     href:R()+pr+'/p/'+slug+'.html',json:R()+pr+'/p/'+slug+'.json',plan:pr+':'+slug};
@@ -323,7 +323,7 @@ function openPath(path){
     it.name=[d.nameTh,d.nameEn].filter(Boolean).join(' · ')||d.name||'';it.lat=d.lat;it.lng=d.lng;
     if(d.lat!=null){gotoPlaceMark(d.lat,d.lng);}
     show(it,{fly:d.lat!=null});say('');
-  }).catch(function(){say('ไม่พบที่นี้ · no such place');});
+  }).catch(function(){if(miss)miss();else say('ไม่พบที่นี้ · no such place');});
 }
 function gotoPlaceMark(lat,lng){if(ptMark)ptMark.remove();
   var el=document.createElement('div');el.className='xpin';
@@ -383,7 +383,7 @@ function placeAt(name,c,miss){
       Math.max(overlap(name,x.name),overlap(name,x.nameEn))>=0.6;});
     h.sort(function(a,b){return far({lat:a.lat,lng:a.lng},c)-far({lat:b.lat,lng:b.lng},c);});
     var pm=h[0]&&h[0].url.match(/\/(cm|cr)\/p\/([^\/?#]+?)\.html/);
-    if(pm){openPath(pm[1]+'/'+decodeURIComponent(pm[2]));return;}
+    if(pm){openPath(pm[1]+'/'+decodeURIComponent(pm[2]),miss);return;}
     miss();
   },miss);
 }
