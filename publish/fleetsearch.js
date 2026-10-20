@@ -26,6 +26,7 @@ import { quickMatch, quickData, quickHtml, quickJson, QA_CSS } from "./quickansw
 import { cachedGet } from "./r2cache.js";
 import { norm, loose, edits, slack, INTENT_RULES } from "./searchcore.js";
 import { learnedFor } from "./findlearn.js";
+import { trustedGuess } from "./where.js";
 import { pinsFor } from "./findpins.js";
 import { liftMore, preferOf, saidOf, leadHtml, leadJson } from "./intents.js";
 import { meaningSoon, semBoost, rescueRows, rescueHtml } from "./findmeaning.js";
@@ -183,12 +184,9 @@ export function readerPin(sp, request) {
       Math.abs(raw[0]) <= 90 && Math.abs(raw[1]) <= 180 && (raw[0] || raw[1])) {
     return { lat: raw[0], lon: raw[1], exact: true };
   }
-  const cf = (request && request.cf) || {};
-  const lat = Number(cf.latitude), lon = Number(cf.longitude);
-  if (Number.isFinite(lat) && Number.isFinite(lon) && (lat || lon)) {
-    return { lat, lon, exact: false, city: cf.city || "" };
-  }
-  return null;
+  /* Cloudflare's guess, only inside a covered city (where.js). */
+  const g = trustedGuess((request && request.cf) || {});
+  return g ? { lat: g.lat, lon: g.lon, exact: false, city: g.city } : null;
 }
 /* Where the words have to match. The index holds three columns and the page
  * draws only the title, so a reader who knows a page's name can say so and

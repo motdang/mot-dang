@@ -76,6 +76,7 @@ import { live, ownsLive, resolve } from "./live.js";
 import { shareSense } from "./sharesense.js";
 import { toHttps, sendToRules, askCrawler, record } from "./edge_gate.js";
 export { toHttps };
+import { trustedGuess } from "./where.js";
 import { findSense, findJudge } from "./findlearn.js";
 
 const TYPES = {
@@ -369,10 +370,13 @@ const LD_MAX_CHARS = 65_536;
 
 function withWhere(res, request, size) {
   const cf = request.cf || {};
-  const v = [cf.city || "", cf.latitude || "", cf.longitude || "",
+  /* The guess counts only inside a covered city (where.js): outside one the
+   * meta carries no position and no line is drawn. */
+  const g = trustedGuess(cf);
+  const v = [g ? g.city : "", g ? g.lat : "", g ? g.lon : "",
              cf.timezone || "", cf.country || ""].join("|");
-  const from = { lat: Number(cf.latitude), lon: Number(cf.longitude) };
-  const known = Number.isFinite(from.lat) && Number.isFinite(from.lon) && (from.lat || from.lon);
+  const from = g ? { lat: g.lat, lon: g.lon } : { lat: NaN, lon: NaN };
+  const known = !!g;
 
   let pin = null;      // the page's own position, set while the head streams
   let isList = false;  // an ItemList in the head → this is a directory or shelf
