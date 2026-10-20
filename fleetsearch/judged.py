@@ -63,10 +63,44 @@ def d1(sql: str) -> list[dict]:
     return json.loads(out.stdout)[0]["results"]
 
 
+def clean(r: dict) -> dict | None:
+    """One row in the shape the report reads, or None when it cannot be."""
+    if not isinstance(r, dict) or not isinstance(r.get("id"), int) or not isinstance(r.get("q"), str):
+        return None
+    for k in ("yes", "no", "snap"):
+        if isinstance(r.get(k), str):
+            try:
+                r[k] = json.loads(r[k]) if r[k] else None
+            except ValueError:
+                r[k] = None
+    strs = lambda v: [x for x in v if isinstance(x, str)] if isinstance(v, list) else []
+    r["yes"], r["no"] = strs(r.get("yes")), strs(r.get("no"))
+    snap = r.get("snap") if isinstance(r.get("snap"), dict) else {}
+    snap["rows"] = [x for x in snap.get("rows") or [] if isinstance(x, list) and len(x) == 2
+                    and isinstance(x[0], int) and isinstance(x[1], str)] if isinstance(snap.get("rows"), list) else []
+    for k in ("said", "has"):
+        snap[k] = strs(snap.get(k))
+    if not (isinstance(snap.get("near"), list) and len(snap["near"]) >= 2
+            and all(isinstance(x, (int, float)) for x in snap["near"][:2])):
+        snap.pop("near", None)
+    r["snap"] = snap
+    for k in ("why", "want", "who", "at", "verdict"):
+        r[k] = r[k] if isinstance(r.get(k), str) else ""
+    return r
+
+
 def read_log() -> list[dict]:
     if not LOG.exists():
         return []
-    return [json.loads(x) for x in LOG.read_text().splitlines() if x.strip()]
+    out = []
+    for x in LOG.read_text().splitlines():
+        try:
+            r = clean(json.loads(x))
+        except ValueError:
+            r = None
+        if r:
+            out.append(r)
+    return out
 
 
 def pull() -> int:
@@ -76,12 +110,9 @@ def pull() -> int:
     new = d1(f"SELECT * FROM judged WHERE id > {int(last)} ORDER BY id LIMIT 5000")
     with LOG.open("a") as f:
         for r in new:
-            for k in ("yes", "no", "snap"):
-                try:
-                    r[k] = json.loads(r[k]) if r[k] else ([] if k != "snap" else {})
-                except ValueError:
-                    pass
-            f.write(json.dumps(r, ensure_ascii=False) + "\n")
+            r = clean(r)
+            if r:
+                f.write(json.dumps(r, ensure_ascii=False) + "\n")
     if new:
         d1(f"UPDATE judged SET seen = datetime('now') WHERE id <= {int(new[-1]['id'])} AND seen IS NULL")
     return len(new)

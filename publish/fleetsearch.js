@@ -2444,7 +2444,9 @@ async function answer(request, env, url, ctx, coreP, now) {
     spelling: Object.keys(fixUsed).length ? fixUsed : undefined,
     sort: st.sort, in: st.in, site: st.site || undefined, kind: st.kind || undefined, sec: st.sec || undefined,
     has: st.has.length ? st.has : undefined, from: st.from || undefined, to: st.to || undefined,
-    near: st.pin ? [Math.round(st.pin.lat * 100) / 100, Math.round(st.pin.lon * 100) / 100, !!st.pin.exact] : undefined,
+    /* Only a position the address carries (near=): a network guess differs by
+     * reader, and this page is cached for every reader of the address. */
+    near: st.pin && st.pin.exact ? [Math.round(st.pin.lat * 100) / 100, Math.round(st.pin.lon * 100) / 100] : undefined,
     sites: siteHits.length ? siteHits.slice(0, 3).map((r) => r.u) : undefined,
     answer: ansHit ? ansHit.a.en : undefined,
     page, n: st.n, total,

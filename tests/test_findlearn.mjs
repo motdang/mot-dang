@@ -163,12 +163,14 @@ test("judgeFields keeps what is well formed and drops the rest", () => {
   assert.equal(f.snap, "");
   assert.equal(f.lang, "");
   assert.equal(judgeFields({ snap: '{"rows":[[1,"u"]]}' }).snap, '{"rows":[[1,"u"]]}');
+  assert.equal(judgeFields({ snap: "[1,2]" }).snap, "");
+  assert.equal(judgeFields({ snap: JSON.stringify({ x: "y".repeat(9000) }) }).snap, "");
 });
 
 test("a person's not-it: one judged row, ✓ ✕ into learn under the matched words, JSON back", async () => {
   const db = judgeDb(), rows = [];
   const r = await findJudge(new Request("https://motdang.net/api/find/judge", { method: "POST",
-    headers: { "content-type": "application/json", "user-agent": "Mozilla/5.0 Chrome" },
+    headers: { "content-type": "application/json", "user-agent": "Mozilla/5.0 Chrome", "sec-fetch-site": "same-origin" },
     body: JSON.stringify({ q: "khao soi open now", qm: "khao soi", v: "bad", why: ["kind"], y: [A], n: [B],
       want: "Khao Soi Mae Sai", snap: JSON.stringify({ rows: [[1, B], [2, A]] }), lang: "en" }) }),
     { SEARCH: db, TRAFFIC: { writeDataPoint: (x) => rows.push(x) } }, classify);
@@ -219,4 +221,22 @@ test("judgePanel: two plain forms, the six reasons, the snap escaped, script par
   assert.match(h, /tap ✓ right/);
   assert.doesNotMatch(judgePanel("x", "x", {}, false), /tap ✓ right/);
   new Function(h.match(/<script>([\s\S]*)<\/script>/)[1]);
+});
+
+test("marks from another site, or on rows the page did not show, move nothing", async () => {
+  const send = async (headers, y) => {
+    const db = judgeDb();
+    await findJudge(new Request("https://motdang.net/api/find/judge", { method: "POST",
+      headers: { "content-type": "application/json", "user-agent": "Mozilla/5.0 Chrome", ...headers },
+      body: JSON.stringify({ q: "khao soi", v: "bad", y, snap: JSON.stringify({ rows: [[1, A]] }) }) }),
+      { SEARCH: db }, classify);
+    return db;
+  };
+  const cross = await send({ "sec-fetch-site": "cross-site" }, [A]);
+  assert.equal(cross.ran.filter((s) => /INSERT INTO learn/.test(s.text)).length, 0);
+  assert.equal(cross.ran.find((s) => /INSERT INTO judged/.test(s.text)).binds[8], "human/cross-site");
+  const unshown = await send({ origin: "https://motdang.net" }, [B]);
+  assert.equal(unshown.ran.filter((s) => /INSERT INTO learn/.test(s.text)).length, 0);
+  const ok = await send({ origin: "https://motdang.net" }, [A]);
+  assert.equal(ok.ran.filter((s) => /INSERT INTO learn/.test(s.text)).length, 1);
 });

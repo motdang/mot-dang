@@ -229,7 +229,13 @@ export function judgeFields(d) {
   const all = (k) => [].concat(d[k] == null ? [] : d[k]);
   const urls = (k) => Array.from(new Set(all(k).map(okUrl).filter(Boolean))).slice(0, 10);
   let snap = "";
-  try { const s = JSON.parse(String(d.snap || "")); if (s && typeof s === "object") snap = JSON.stringify(s).slice(0, 8000); } catch { /* none */ }
+  try {
+    const s = JSON.parse(String(d.snap || ""));
+    if (s && typeof s === "object" && !Array.isArray(s)) {
+      const t = JSON.stringify(s);
+      if (t.length <= 8000) snap = t;
+    }
+  } catch { /* none */ }
   return {
     q: clip(d.q, 200),
     qm: clip(d.qm, 200),
@@ -261,6 +267,16 @@ export async function findJudge(request, env, classify) {
     }
   } catch { d = {}; }
   const f = judgeFields(d);
+  /* Marks move ranking only when they come from a motdang.net page and name
+   * rows that page showed. A post from elsewhere is kept, labelled, and moves
+   * nothing. */
+  const site = request.headers.get("sec-fetch-site");
+  let origin = "";
+  try { origin = new URL(request.headers.get("origin") || request.headers.get("referer") || "").host; } catch { /* none */ }
+  const sameSite = site ? site === "same-origin" : origin === url.host;
+  let shownRows = new Set();
+  try { shownRows = new Set((JSON.parse(f.snap || "{}").rows || []).map((r) => Array.isArray(r) ? r[1] : "")); } catch { /* none */ }
+  const moves = (u) => sameSite && shownRows.has(u);
   /* Keyed by the words the ranking matched (intent words lifted out), the key
    * learnedFor reads back. */
   const qk = learnKey(f.qm) || learnKey(f.q);
@@ -283,13 +299,14 @@ export async function findJudge(request, env, classify) {
           `INSERT INTO judged(qk, q, verdict, why, yes, no, want, snap, who, agent, country, lang)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`)
           .bind(qk, f.q, f.v, f.why.join(","), JSON.stringify(f.y), JSON.stringify(f.n), f.want, f.snap,
-                category, String(agent || "").slice(0, 40), request.cf?.country || "", f.lang).first();
+                sameSite ? category : `${category}/cross-site`, String(agent || "").slice(0, 40), request.cf?.country || "", f.lang).first();
         id = (r && r.id) || 0;
-        if (category === "human" && (f.y.length || f.n.length)) {
+        const ys = f.y.filter(moves), ns = f.n.filter(moves);
+        if (category === "human" && (ys.length || ns.length)) {
           const mark = (col) => db.prepare(
             `INSERT INTO learn(qk, url, ${col}) VALUES (?, ?, 1)
              ON CONFLICT(qk, url) DO UPDATE SET ${col} = ${col} + 1, last = datetime('now')`);
-          await db.batch([...f.y.map((u) => mark("up").bind(qk, u)), ...f.n.map((u) => mark("down").bind(qk, u))]);
+          await db.batch([...ys.map((u) => mark("up").bind(qk, u)), ...ns.map((u) => mark("down").bind(qk, u))]);
           LEARNED.delete(qk);
         }
       } catch (e) {
