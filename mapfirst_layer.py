@@ -438,12 +438,12 @@ function paintQ(rs){
 }
 var QR=[];
 function runSearch(first){
-  var m=MDX.map,b=m.getBounds(),my=++seq;
+  var m=MDX.map,b=m.getBounds(),my=++seq,namedOpen=false;
   /* the words are one place's whole name: open it, in view or not (Nan, 2026-10-20: "tulou" drew 339 dots).
      Judged on the whole match list, so a second place of that name anywhere leaves both on the map. */
   if(first)fetch(R()+'api/v1/search?q='+encodeURIComponent(S.q)+'&limit=200').then(function(r){return r.json();}).then(function(w){
     if(my!==seq)return;var hit=named(S.q,(w.results||[]).filter(function(r){return r.lat!=null;}));
-    if(hit)show(qItem(hit),{fly:true});},function(){});
+    if(hit){namedOpen=true;show(qItem(hit),{fly:true});}},function(){});
   var bb=[b.getWest(),b.getSouth(),b.getEast(),b.getNorth()].map(function(x){return x.toFixed(5);}).join(',');
   say('กำลังค้น · searching…');
   fetch(R()+'api/v1/search?q='+encodeURIComponent(S.q)+'&bbox='+bb+'&limit=200').then(function(r){return r.json();}).then(function(d){
@@ -461,7 +461,7 @@ function runSearch(first){
     paintQ(rs);
     var tot=Math.max(d.total||0,rs.length);
     say(tot+' ที่ในจอนี้ · '+tot+' in view for "'+S.q+'"'+(tot>rs.length?' — '+rs.length+' ขึ้นแผนที่ · '+rs.length+' drawn, zoom in for the rest':''));
-    if(first&&rs.length===1&&!named(S.q,rs))show(qItem(rs[0]));
+    if(first&&rs.length===1&&!namedOpen&&!named(S.q,rs))show(qItem(rs[0]));
   }).catch(function(){say('ค้นไม่ได้ตอนนี้ · search is not answering');});
 }
 /* The one place whose name is the words, give or take a word like restaurant or ร้าน; none when two share it. */
