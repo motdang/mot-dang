@@ -4556,6 +4556,9 @@ hi?{enableHighAccuracy:true,timeout:10000,maximumAge:60000}
 // (said no here), 'blocked', 'nofix', 'none' (no geolocation at all).
 // Callers use nope() to fall back to something that works.
 function ask(ok,nope){
+// a fix this tab took in the last five minutes answers without asking again (Nan, 2026-10-20, gemba 2)
+try{const h=JSON.parse(sessionStorage.getItem('md-here'));
+if(h&&Date.now()-h.t<3e5&&isFinite(h.lat)&&isFinite(h.lng)){ok({lat:h.lat,lng:h.lng,src:'gps'});return;}}catch(e){}
 if(OFF){nope&&nope('off');return;}
 if(!navigator.geolocation){nope&&nope('none');return;}
 if(BLOCKED){howTo();nope&&nope('blocked');return;}
@@ -4569,6 +4572,26 @@ st.onchange=()=>{BLOCKED=st.state==='denied';};}).catch(()=>{});}catch(e){}}
 return {ask,origin,remember,kill,near,get off(){return OFF;},get blocked(){return BLOCKED;}};
 })();
 window.MDLOC=MDLOC;
+/* A fix this tab already has redraws the distance under a place's heading. The server draws that line
+   from the network's guess, which can be a province off (Nan, 2026-10-20: "Tolou is <15 km from me",
+   the page said ~163 km). The fix stays in the browser. */
+(function(){
+var h=null;try{h=JSON.parse(sessionStorage.getItem('md-here'));}catch(e){}
+if(!h||!(Date.now()-h.t<12e5)||!isFinite(h.lat)||!isFinite(h.lng))return;
+var pm=document.getElementById('placemap');if(!pm)return;
+var la=+pm.getAttribute('data-lat'),lo=+pm.getAttribute('data-lng');if(!isFinite(la)||!isFinite(lo)||!(la||lo))return;
+var dy=(la-h.lat)*111320,dx=(lo-h.lng)*111320*Math.cos(h.lat*Math.PI/180),m=Math.sqrt(dx*dx+dy*dy);
+var C=[['เหนือ','N'],['ตะวันออกเฉียงเหนือ','NE'],['ตะวันออก','E'],['ตะวันออกเฉียงใต้','SE'],['ใต้','S'],['ตะวันตกเฉียงใต้','SW'],['ตะวันตก','W'],['ตะวันตกเฉียงเหนือ','NW']];
+var d=m<30?null:C[Math.round(((Math.atan2(dx,dy)*180/Math.PI+360)%360)/45)%8];
+var n=m<950?Math.round(m/10)*10:(m/1000).toFixed(m<9950?1:0),u=m<950?['ม.','m']:['กม.','km'];
+var p=document.querySelector('p.md-here');
+if(!p){var h1=document.querySelector('h1');if(!h1)return;p=document.createElement('p');p.className='md-here';
+  p.style.cssText='margin:.2em 0 .6em;font-size:.95em';h1.after(p);}
+var a=document.createElement('span');a.style.color='#0b6b3a';
+a.textContent=n+' '+u[0]+' · '+n+' '+u[1]+(d?' '+d[0]+' · '+d[1]:'');
+var b=document.createElement('span');b.style.cssText='color:#5c4d38;font-size:.9em';
+b.textContent=' — จากตรงที่คุณยืน · from where you stand';
+p.textContent='';p.append(a,b);})();
 /* A map link, coordinates or a Plus Code typed into a search box opens the map at that point with the places
    around it, instead of a word search that cannot read it (Nan, 2026-10-03: "you should be able to search a
    google maps short link on motdang and come up with a map pin and placeIDs for anywhere nearby").

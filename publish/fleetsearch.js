@@ -26,6 +26,7 @@ import { quickMatch, quickData, quickHtml, quickJson, QA_CSS } from "./quickansw
 import { cachedGet } from "./r2cache.js";
 import { norm, loose, edits, slack, INTENT_RULES } from "./searchcore.js";
 import { learnedFor } from "./findlearn.js";
+import { trustedGuess } from "./where.js";
 import { pinsFor } from "./findpins.js";
 import { liftMore, preferOf, saidOf, leadHtml, leadJson } from "./intents.js";
 import { meaningSoon, semBoost, rescueRows, rescueHtml } from "./findmeaning.js";
@@ -183,12 +184,9 @@ export function readerPin(sp, request) {
       Math.abs(raw[0]) <= 90 && Math.abs(raw[1]) <= 180 && (raw[0] || raw[1])) {
     return { lat: raw[0], lon: raw[1], exact: true };
   }
-  const cf = (request && request.cf) || {};
-  const lat = Number(cf.latitude), lon = Number(cf.longitude);
-  if (Number.isFinite(lat) && Number.isFinite(lon) && (lat || lon)) {
-    return { lat, lon, exact: false, city: cf.city || "" };
-  }
-  return null;
+  /* Cloudflare's guess, only inside a covered city (where.js). */
+  const g = trustedGuess((request && request.cf) || {});
+  return g ? { lat: g.lat, lon: g.lon, exact: false, city: g.city } : null;
 }
 /* Where the words have to match. The index holds three columns and the page
  * draws only the title, so a reader who knows a page's name can say so and
@@ -689,6 +687,16 @@ function orderBy(sort, o, keys, rows) {
  * named in `except` — a facet counts its own options with every OTHER filter
  * applied. `today` and `open` (the schedule ids open this minute) come from
  * the handler; every value that is not a number travels as a bind. */
+/* bbox=west,south,east,north → [w, s, e, n], or null. The city map asks for
+ * the places in view (Nan, 2026-10-20, gemba 2: its old engine took 5–17 s). */
+export function bboxOf(v) {
+  const b = String(v || "").split(",").map(Number);
+  if (b.length !== 4 || !b.every(Number.isFinite)) return null;
+  const [w, s, e, n] = b;
+  if (s < -90 || n > 90 || w < -180 || e > 180 || s >= n || w >= e) return null;
+  return b;
+}
+
 export function keyFilters(o, except) {
   const x = except || {};
   const where = [], binds = [];
@@ -697,6 +705,10 @@ export function keyFilters(o, except) {
     if (o.to) { where.push("q.lastmod <= ?"); binds.push(o.to); }
   }
   if (!x.kind && o.kind) { where.push("q.kind = ?"); binds.push(o.kind); }
+  if (!x.bbox && o.bbox) {
+    where.push("q.lat BETWEEN ? AND ? AND q.lon BETWEEN ? AND ?");
+    binds.push(o.bbox[1], o.bbox[3], o.bbox[0], o.bbox[2]);
+  }
   if (!x.sec && o.sec) { where.push("q.sec = ?"); binds.push(o.sec); }
   if (!x.has) {
     let mask = 0;
@@ -745,12 +757,15 @@ const RANK_WIN = 200;
 const NEAR_FREE = 0.002;      // degrees², ~5 km
 const NEAR_HALF = 0.07;       // degrees², the weight halves ~30 km out
 const NEAR_BONUS = 1.6;       // a pinned row within ~5 km, against an unpinned one
+const GUESS_FLOOR = 0.5;      // under a network guess, the least a pinned row keeps
 
 const COLS = "p.id, k.site, k.host, p.url, p.title, p.abstract, k.lastmod, p.kb, k.lat, k.lon," +
              " k.kind, k.has, k.sk, k.evn, k.evu, p.crumbs, p.thumb, p.rich";
 
 function rankScore(o, names, tb) {
   let sc = "w.rank * (1.0 + 0.05 * min(k.evc, 10))";
+  /* compared against lower(k.title), so folded the same way */
+  names = names.map((nm) => String(nm).toLowerCase());
   if (names.length) {
     const piece = names.map(() => "instr(' · ' || replace(lower(k.title), ' — ', ' · ') || ' · ', ?) > 0").join(" OR ");
     const has = names.map(() => "instr(lower(k.title), ?) > 0").join(" OR ");
@@ -759,7 +774,19 @@ function rankScore(o, names, tb) {
     for (const nm of names) tb.push(nm);
   }
   if (o.pin) {
-    sc += ` * (CASE WHEN k.lat IS NULL THEN 1.0 ELSE ${NEAR_BONUS} / (1.0 + max(0.0, ${nearSql(o.pin, "k")} - ${NEAR_FREE}) / ${NEAR_HALF}) END)`;
+    /* Distance never sinks a page whose title carries the words: a place
+     * asked for by name is the answer wherever the reader stands. And a
+     * network guess (pin.exact false) can be a province off — on 2026-10-20 it
+     * put a Chiang Mai connection in Phayao, 150 km out, and "tulou" ranked
+     * Tulou Restaurant 15th of 15 under list pages with no pin — so under a
+     * guess a pinned row keeps at least GUESS_FLOOR of an unpinned one. */
+    const d = `${NEAR_BONUS} / (1.0 + max(0.0, ${nearSql(o.pin, "k")} - ${NEAR_FREE}) / ${NEAR_HALF})`;
+    let dist = o.pin.exact ? d : `max(${GUESS_FLOOR}, ${d})`;
+    if (names.length) {
+      dist = `(CASE WHEN ${names.map(() => "instr(lower(k.title), ?) > 0").join(" OR ")} THEN max(1.0, ${d}) ELSE ${dist} END)`;
+      for (const nm of names) tb.push(nm);
+    }
+    sc += ` * (CASE WHEN k.lat IS NULL THEN 1.0 ELSE ${dist} END)`;
   }
   for (const c of preferConds(o.prefer, "w.id", "k", "pf", tb)) sc += ` * (CASE WHEN ${c} THEN ${PREFER} ELSE 1.0 END)`;
   if ((o.prefer || []).some((g) => g.score)) sc += " * (1.0 + 0.06 * min(k.score, 10))";
@@ -2132,7 +2159,11 @@ async function answer(request, env, url, ctx, coreP, now) {
     from: since ? new Date(today.getTime() - SINCE[since][2] * 86400000).toISOString().slice(0, 10)
                 : day("from"),
     to: day("to"),
-    n: PER_PAGE.includes(Number(sp.get("n"))) ? Number(sp.get("n")) : 10,
+    /* 200 for a JSON answer only: the city map draws a search's places as dots
+     * (mapfirst_layer.py), up to 200 in view. */
+    n: PER_PAGE.includes(Number(sp.get("n"))) || (sp.get("fmt") === "json" && Number(sp.get("n")) === 200)
+      ? Number(sp.get("n")) : 10,
+    bbox: bboxOf(sp.get("bbox")),
     pin: readerPin(sp, request),
     kind: KINDS[sp.get("kind")] ? sp.get("kind") : "",
     sec: clean(sp.get("sec") || "").slice(0, 160),
@@ -2168,7 +2199,13 @@ async function answer(request, env, url, ctx, coreP, now) {
   let cache = null, ckey = null;
   try {
     cache = caches.default;
-    ckey = new Request(url.toString(), { method: "GET" });
+    /* A page built from the network's guess (no near= in the address) is
+     * kept per ~10 km of that guess: by address alone, the next reader at
+     * this data centre got the last reader's distances, order and city
+     * (Nan, 2026-10-20, gemba 2). */
+    const ku = new URL(url.toString());
+    if (st.pin && !st.pin.exact) ku.searchParams.set("__g", `${st.pin.lat.toFixed(1)},${st.pin.lon.toFixed(1)}`);
+    ckey = new Request(ku.toString(), { method: "GET" });
     const hit = await cache.match(ckey);
     if (hit) {
       const r = new Response(hit.body, hit);
@@ -2185,9 +2222,9 @@ async function answer(request, env, url, ctx, coreP, now) {
     try { return await p; } finally { T[k] = (T[k] || 0) + Date.now() - s; }
   };
   /* Intent first: the constraint words leave the match (liftIntent). */
-  const intent = liftIntent(adv ? "" : q);
-  const qm = adv ? q : intent.q;
-  const boolQ = adv || isBoolean(qm);
+  let intent = liftIntent(adv ? "" : q);
+  let qm = adv ? q : intent.q;
+  let boolQ = adv || isBoolean(qm);
   /* The dictionary and thesaurus cost one R2 read per isolate. Every simple
    * query reads the thesaurus now, since other spellings join the first step;
    * the boolean door needs only the segmenter, and only for Thai. The
@@ -2229,6 +2266,31 @@ async function answer(request, env, url, ctx, coreP, now) {
       if (/^[฀-๿]{3,}$/.test(th) && seg.split(th).length > 1) keep.add(th);
     }
   }
+  /* A word read as an intent inside a name stays in the name (gemba 2,
+   * 2026-10-20: เจ, "vegetarian", was lifted out of the shop ปฐมเจ, the match
+   * became ปฐม, and the shop was not found). A run of the words that holds a
+   * lifted word and is itself in some page's title keeps the query whole. */
+  if (!adv && intent.said.length) {
+    const lc = (x) => String(x).toLowerCase();
+    const runs = q.split(/\s+/).filter((t) => intent.said.some((w) => lc(t) !== lc(w) && lc(t).includes(lc(w))));
+    const m = runs.map((t) => phrase(t, seg)).filter(Boolean).map((p) => `title_s : ${p}`).join(" OR ");
+    if (m) {
+      try {
+        const hit = await lap("name", db.prepare("SELECT rowid FROM fts WHERE fts MATCH ? LIMIT 1").bind(m).first());
+        if (hit) {
+          /* the name runs stand in as placeholders while the rest is read
+           * again, so "ปฐมเจ ใกล้ฉัน" keeps its near-me */
+          let masked = ` ${q} `;
+          runs.forEach((t, i) => { masked = masked.split(t).join(` zqxname${i} `); });
+          intent = liftIntent(masked.trim());
+          let back = intent.q;
+          runs.forEach((t, i) => { back = back.split(`zqxname${i}`).join(t); });
+          intent.q = back.replace(/\s+/g, " ").trim();
+          qm = intent.q; boolQ = isBoolean(qm);
+        }
+      } catch { /* lifted as before */ }
+    }
+  }
   const common = boolQ ? new Set() : await lap("common", commonWords(db, qm, seg));
   const pl = boolQ ? planBoolean(qm, seg) : planSimple(qm, seg, thes, { keep, common });
   st.fields = !!pl.fields;
@@ -2236,7 +2298,7 @@ async function answer(request, env, url, ctx, coreP, now) {
   const opts = { sites, qsites: pl.sites, name: pl.name || "", names: pl.names || [], in: st.in, fields: pl.fields,
                  sort: st.sort, pin: st.pin, drop: true,
                  from: st.from, to: st.to, n: st.n, offset: (page - 1) * st.n,
-                 kind: st.kind, sec: st.sec, has: st.has, today: when.today,
+                 kind: st.kind, sec: st.sec, has: st.has, bbox: st.bbox, today: when.today,
                  open: openIds(ax.scheds, when.minute), learn, pins: adv ? new Map() : pinsFor(q),
                  prefer: adv ? [] : preferOf(intent.heard, { phrase, seg, scheds: ax.scheds, openAt }),
                  sem: semBoost(meaning) };

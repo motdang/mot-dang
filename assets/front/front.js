@@ -1735,7 +1735,9 @@ function doodle() {
     var a = ev.target.closest && ev.target.closest('[data-nr]'); if (!a) return;
     ev.preventDefault();
     try { localStorage.setItem(SAID, String(Date.now())); } catch (e) { }
-    var body = { answer: 'none' }; if (where.how !== 'gate') { body.lat = where.lat; body.lng = where.lng; }
+    /* only a fix from this device is the reader's position; without one the rain worker reads the network's
+       and files it as 'edge' — a network guess posted here was filed as 'reader' (Nan, 2026-10-20) */
+    var body = { answer: 'none' }; if (where.how === 'gps') { body.lat = where.lat; body.lng = where.lng; }
     fetch('https://mot-dang-claims.nanobotco.workers.dev/rain', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }).catch(function () { });
     veil.set(0, T.a ? T.a.pm25 : 0);
     rebuild();

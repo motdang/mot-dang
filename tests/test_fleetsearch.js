@@ -348,8 +348,16 @@ t("best match reads the title from keys, and blends distance in", () => {
   eq(/lower\(k\.title\)/.test(s.text), true, "keys.title");
   eq(/k\.lat IS NULL THEN 1\.0/.test(s.text), true, "an unpinned row keeps its weight");
   eq(/LIMIT 200\)/.test(s.text), true, "the window is 200");
-  eq(s.binds[0], " · khao soi · "); eq(s.binds[1], "khao soi"); eq(s.binds[2], '"a"');
+  eq(s.binds[0], " · khao soi · "); eq(s.binds[1], "khao soi"); eq(s.binds[2], "khao soi"); eq(s.binds[3], '"a"');
   eq(/LIMIT 10 OFFSET 200/.test(fs.sql('"a"', { n: 10, offset: 200, names: ["x"] }).text), true, "past the window: plain rank");
+});
+t("distance never sinks a named page, and a network guess keeps a floor (Tulou, 2026-10-20)", () => {
+  const ex = fs.sql('"tulou"', { n: 10, offset: 0, names: ["tulou"], pin: { lat: 18.79, lon: 98.98, exact: true } });
+  eq(/THEN max\(1\.0, 1\.6 \//.test(ex.text), true, "a title with the words keeps at least 1.0");
+  eq(/max\(0\.5,/.test(ex.text), false, "an exact position has no floor");
+  const gs = fs.sql('"khao soi"', { n: 10, offset: 0, pin: { lat: 19.685, lon: 100.195, exact: false } });
+  eq(/max\(0\.5, 1\.6 \//.test(gs.text), true, "a guess keeps half an unpinned row");
+  eq(gs.binds.length, ex.binds.length - 3, "binds line up");
 });
 t("nearest orders the rows whose title or address answers first", () => {
   const s = fs.sql('"a"', { n: 10, offset: 0, sort: "near", pin: { lat: 18.79, lon: 98.98 } });

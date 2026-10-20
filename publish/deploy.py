@@ -651,6 +651,27 @@ def prune_bound():
     return int(sys.argv[i + 1])
 
 
+def asset_versions(skip=()):
+    """docs/data/asset-versions.json: every top-level .js and .css with the
+    first 10 hex of its md5. The Worker adds ?v=<that> to each page's
+    reference, and a ?v= address is kept by the browser for good, so a
+    changed script reaches a reader on their next page view rather than the
+    one after (gemba 2, Nan 2026-10-20). A file in `skip` (one this round
+    keeps at its live copy) is left out, so no page names a hash the bucket
+    does not hold. Returns the file's name under docs/."""
+    import hashlib, json
+    out = {}
+    for f in sorted(list(DOCS.glob("*.js")) + list(DOCS.glob("*.css"))):
+        if f.name not in skip:
+            out[f.name] = hashlib.md5(f.read_bytes()).hexdigest()[:10]
+    dest = DOCS / "data" / "asset-versions.json"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    text = json.dumps(out, sort_keys=True, separators=(",", ":"))
+    if not dest.exists() or dest.read_text() != text:
+        dest.write_text(text)
+    return "data/asset-versions.json"
+
+
 def main():
     go = "--yes" in sys.argv
     with_tiles = "--tiles" in sys.argv
@@ -663,6 +684,9 @@ def main():
         sys.exit("rclone not installed — brew install rclone")
 
     if files:
+        # a top-level script or stylesheet sent alone takes its new hash with
+        # it — uploaded after the files, so no page names a hash first
+        av_after = any("/" not in n and n.endswith((".js", ".css")) for n in files)
         print("mot-dang → r2://%s" % BUCKET)
         hits = [n for n in files if "/Users/" in (DOCS / n).read_text(errors="ignore")]
         if hits:
@@ -680,6 +704,9 @@ def main():
             return
         sent_at = datetime.datetime.now(datetime.timezone.utc)
         run(cmd, env)
+        if av_after:
+            av = asset_versions()
+            run(["rclone", "copyto", str(DOCS / av), "R2:%s/%s" % (BUCKET, av), "--checksum", "--s3-no-head"], env)
         record_direct_uploads(files, sent_at)
         print("\n  asking the live site…")
         bad = safety.smoke(say=note)
@@ -816,6 +843,10 @@ def main():
                 ", ".join(young[:5]), " …" if len(young) > 5 else ""))
         globs, gone, places = keep_young(young, gone, places)
         hold += globs
+    # the script versions go up last, after the scripts they name, and leave
+    # out any script this round keeps at its live copy
+    av_rel = asset_versions(skip={k for k in young if "/" not in k})
+    hold.append("/" + av_rel)
     if hold:
         keep_list = Path(tempfile.mkstemp(suffix=".txt")[1])
         atexit.register(keep_list.unlink, missing_ok=True)
@@ -860,6 +891,8 @@ def main():
                 "--transfers", "96", "--checkers", "32", "--s3-no-head", "--stats", "10s",
                 "--stats-one-line", "--stats-log-level", "NOTICE"], env)
         note("  place pages with changed records copied")
+    run(["rclone", "copyto", str(DOCS / av_rel), "%s/%s" % (dest, av_rel), "--checksum", "--s3-no-head"], env)
+    note("  script versions published")
     placeround.record(full=places is None, uploaded=places[1] if places else ())
 
     if with_tiles:

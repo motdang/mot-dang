@@ -59,7 +59,7 @@ import { cachedGet } from "./r2cache.js";
  * (advanced.html → search.html?tag=…&su=…) keeps its address: any other
  * parameter falls through to the static file as before. */
 const FLEET_PARAMS = new Set(["q", "adv", "lucky", "p", "n", "site", "from", "to", "fmt",
-                              "sort", "in", "since", "near", "kind", "sec", "has"]);
+                              "sort", "in", "since", "near", "kind", "sec", "has", "bbox"]);
 function fleetOwns(url) {
   const p = url.pathname;
   if (p === "/find" || p === "/find/" || p === "/find.html" || p === "/search") return true;
@@ -76,6 +76,7 @@ import { live, ownsLive, resolve } from "./live.js";
 import { shareSense } from "./sharesense.js";
 import { toHttps, sendToRules, askCrawler, record } from "./edge_gate.js";
 export { toHttps };
+import { trustedGuess } from "./where.js";
 import { findSense, findJudge } from "./findlearn.js";
 
 const TYPES = {
@@ -223,12 +224,45 @@ export function ntConditional(reqHeaders) {
  * to come through here: an element holds one end-tag handler, so a second
  * onEndTag on <head> replaces this one and these tags fall through to before
  * <body>. */
-function noTranslate(rw, atHeadEnd = () => {}) {
+/* SCRIPTS NAMED BY CONTENT (gemba 2, 2026-10-20). A script is served "show
+ * the copy you hold, ask in the background" (cacheFor), so the first page
+ * view after a fix ran the old code: the map's Copy link went on sending 0,0
+ * for a reader who had the old mapfirst.js. deploy.py writes
+ * data/asset-versions.json (top-level .js/.css → content hash); every page's
+ * <script src> and stylesheet link to one of them gets ?v=<hash>, and a
+ * ?v= address is kept by the browser for good — a new hash is a new address.
+ * Read through the colo cache, at most once a minute per isolate. */
+let AV = {}, AV_AT = 0, AV_P = null;
+function assetVersions(env) {
+  if (Date.now() - AV_AT < 60_000) return Promise.resolve(AV);
+  if (!AV_P) AV_P = (async () => {
+    try {
+      const o = await cachedGet(env, "data/asset-versions.json", 60);
+      const j = o ? await o.json() : null;
+      if (j && typeof j === "object") AV = j;
+    } catch { /* keep what we had */ }
+    AV_AT = Date.now(); AV_P = null; return AV;
+  })();
+  return AV_P;
+}
+/* ref as written in a page at `base`; only a file at the site's top level
+ * (md.js, map.js, style.css …) is in the list. */
+export function versioned(ref, av = AV, base = "https://motdang.net/") {
+  if (!ref || /[?#]|^[a-z]+:/i.test(ref) || ref.startsWith("//")) return null;
+  let path;
+  try { path = new URL(ref, base).pathname; } catch { return null; }
+  const k = path.replace(/^\//, "");
+  return !k.includes("/") && av[k] ? `${ref}?v=${av[k]}` : null;
+}
+
+function noTranslate(rw, atHeadEnd = () => {}, base = "https://motdang.net/") {
   let done = false, google = false, robots = false, script = false, tp = false;
   const tags = () => (google ? "" : NT_META_GOOGLE) + (robots ? "" : NT_META_ROBOTS) +
                      (script ? "" : NT_SCRIPT) + (tp ? "" : TP_SCRIPT);
   const put = (write) => { if (!done) { done = true; write(tags()); } };
   return rw
+    .on("script[src]", { element(e) { const v = versioned(e.getAttribute("src"), AV, base); if (v) e.setAttribute("src", v); } })
+    .on('link[rel="stylesheet"][href]', { element(e) { const v = versioned(e.getAttribute("href"), AV, base); if (v) e.setAttribute("href", v); } })
     .on("html", {
       element(e) {
         e.setAttribute("translate", "no");
@@ -255,10 +289,10 @@ function noTranslate(rw, atHeadEnd = () => {}) {
 /* Last step for every response: a page not yet rewritten is rewritten, and
  * the header is appended (a page may already send noindex). A redirect has no
  * page to translate and keeps its headers as they were. */
-export function finish(res) {
+export function finish(res, base) {
   const type = res.headers.get("content-type") || "";
   const out = res.body && !NT_DONE.has(res) && /^text\/html/i.test(type)
-    ? noTranslate(new HTMLRewriter()).transform(res)
+    ? noTranslate(new HTMLRewriter(), undefined, base).transform(res)
     : new Response(res.body, res);
   if (!(out.status >= 301 && out.status <= 308 && out.status !== 304))
     out.headers.append("x-robots-tag", "notranslate");
@@ -369,10 +403,13 @@ const LD_MAX_CHARS = 65_536;
 
 function withWhere(res, request, size) {
   const cf = request.cf || {};
-  const v = [cf.city || "", cf.latitude || "", cf.longitude || "",
+  /* The guess counts only inside a covered city (where.js): outside one the
+   * meta carries no position and no line is drawn. */
+  const g = trustedGuess(cf);
+  const v = [g ? g.city : "", g ? g.lat : "", g ? g.lon : "",
              cf.timezone || "", cf.country || ""].join("|");
-  const from = { lat: Number(cf.latitude), lon: Number(cf.longitude) };
-  const known = Number.isFinite(from.lat) && Number.isFinite(from.lon) && (from.lat || from.lon);
+  const from = g ? { lat: g.lat, lon: g.lon } : { lat: NaN, lon: NaN };
+  const known = !!g;
 
   let pin = null;      // the page's own position, set while the head streams
   let isList = false;  // an ItemList in the head → this is a directory or shelf
@@ -380,7 +417,7 @@ function withWhere(res, request, size) {
   let metaSeen = false;
   const rw = noTranslate(new HTMLRewriter(), (end) => {
     if (!metaSeen) end.before(`<meta name="md-where" content="${esc(v)}">`, { html: true });
-  })
+  }, request.url)
     .on('meta[name="md-where"]', {
       element(e) { metaSeen = true; e.setAttribute("content", v); },
     });
@@ -519,8 +556,23 @@ async function revalidateIndex(env) {
 let EDGE_P = null;
 let CORE_P = null;
 
-function edgeLoader(env) {
-  return async (rel) => { const o = await env.SITE.get(rel); return o ? o.json() : null; };
+/* The engine's files through the data centre's cache (r2cache.js). Measured
+ * 2026-10-20 from Chiang Mai: a "tulou" query on a fresh isolate made 28
+ * bucket reads at ~2.6 s each, 8–17 s an answer, and traffic is light enough
+ * that most answers start on a fresh isolate. The copies are named by
+ * meta.json's etag, so a rebuilt index is read whole and new, never mixed. */
+const R2N = { n: 0, ms: 0 };   // bucket reads by the engine, for server-timing
+function edgeLoader(env, base = "api/v1/edge/") {
+  let verP = null;
+  const ver = () => verP || (verP = env.SITE.head(base + "meta.json")
+    .then((h) => (h ? h.httpEtag : "")).catch(() => ""));
+  return async (rel) => {
+    const t = Date.now();
+    const v = rel === base + "meta.json" ? "" : await ver();
+    const o = v ? await cachedGet(env, rel, 86400, v) : await env.SITE.get(rel);
+    const j = o ? await o.json() : null;
+    R2N.n++; R2N.ms += Date.now() - t; return j;
+  };
 }
 
 function edgeCore(env) {
@@ -629,6 +681,14 @@ export function refineFacets(rows, qwords) {
  * its province (api.js liftProvince). What the page adds AFTER ranking — the
  * landmark, the tag routes, the shelf lift, the rail — stays on the page; the
  * page asks this first and repaints over it when its own index has landed. */
+/* A name folded for comparison: lower case, letters and digits, one space,
+ * and a leading or trailing kind word (restaurant, cafe, ร้าน …) taken off. */
+const KIND_WORD = /^(restaurant|cafe|café|coffee|shop|store|bar|hotel|hostel|resort|spa|clinic|ร้าน|ร้านอาหาร|คาเฟ่|โรงแรม)$/;
+export function nameKey(s) {
+  return String(s || "").normalize("NFKC").toLowerCase().replace(/[^\p{L}\p{M}\p{N}]+/gu, " ").trim()
+    .split(" ").filter((w, i, a) => w && !((i === 0 || i === a.length - 1) && a.length > 1 && KIND_WORD.test(w))).join(" ");
+}
+
 export async function searchHandler(env, ix, sp, now = new Date()) {
   const raw = sp.get("q") || "";
   const p = parseQuery(sp);
@@ -684,6 +744,20 @@ export async function searchHandler(env, ix, sp, now = new Date()) {
       if (d === false) continue;
       rows.push([row, d, h.score, h.tier]);
     }
+    /* A place whose name is the words comes first, then one whose name holds
+     * them as whole words; the engine's order stands inside each (gemba 2,
+     * 2026-10-20: a place's own name came first 43 of 60 times here against
+     * 51 on /find). Near-sorts keep their order. */
+    if (!p.near) {
+      const fq = nameKey(q);
+      const tierOf = (r) => {
+        const ks = [r.name, r.nameEn].filter(Boolean).map(nameKey);
+        if (ks.includes(fq)) return 0;
+        return ks.some((k) => (" " + k + " ").includes(" " + fq + " ")) ? 1 : 2;
+      };
+      rows = rows.map((r, i) => [r, tierOf(r[0]), i])
+        .sort((a, b) => a[1] - b[1] || a[2] - b[2]).map((x) => x[0]);
+    }
   } else {
     rows = [];
     for (const row of ix.places) {
@@ -733,6 +807,10 @@ function dice(env) {
 function loadIndex(env) {
   if (!INDEX_P) {
     INDEX_P = (async () => {
+      /* Read straight from the bucket: through the colo cache the whole
+       * 69 MB was held twice over before the parse, against a 128 MB
+       * isolate (review of PR #24, 2026-10-20; the 2026-09-10 note at
+       * cacheFor measured hand-caching big bodies slower too). */
       const obj = await env.SITE.get("api/v1/index.json");
       if (!obj) throw new Error("api index not deployed");
       INDEX_ETAG = obj.httpEtag;
@@ -993,11 +1071,15 @@ async function api(request, env, url, path, ctx) {
   }
 
   let ix;
+  /* What a cold isolate pays, said in the answer (gemba 2, 2026-10-20: the
+   * search took 5–14 s a query). */
+  const coldIx = !INDEX_P, coldEdge = !EDGE_P, tIx = Date.now();
   try {
     ix = await loadIndex(env);
   } catch (e) {
     return apiError(503, "index unavailable", String(e.message));
   }
+  const msIx = Date.now() - tIx;
 
   if (path === "/places") {
     const res = apiJson(queryPlaces(ix, url.searchParams));
@@ -1011,8 +1093,12 @@ async function api(request, env, url, path, ctx) {
 
   if (path === "/search") {
     try {
+      const tS = Date.now(); const r0 = { ...R2N };
       const body = await searchHandler(env, ix, url.searchParams);
       const res = apiJson(body);
+      res.headers.set("server-timing", `index;dur=${msIx};desc="${coldIx ? "cold" : "warm"}", ` +
+        `engine;dur=${Date.now() - tS};desc="${coldEdge ? "cold" : "warm"}", ` +
+        `reads;dur=${R2N.ms - r0.ms};desc="${R2N.n - r0.n} bucket reads"`);
       /* How many answered, for the counter (record(): a search that found
        * nothing keeps its words there). Set before the clone so a cached copy
        * carries it too. */
@@ -1353,8 +1439,20 @@ export default {
   async fetch(request, env, ctx) {
     const started = Date.now();
 
+    try { await assetVersions(env); } catch { /* pages go out unversioned */ }
     /* The one thing that matters. Nothing below this line can fail it. */
-    const response = finish(toHttps(request) || sendToRules(request) || askCrawler(request, env) || await serve(request, env, ctx));
+    const response = finish(toHttps(request) || sendToRules(request) || askCrawler(request, env) || await serve(request, env, ctx), request.url);
+    /* A script or stylesheet asked for by its content hash is kept for good —
+     * when the bytes served are the ones the hash names. The bucket's etag of
+     * a small file is its md5, so a ?v= that arrives before its file (or for a
+     * file a round kept at its live copy) is served with the ordinary rule. */
+    try {
+      const u = new URL(request.url);
+      const v = u.searchParams.get("v") || "";
+      const et = (response.headers.get("etag") || "").replace(/^W\//, "").replace(/"/g, "");
+      if (response.status === 200 && v.length >= 8 && /\.(js|css)$/.test(u.pathname) && et.startsWith(v))
+        response.headers.set("cache-control", "public, max-age=31536000, immutable");
+    } catch { /* headers as they were */ }
 
     try {
       ctx.waitUntil(Promise.resolve(record(request, response, env, Date.now() - started)));
