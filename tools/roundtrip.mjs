@@ -106,7 +106,7 @@ const CASES = {
     try {
       const card = await p.until(`(${CARD}).includes('Tulou') && ${CARD}`);
       if (!card) return `?go=${TULOU.id} did not open Tulou`;
-      const line = await p.ev(`(document.querySelector('.mfsheet a.line') || {}).href || ''`);
+      const line = (await p.until(`(document.querySelector('.mfsheet:not([hidden]) a.line') || {}).href || ''`, 15000)) || "";
       return line.includes(encodeURIComponent(`go=${TULOU.id}`)) ? "" : `the LINE link does not carry ${TULOU.id}: ${line.slice(0, 120)}`;
     } finally { await p.close(); }
   },
