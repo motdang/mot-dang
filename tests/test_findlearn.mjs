@@ -5,8 +5,8 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { learnKey, learnLift, findSense, learnedFor, LIFT_MAX } from "../publish/findlearn.js";
-import { sql } from "../publish/fleetsearch.js";
+import { learnKey, learnLift, findSense, learnedFor, LIFT_MAX, findJudge, judgeFields, judgeMult, UP_X, DOWN_X, JUDGE_CAP } from "../publish/findlearn.js";
+import { sql, judgePanel } from "../publish/fleetsearch.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -131,4 +131,92 @@ test("on the twin: a learned page rises, within the bound", { skip: !existsSync(
   const r0 = twin.prepare(`SELECT rank FROM fts WHERE fts MATCH ? ORDER BY rank LIMIT 50`).all(s.binds[s.binds.length - 1]);
   assert.ok(r0.length > 0);
   twin.close();
+});
+
+/* ---- good / not it (findJudge, judgePanel) ---- */
+
+function judgeDb() {
+  const ran = [];
+  const st = (text) => ({ text, binds: [], bind(...b) { this.binds = b; return this; },
+    async first() { ran.push(this); return { id: 7 }; } });
+  return { ran, prepare: st, async batch(x) { ran.push(...x); return x.map(() => ({})); } };
+}
+const A = "https://motdang.net/cm/p/a.html", B = "https://motdang.net/cm/p/b.html";
+
+test("judgeMult: ✓ up, ✕ down, a tie or nothing leaves it", () => {
+  assert.equal(judgeMult(1, 0), UP_X);
+  assert.equal(judgeMult(0, 2), DOWN_X);
+  assert.equal(judgeMult(1, 1), 1);
+  assert.equal(judgeMult(undefined, null), 1);
+  assert.ok(DOWN_X > 0 && DOWN_X < 1 && JUDGE_CAP < 2);
+});
+
+test("judgeFields keeps what is well formed and drops the rest", () => {
+  const f = judgeFields({ q: " khao\nsoi ", v: "nonsense", why: ["far", "far", "bogus", "missing"],
+    y: [A, "javascript:alert(1)", A], n: B, want: "x".repeat(900), snap: "{not json", lang: "fr" });
+  assert.equal(f.q, "khao soi");
+  assert.equal(f.v, "bad");
+  assert.deepEqual(f.why, ["far", "missing"]);
+  assert.deepEqual(f.y, [A]);
+  assert.deepEqual(f.n, [B]);
+  assert.equal(f.want.length, 600);
+  assert.equal(f.snap, "");
+  assert.equal(f.lang, "");
+  assert.equal(judgeFields({ snap: '{"rows":[[1,"u"]]}' }).snap, '{"rows":[[1,"u"]]}');
+});
+
+test("a person's not-it: one judged row, ✓ ✕ into learn under the matched words, JSON back", async () => {
+  const db = judgeDb(), rows = [];
+  const r = await findJudge(new Request("https://motdang.net/api/find/judge", { method: "POST",
+    headers: { "content-type": "application/json", "user-agent": "Mozilla/5.0 Chrome" },
+    body: JSON.stringify({ q: "khao soi open now", qm: "khao soi", v: "bad", why: ["kind"], y: [A], n: [B],
+      want: "Khao Soi Mae Sai", snap: JSON.stringify({ rows: [[1, B], [2, A]] }), lang: "en" }) }),
+    { SEARCH: db, TRAFFIC: { writeDataPoint: (x) => rows.push(x) } }, classify);
+  assert.equal(r.status, 200);
+  assert.deepEqual(await r.json(), { ok: true, id: 7 });
+  const ins = db.ran.find((s) => /INSERT INTO judged/.test(s.text));
+  assert.deepEqual(ins.binds.slice(0, 7), ["khao soi", "khao soi open now", "bad", "kind", JSON.stringify([A]), JSON.stringify([B]), "Khao Soi Mae Sai"]);
+  assert.equal(ins.binds[8], "human");
+  assert.ok(db.ran.some((s) => /SET up = up \+ 1/.test(s.text) && s.binds.join("|") === `khao soi|${A}`));
+  assert.ok(db.ran.some((s) => /SET down = down \+ 1/.test(s.text) && s.binds.join("|") === `khao soi|${B}`));
+  assert.equal(rows[0].blobs[8], "judge-bad");
+  assert.deepEqual(rows[0].doubles.slice(2, 4), [1, 1]);
+});
+
+test("a form post with no script gets a page back; a machine's marks move nothing", async () => {
+  const db = judgeDb();
+  const body = new URLSearchParams([["q", "<b>soi</b>"], ["v", "good"], ["y", A]]);
+  const r = await findJudge(new Request("https://motdang.net/api/find/judge", { method: "POST", body,
+    headers: { "user-agent": "GPTBot/1.2" } }), { SEARCH: db }, classify);
+  assert.equal(r.status, 200);
+  const page = await r.text();
+  assert.match(page, /Got it/);
+  assert.doesNotMatch(page, /<b>soi/);
+  assert.match(page, /href="\/find\?q=%3Cb%3Esoi%3C%2Fb%3E"/);
+  assert.equal(db.ran.filter((s) => /INSERT INTO judged/.test(s.text)).length, 1);
+  assert.equal(db.ran.filter((s) => /INSERT INTO learn/.test(s.text)).length, 0);
+  const G = await findJudge(new Request("https://motdang.net/api/find/judge"), { SEARCH: db }, classify);
+  assert.equal(G.status, 405);
+});
+
+test("learnedFor: one person's ✓ or ✕ moves the page below the tap floor, capped", async () => {
+  const db = { prepare: () => ({ bind() { return this; }, async all() { return { results: [
+    { url: A, shown: 1, taps: 0, pogo: 0, via: 0, up: 1, down: 0 },
+    { url: B, shown: 1, taps: 0, pogo: 0, via: 0, up: 0, down: 1 },
+    { url: A + "?big", shown: 30, taps: 25, pogo: 0, via: 0, up: 3, down: 0 }] }; } }) };
+  const m = await learnedFor(db, "judge floor " + Date.now());
+  assert.equal(m.get(A), UP_X);
+  assert.equal(m.get(B), DOWN_X);
+  assert.equal(m.get(A + "?big"), JUDGE_CAP);
+});
+
+test("judgePanel: two plain forms, the six reasons, the snap escaped, script parses", () => {
+  const h = judgePanel('soi "x" <y>', "soi", { q: '<script>', rows: [[1, A]] }, true);
+  assert.equal((h.match(/action="\/api\/find\/judge"/g) || []).length, 2);
+  assert.equal((h.match(/name="why"/g) || []).length, 6);
+  assert.doesNotMatch(h, /<y>|"<script>/);
+  assert.match(h, /name="snap" value="\{&quot;q&quot;:&quot;&lt;script&gt;/);
+  assert.match(h, /tap ✓ right/);
+  assert.doesNotMatch(judgePanel("x", "x", {}, false), /tap ✓ right/);
+  new Function(h.match(/<script>([\s\S]*)<\/script>/)[1]);
 });
