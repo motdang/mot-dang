@@ -220,6 +220,8 @@ export function judgeMult(up, down) {
   return u > d ? UP_X : d > u ? DOWN_X : 1;
 }
 
+/* 50 rows of addresses up to 240 characters each, and the match, fit. */
+const SNAP_MAX = 16000;
 const clip = (s, n) => String(s == null ? "" : s).replace(/[\u0000-\u001f]+/g, " ").trim().slice(0, n);
 const escH = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
@@ -233,7 +235,7 @@ export function judgeFields(d) {
     const s = JSON.parse(String(d.snap || ""));
     if (s && typeof s === "object" && !Array.isArray(s)) {
       const t = JSON.stringify(s);
-      if (t.length <= 8000) snap = t;
+      if (t.length <= SNAP_MAX) snap = t;
     }
   } catch { /* none */ }
   return {
@@ -262,7 +264,7 @@ export async function findJudge(request, env, classify) {
       for (const k of ["q", "qm", "v", "want", "snap", "lang"]) if (Array.isArray(d[k])) d[k] = d[k][0];
     } else {
       const text = await request.text();
-      if (text.length > 16384) throw new Error("big");
+      if (text.length > 24576) throw new Error("big");
       d = JSON.parse(text) || {};
     }
   } catch { d = {}; }
@@ -282,7 +284,7 @@ export async function findJudge(request, env, classify) {
   const qk = learnKey(f.qm) || learnKey(f.q);
   const { category, agent } = classify(request.headers.get("user-agent") || "",
     { asn: request.cf?.asn, headers: request.headers });
-  let id = 0;
+  let id = 0, failed = false;
   if (qk) {
     try {
       env.TRAFFIC && env.TRAFFIC.writeDataPoint({
@@ -295,27 +297,31 @@ export async function findJudge(request, env, classify) {
     if (env.SEARCH) {
       const db = env.SEARCH;
       try {
-        const r = await db.prepare(
-          `INSERT INTO judged(qk, q, verdict, why, yes, no, want, snap, who, agent, country, lang)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`)
-          .bind(qk, f.q, f.v, f.why.join(","), JSON.stringify(f.y), JSON.stringify(f.n), f.want, f.snap,
-                sameSite ? category : `${category}/cross-site`, String(agent || "").slice(0, 40), request.cf?.country || "", f.lang).first();
-        id = (r && r.id) || 0;
-        const ys = f.y.filter(moves), ns = f.n.filter(moves);
-        if (category === "human" && (ys.length || ns.length)) {
-          const mark = (col) => db.prepare(
-            `INSERT INTO learn(qk, url, ${col}) VALUES (?, ?, 1)
-             ON CONFLICT(qk, url) DO UPDATE SET ${col} = ${col} + 1, last = datetime('now')`);
-          await db.batch([...ys.map((u) => mark("up").bind(qk, u)), ...ns.map((u) => mark("down").bind(qk, u))]);
-          LEARNED.delete(qk);
-        }
+        /* The send and its marks land together or not at all. */
+        const ys = category === "human" ? f.y.filter(moves) : [];
+        const ns = category === "human" ? f.n.filter(moves) : [];
+        const mark = (col) => db.prepare(
+          `INSERT INTO learn(qk, url, ${col}) VALUES (?, ?, 1)
+           ON CONFLICT(qk, url) DO UPDATE SET ${col} = ${col} + 1, last = datetime('now')`);
+        const res = await db.batch([
+          db.prepare(
+            `INSERT INTO judged(qk, q, verdict, why, yes, no, want, snap, who, agent, country, lang)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`)
+            .bind(qk, f.q, f.v, f.why.join(","), JSON.stringify(f.y), JSON.stringify(f.n), f.want, f.snap,
+                  sameSite ? category : `${category}/cross-site`, String(agent || "").slice(0, 40),
+                  request.cf?.country || "", f.lang),
+          ...ys.map((u) => mark("up").bind(qk, u)), ...ns.map((u) => mark("down").bind(qk, u))]);
+        id = (res && res[0] && res[0].results && res[0].results[0] && res[0].results[0].id) || 0;
+        if (ys.length || ns.length) LEARNED.delete(qk);
       } catch (e) {
+        failed = true;
         console.log("findJudge", String(e && e.message || e).slice(0, 120));
       }
     }
   }
   if (!viaForm) {
-    return new Response(JSON.stringify({ ok: !!qk, id }), { status: 200, headers: {
+    /* A send the database did not keep says so: the page shows "did not send". */
+    return new Response(JSON.stringify({ ok: !!qk && !failed, id }), { status: failed ? 503 : 200, headers: {
       "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
   }
   /* No script on the reader's side: a page that says it arrived and leads back. */

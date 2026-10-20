@@ -138,8 +138,8 @@ test("on the twin: a learned page rises, within the bound", { skip: !existsSync(
 function judgeDb() {
   const ran = [];
   const st = (text) => ({ text, binds: [], bind(...b) { this.binds = b; return this; },
-    async first() { ran.push(this); return { id: 7 }; } });
-  return { ran, prepare: st, async batch(x) { ran.push(...x); return x.map(() => ({})); } };
+ });
+  return { ran, prepare: st, async batch(x) { ran.push(...x); return x.map((s) => /RETURNING id/.test(s.text) ? { results: [{ id: 7 }] } : {}); } };
 }
 const A = "https://motdang.net/cm/p/a.html", B = "https://motdang.net/cm/p/b.html";
 
@@ -164,7 +164,9 @@ test("judgeFields keeps what is well formed and drops the rest", () => {
   assert.equal(f.lang, "");
   assert.equal(judgeFields({ snap: '{"rows":[[1,"u"]]}' }).snap, '{"rows":[[1,"u"]]}');
   assert.equal(judgeFields({ snap: "[1,2]" }).snap, "");
-  assert.equal(judgeFields({ snap: JSON.stringify({ x: "y".repeat(9000) }) }).snap, "");
+  assert.equal(judgeFields({ snap: JSON.stringify({ x: "y".repeat(17000) }) }).snap, "");
+  const fifty = JSON.stringify({ rows: Array.from({ length: 50 }, (_, i) => [i + 1, "https://motdang.net/cm/p/" + "x".repeat(200) + i + ".html"]) });
+  assert.equal(judgeFields({ snap: fifty }).snap, fifty);
 });
 
 test("a person's not-it: one judged row, ✓ ✕ into learn under the matched words, JSON back", async () => {
@@ -179,6 +181,7 @@ test("a person's not-it: one judged row, ✓ ✕ into learn under the matched wo
   const ins = db.ran.find((s) => /INSERT INTO judged/.test(s.text));
   assert.deepEqual(ins.binds.slice(0, 7), ["khao soi", "khao soi open now", "bad", "kind", JSON.stringify([A]), JSON.stringify([B]), "Khao Soi Mae Sai"]);
   assert.equal(ins.binds[8], "human");
+  assert.equal(db.ran.length, 3);   // one batch: the send and both marks
   assert.ok(db.ran.some((s) => /SET up = up \+ 1/.test(s.text) && s.binds.join("|") === `khao soi|${A}`));
   assert.ok(db.ran.some((s) => /SET down = down \+ 1/.test(s.text) && s.binds.join("|") === `khao soi|${B}`));
   assert.equal(rows[0].blobs[8], "judge-bad");
