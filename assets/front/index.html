@@ -575,6 +575,7 @@ html[data-contrast="more"] #veil{display:none}
   function pick(){var q=new URLSearchParams(location.search).get('map');if(q)return /rai|^cr$/i.test(q)?'cr':/pathum|^pth?$/i.test(q)?'pth':/phnom|penh|^pp$/i.test(q)?'pp':'cm';
     try{var s=sessionStorage.getItem('md-map-city');if(B[s])return s}catch(e){}
     var ll=null;try{var h=JSON.parse(sessionStorage.getItem('md-here'));if(h&&Date.now()-h.t<12e5)ll=[h.lat,h.lng]}catch(e){}
+    if(!ll){try{var mc=localStorage.getItem('md-city');if(mc==='cm'||mc==='cr')return mc}catch(e){}}
     if(!ll){var m=document.querySelector('meta[name=md-where]'),v=m&&m.content.split('|');if(v&&v.length>=3)ll=[+v[1],+v[2]]}
     if(ll&&ll[0]>13.93&&ll[0]<14.30&&ll[1]>100.33&&ll[1]<100.95)return'pth';
     if(ll&&Math.hypot(ll[0]-11.56,ll[1]-104.92)<0.4)return'pp';
@@ -584,7 +585,7 @@ html[data-contrast="more"] #veil{display:none}
     if(load||f.getAttribute('src'))f.src=B[c]}
   show(pick(),document.documentElement.getAttribute('data-stage')!=='cal');
   document.querySelector('#now .mapcity').addEventListener('click',function(e){var b=e.target.closest('button[data-city]');if(!b)return;
-    try{sessionStorage.setItem('md-map-city',b.dataset.city)}catch(x){}show(b.dataset.city,true)})})()</script>
+    try{sessionStorage.setItem('md-map-city',b.dataset.city)}catch(x){}if(window.mdChooseCity)mdChooseCity(b.dataset.city);show(b.dataset.city,true)})})()</script>
   <noscript><iframe src="/sites/doodle-map/?embed=1" title="เชียงใหม่ วาดเล่น · Chiang Mai, Doodled"></iframe></noscript>
 </div>
 <div id="msmap" class="wrap" role="region" aria-label="เว็บเล็ก · minisites"></div>

@@ -151,6 +151,18 @@ var where = { lat: GATE[0], lng: GATE[1], how: 'gate' };
    pill and locshare.js write it too) — Nan, 2026-10-03: "I could share my location but I couldn't find myself" */
 function hereLoad() { try { var v = JSON.parse(sessionStorage.getItem('md-here')); if (v && Date.now() - v.t < 20 * 60e3) return v; } catch (e) { } return null; }
 function hereSave(lat, lng, acc) { try { sessionStorage.setItem('md-here', JSON.stringify({ lat: lat, lng: lng, acc: acc || null, t: Date.now() })); } catch (e) { } }
+/* the city the reader chose — a tap on the map's Chiang Mai or Chiang Rai, kept in this browser (md-city) —
+   comes before the network's guess; a GPS fix comes before both (Nan, 2026-10-20, C223: "yes you should be
+   able to remember and save things"). Measured from the point each city measures from. */
+var CITYPT = { cm: [18.7876, 98.9931], cr: [19.9094, 99.8325] };
+function chosenCity() { try { var c = localStorage.getItem('md-city'); return CITYPT[c] ? c : ''; } catch (e) { return ''; } }
+(function () { var c = chosenCity(); if (c) where = { lat: CITYPT[c][0], lng: CITYPT[c][1], how: 'chosen', city: c }; })();
+window.mdChooseCity = function (c) {
+  if (!CITYPT[c]) return;
+  try { localStorage.setItem('md-city', c); } catch (e) { }
+  if (where.how === 'gps') return;
+  where = { lat: CITYPT[c][0], lng: CITYPT[c][1], how: 'chosen', city: c }; relocated();
+};
 (function () { var h = hereLoad(); if (h && h.lat > 17.3 && h.lat < 20.7 && h.lng > 97.2 && h.lng < 100.7) where = { lat: h.lat, lng: h.lng, how: 'gps' }; })();
 /* A map link, coordinates or a Plus Code typed into a search box opens the map at that point with the places
    around it, instead of a word search that cannot read it (Nan, 2026-10-03: "you should be able to search a
@@ -197,6 +209,7 @@ function farEn(k) {
 function fromWhere() {
   return where.how === 'gps' ? bi('จากตรงที่คุณยืน', 'from where you stand')
     : where.how === 'network' ? bi('จากราวๆ ที่คุณอยู่ (เครือข่ายเดาให้)', 'from roughly where you are, a network guess')
+    : where.how === 'chosen' && where.city === 'cr' ? bi('จากหอนาฬิกาเชียงราย', 'from the Chiang Rai Clock Tower')
     : bi('จากประตูท่าแพ', 'from Tha Phae Gate');
 }
 

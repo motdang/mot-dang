@@ -22,8 +22,9 @@ function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^=
 function dayStr(d) { return [+d.slice(8) + ' ' + MON_TH[+d.slice(5, 7) - 1], +d.slice(8) + ' ' + MON_EN[+d.slice(5, 7) - 1]]; }
 var SANS = '"Sarabun",system-ui,sans-serif', MONO = 'ui-monospace,"SF Mono",Menlo,monospace';
 
-/* the reader's province, as front.js reads it: the network's guess, else Chiang Mai */
+/* the reader's province, as front.js reads it: the city they chose, the network's guess, else Chiang Mai */
 var PROV = (function () {
+  try { var c = localStorage.getItem('md-city'); if (c === 'cm' || c === 'cr') return c; } catch (e) { }   // the city the reader chose
   var m = document.querySelector('meta[name=md-where]'), v = m && m.content.split('|'), la = v && parseFloat(v[1]);
   return la > 19.5 && la < 20.7 ? 'cr' : 'cm';
 })();
