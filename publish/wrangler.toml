@@ -51,6 +51,14 @@ dataset = "traffic_eye"
 # content step, like deploy.py; the Worker only changes when the query or the
 # page does. Binding name must stay SEARCH — fleetsearch.js reads env.SEARCH.
 # Without it /find answers 503 and every other path serves as before.
+# Sign in with LINE and saved things across devices (publish/accounts.js,
+# migrations/0006_accounts.sql). Without the LINE_LOGIN_ID / LINE_LOGIN_SECRET
+# secrets, /auth/line answers "not switched on yet" and nothing else changes.
+[[d1_databases]]
+binding = "ACCOUNTS"
+database_name = "motdang-accounts"
+database_id = "52dcfb91-1a2c-4621-9b1e-3bb018ee9f3a"
+
 [[d1_databases]]
 binding = "SEARCH"
 database_name = "motdang-search"

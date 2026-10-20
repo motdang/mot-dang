@@ -76,6 +76,7 @@ import { live, ownsLive, resolve } from "./live.js";
 import { shareSense } from "./sharesense.js";
 import { toHttps, sendToRules, askCrawler, record } from "./edge_gate.js";
 export { toHttps };
+import { accounts } from "./accounts.js";
 import { trustedGuess } from "./where.js";
 import { findSense, findJudge } from "./findlearn.js";
 
@@ -1220,6 +1221,11 @@ async function serve(request, env, ctx) {
   /* A reader's word on one results page: good, bad, and why (findlearn.js). */
   if (url.pathname === "/api/find/judge")
     return findJudge(request, env, classify);
+  /* Sign in with LINE and saved things across devices (accounts.js). */
+  if (url.pathname.startsWith("/auth/") || url.pathname === "/api/me" || url.pathname === "/api/me/saved") {
+    const r = await accounts(request, env, url);
+    if (r) return r;
+  }
 
   if (request.method !== "GET" && request.method !== "HEAD") {
     return new Response("Method not allowed", {
