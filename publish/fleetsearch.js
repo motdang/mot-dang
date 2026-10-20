@@ -1544,12 +1544,25 @@ body:has(#jfd[open]) .jm{display:inline-flex}
 .jok{color:#0b6b3a;margin:.2em 0 .7em}
 `;
 
-function shell(title, body, robots) {
+/* The front page's link card (assets/og/p/search.jpg, drawn by share-cards; Nan 2026-10-20). */
+const FRONT_CARD = `<meta property="og:title" content="ค้นหา · Search">
+<meta property="og:description" content="ค้นหา · Search — ตรรกะ · Boolean">
+<meta property="og:image" content="https://motdang.net/og/p/search.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:alt" content="Card: ค้นหา · Search">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://motdang.net/og/p/search.jpg">
+<meta name="twitter:image:alt" content="Card: ค้นหา · Search">
+`;
+
+function shell(title, body, robots, card = "") {
   return `<!DOCTYPE html><html lang="th" translate="no" class="notranslate"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="google" content="notranslate">
 <title>${esc(title)}</title>
 <meta name="robots" content="${robots}">
+${card}
 <link rel="icon" href="/logo/motdang-favicon.svg" type="image/svg+xml">
 <style>${CSS}${CAL_CSS}${QA_CSS}</style></head><body>
 ${body}
@@ -2190,7 +2203,8 @@ async function answer(request, env, url, ctx, coreP, now) {
     try { c = await counts(db); } catch { /* the front still opens */ }
     const body = head(adv) + (adv ? booleanForm(q, st, c) : simpleForm(q, st)) +
                  (said || "") + sitesList(c);
-    return html(shell(adv ? "ตรรกะ · Boolean search · มดแดง" : "ค้นหา · Search · มดแดง", body, q ? "noindex,follow" : "index,follow"),
+    return html(shell(adv ? "ตรรกะ · Boolean search · มดแดง" : "ค้นหา · Search · มดแดง", body, q ? "noindex,follow" : "index,follow",
+                      !q && !adv ? FRONT_CARD : ""),
                 200, { "cache-control": `public, max-age=60, s-maxage=${CACHE_S}` });
   };
   if (!q) return front("");
