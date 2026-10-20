@@ -1371,7 +1371,15 @@ async function serve(request, env, ctx) {
    * mistyped soi still lands somewhere with the search box on it. */
   const nf = await env.SITE.get("404.html");
   if (nf) {
-    return new Response(nf.body, {
+    /* /this-page-does-not-exist-smoke-test is the smoke check's address
+     * (publish/safety.py wants a 404 there). Something asked for it 79 times
+     * the week to 2026-10-18, so it has a page to rest in now, still served
+     * with status 404 and only when 404.html is deployed, so the check means
+     * what it did. Nan, 2026-10-20. */
+    const sala = url.pathname === "/this-page-does-not-exist-smoke-test"
+      ? await env.SITE.get("voight-kampff/lost/index.html") : null;
+    if (sala) nf.body.cancel();
+    return new Response((sala || nf).body, {
       status: 404,
       headers: {
         "content-type": TYPES.html,
