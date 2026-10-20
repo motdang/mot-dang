@@ -88,19 +88,23 @@ test("sign in, save, read back, sign out", async () => {
 
     const data = { keys: { "md-city": { v: "cm", t: 1 } }, saved: [{ k: "cm:tulou-restaurant-405600680", t: 2 }], gone: [] };
     const same = { ...ck, "sec-fetch-site": "same-origin" };
-    const cross = await call(env, "/api/me/saved", { method: "PUT", headers: { ...ck, "sec-fetch-site": "cross-site" }, body: JSON.stringify({ data, ver: 0 }) });
+    const cross = await call(env, "/api/me/saved", { method: "PUT", headers: { ...ck, "sec-fetch-site": "cross-site" }, body: JSON.stringify({ data, ver: 0, acct: me.u }) });
     assert.equal(cross.status, 403);
-    const put = await call(env, "/api/me/saved", { method: "PUT", headers: same, body: JSON.stringify({ data, ver: 0 }) });
+    const put = await call(env, "/api/me/saved", { method: "PUT", headers: same, body: JSON.stringify({ data, ver: 0, acct: me.u }) });
     assert.equal(put.status, 200);
     assert.equal((await put.json()).ver, 1);
     const got = await (await call(env, "/api/me/saved", { headers: ck })).json();
     assert.deepEqual(got.data, data);
     assert.equal(got.ver, 1);
     // a second device merged from the same empty read: refused, reads again
-    const stale = await call(env, "/api/me/saved", { method: "PUT", headers: same, body: JSON.stringify({ data: { keys: {} }, ver: 0 }) });
+    const stale = await call(env, "/api/me/saved", { method: "PUT", headers: same, body: JSON.stringify({ data: { keys: {} }, ver: 0, acct: me.u }) });
     assert.equal(stale.status, 409);
-    const next = await call(env, "/api/me/saved", { method: "PUT", headers: same, body: JSON.stringify({ data, ver: 1 }) });
+    const next = await call(env, "/api/me/saved", { method: "PUT", headers: same, body: JSON.stringify({ data, ver: 1, acct: me.u }) });
     assert.equal((await next.json()).ver, 2);
+    // a tab still holding another account's things is refused
+    const other = await call(env, "/api/me/saved", { method: "PUT", headers: same, body: JSON.stringify({ data, ver: 2, acct: "AAAAAAAAAAAAAAAA" }) });
+    assert.equal(other.status, 409);
+    assert.equal((await other.json()).error, "account");
 
     const anon = await call(env, "/api/me/saved", {});
     assert.equal(anon.status, 401);

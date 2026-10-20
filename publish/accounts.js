@@ -31,6 +31,8 @@ const enc = new TextEncoder();
 const b64u = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 const rand = (n = 32) => b64u(crypto.getRandomValues(new Uint8Array(n)));
 export async function sha256(s) { return b64u(await crypto.subtle.digest("SHA-256", enc.encode(s))); }
+/* an opaque mark of the account, so a browser can tell one person from another */
+const markOf = async (id) => (await sha256("acct:" + id)).slice(0, 16);
 
 export function cookies(request) {
   const out = {};
@@ -149,7 +151,7 @@ export async function accounts(request, env, url) {
     const u = await whoIs(request, env);
     /* u: an opaque mark of the account, so a browser can tell when a
      * different person signs in on it (accounts_layer.py) */
-    return json(u ? { signedIn: true, u: (await sha256("acct:" + u.id)).slice(0, 16), name: u.name,
+    return json(u ? { signedIn: true, u: await markOf(u.id), name: u.name,
                       picture: u.picture || undefined, line: on } : { signedIn: false, line: on });
   }
 
@@ -161,7 +163,7 @@ export async function accounts(request, env, url) {
       const r = await db.prepare("SELECT data, at, ver FROM saved WHERE user_id = ?").bind(u.id).first();
       let data = {};
       try { data = r ? JSON.parse(r.data) : {}; } catch { data = {}; }
-      return json({ data, at: r ? r.at : null, ver: r ? r.ver : 0 });
+      return json({ data, at: r ? r.at : null, ver: r ? r.ver : 0, u: await markOf(u.id) });
     }
     if (request.method === "PUT") {
       if (!sameSite(request, url)) return json({ error: "from a motdang.net page" }, 403);
@@ -171,7 +173,10 @@ export async function accounts(request, env, url) {
       try { d = JSON.parse(text); } catch { return json({ error: "not JSON" }, 400); }
       if (!d || typeof d !== "object" || Array.isArray(d) || typeof d.data !== "object" || Array.isArray(d.data)
           || !Number.isInteger(d.ver) || d.ver < 0)
-        return json({ error: "{ data: {...}, ver: <the ver it was merged from> }" }, 400);
+        return json({ error: "{ data: {...}, ver: <the ver it was merged from>, acct: <the account's mark> }" }, 400);
+      /* A tab still holding an earlier account's things, after a different
+       * account signed in on this browser, carries that account's mark. */
+      if (d.acct !== await markOf(u.id)) return json({ error: "account", hint: "signed in as someone else now" }, 409);
       /* A copy merged from an older read is refused, so two devices saving at
        * once cannot overwrite each other: the second reads again and merges. */
       const body = JSON.stringify(d.data);

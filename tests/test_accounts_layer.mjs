@@ -44,7 +44,7 @@ async function boot(me, server) {
       document: { getElementById() { return null; }, dispatchEvent() {} }, CustomEvent: class {},
       fetch: async (u, init) => {
         if (u === "/api/me") return { ok: true, json: async () => me };
-        if (u === "/api/me/saved" && (!init || !init.method)) return { ok: true, status: 200, json: async () => server[me.u] || { data: {}, ver: 0 } };
+        if (u === "/api/me/saved" && (!init || !init.method)) return { ok: true, status: 200, json: async () => ({ ...(server[me.u] || { data: {}, ver: 0 }), u: me.u }) };
         if (u === "/api/me/saved" && init.method === "PUT") { const b = JSON.parse(init.body); server[me.u] = { data: b.data, ver: b.ver + 1 }; return { ok: true, status: 200 }; }
         return { ok: false, status: 404, json: async () => ({}) };
       } };

@@ -96,11 +96,15 @@ function sync(){
   var kept=J('md-acct-stash:'+ME.u,null);
   function round(n){
     return fetch('/api/me/saved',{credentials:'same-origin'}).then(function(r){return r.ok?r.json():null;}).then(function(srv){
-      if(!srv)return false;var m=merge(merge(local(),kept||{}),srv.data||{});apply(m);put('md-acct',ME.u||'');
+      if(!srv)return false;
+      /* the copy read is someone else's: another tab signed a different account in — stop, and ask again next load */
+      if(srv.u&&srv.u!==ME.u){try{sessionStorage.removeItem('md-me');}catch(e){}ME={signedIn:false,line:true};return false;}
+      var m=merge(merge(local(),kept||{}),srv.data||{});apply(m);put('md-acct',ME.u||'');
       if(JSON.stringify(m)===JSON.stringify(srv.data||{}))return true;
       return fetch('/api/me/saved',{method:'PUT',credentials:'same-origin',headers:{'content-type':'application/json'},
-        body:JSON.stringify({data:m,ver:srv.ver||0})}).then(function(r){
-          if(r.status===409&&n<3)return round(n+1);return r.ok;});});}
+        body:JSON.stringify({data:m,ver:srv.ver||0,acct:ME.u})}).then(function(r){
+          if(r.status===409&&n<3)return r.json().then(function(e){return e&&e.error==='account'?false:round(n+1);});
+          return r.ok;});});}
   return round(0).catch(function(){return false;}).then(function(ok){
     if(ok&&kept)put('md-acct-stash:'+ME.u,null);BUSY=false;return ok;});}
 
