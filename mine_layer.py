@@ -34,7 +34,11 @@ function add(list){var a=get(),ch=false;
   (Array.isArray(list)?list:[list]).forEach(function(o){if(ok(o)&&merge(a,o))ch=true;});
   if(ch)put(a);}
 function has(o){return get().some(function(x){return same(x,o);});}
-function forget(o){var a=get(),b=a.filter(function(x){return !same(x,o);});if(b.length!==a.length)put(b);}
+function forget(o){var a=get(),b=a.filter(function(x){return !same(x,o);});if(b.length!==a.length)put(b);
+  /* a dated note of the removal, so a reader signed in on another device does not get it back (accounts_layer.py) */
+  try{var g=JSON.parse(localStorage.getItem('md-saved-gone'))||[];
+    g.push(o.k?{k:o.k,t:Date.now()}:{lat:+o.lat,lng:+o.lng,t:Date.now()});
+    localStorage.setItem('md-saved-gone',JSON.stringify(g.slice(-500)));}catch(e){}}
 function keys(list){add((list||[]).filter(function(k){return typeof k==='string';})
   .map(function(k){return {k:k};}));}
 window.MDSAVED={get:get,add:add,has:has,forget:forget,keys:keys};

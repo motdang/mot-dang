@@ -16540,6 +16540,15 @@ def build_privacy_page():
          "kilometre when sorted by distance), the reasons you picked, the rows you marked ✓ or ✕, what you "
          "typed in the box, the country and the browser's name. A ✓ or ✕ from a browser the counter reads "
          "as a person moves that result up or down for those words."),
+        ("เข้าสู่ระบบด้วย LINE",
+         "Sign in with LINE",
+         "ถ้าคุณเข้าสู่ระบบด้วย LINE บนหน้าของฉัน เว็บเก็บรหัสผู้ใช้ LINE ของคุณสำหรับเว็บนี้ ชื่อที่แสดงและรูปโปรไฟล์ตามที่ LINE ส่งมา "
+         "และสำเนาของที่บันทึกไว้ แผนการเที่ยว บุ๊กมาร์ก โน้ต และการตั้งค่า เพื่อให้ตามไปเครื่องอื่นที่คุณเข้าสู่ระบบ "
+         "คุกกี้ md-s บอกเว็บว่าเป็นคุณ เว็บเก็บแค่ค่าแฮชของคุกกี้ ไม่ได้ขออีเมล ออกจากระบบได้ที่หน้าของฉัน",
+         "If you sign in with LINE on My page, the site keeps your LINE user ID for this site, the display name and "
+         "picture LINE sends, and a copy of your saved places, day plan, bookmarks, notes and settings, so they "
+         "follow you to the other devices you sign in on. A cookie, md-s, tells the site it is you; the site keeps "
+         "only a hash of it. No email is asked for. Sign out on My page."),
         ("แผนที่",
          "The maps",
          "เมื่อคุณเลื่อนแผนที่แล้วหยุด เปิดที่บนแผนที่ ปักหมุด ส่งหมุด หรือวางรหัสที่หรือพิกัด "
@@ -19338,17 +19347,18 @@ def build():
     import obs_layer  # rain + flood from readers, Nan 2026-09-28
     import mine_layer  # saved places on every map, Michael 2026-09-29
     import share_layer  # send my location, pick what to send, row share — Nan 2026-10-01
+    import accounts_layer  # saved things follow a reader signed in with LINE — Nan 2026-10-20, C230
     (DOCS / "md.js").write_text(JS + "\n" + rowline_layer.JS + "\n" + indexsplit_layer.js()
                                 + "\n" + eggs_layer.js() + "\n" + obs_layer.js()
                                 + "\n" + mine_layer.md_js() + "\n" + share_layer.md_js()
-                                + "\n" + preview_layer.LOADER)
+                                + "\n" + accounts_layer.MD_JS + "\n" + preview_layer.LOADER)
     import i18n_layer  # Burmese and Shan for the interface, WO-112
     layers.run("i18n.emit", lambda: print("  i18n: %d strings in each of Burmese and Shan" % (i18n_layer.emit(DOCS) // 2)))
     # The same script alone, for the pages that do not load md.js: the front
     # page (assets/front/index.html) and the Worker's /find.
     # /find's tap learning rides here too (assets/find_learn.js, idle off /find).
     (DOCS / "locshare.js").write_text(share_layer.md_js() + "\n" + (ROOT / "assets/find_learn.js").read_text()
-                                      + "\n" + preview_layer.LOADER)
+                                      + "\n" + accounts_layer.MD_JS + "\n" + preview_layer.LOADER)
     # The picture, the event sheet and the shared-event welcome, fetched on first use.
     (DOCS / "sharepic.js").write_text(share_layer.pic_js())
     # Installs motdang as an app, and takes shares from other apps (share_target).
@@ -20793,6 +20803,8 @@ def build():
         f'<h1>🏠 {bi("หน้าแรกของฉัน", "My page")}</h1>'
         f'{freshness_strip()}'
         f'<p class="myhint">💡 {bi(my_hint_th, my_hint_en)}</p>'
+        # Sign in with LINE, filled by accounts_layer.py once LINE is switched on (C230)
+        f'<div id="md-acct" class="myacct" style="margin:.3em 0 1em"></div>'
         f'<div class="module"><h3>{bi("ของดีวันนี้", "Pick of the day")}</h3>'
         f'<p id="dailypick" style="margin:.2rem 0">…</p></div>'
         f'<div class="module"><h3>{bi("หมวดที่ปักไว้", "Pinned shelves")}</h3>'
