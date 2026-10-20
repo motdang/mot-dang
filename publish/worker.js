@@ -76,7 +76,7 @@ import { live, ownsLive, resolve } from "./live.js";
 import { shareSense } from "./sharesense.js";
 import { toHttps, sendToRules, askCrawler, record } from "./edge_gate.js";
 export { toHttps };
-import { findSense } from "./findlearn.js";
+import { findSense, findJudge } from "./findlearn.js";
 
 const TYPES = {
   html: "text/html; charset=utf-8",
@@ -1131,6 +1131,9 @@ async function serve(request, env, ctx) {
   /* What people tap on /find, and whether they come back (findlearn.js). */
   if (url.pathname === "/api/find")
     return findSense(request, env, classify);
+  /* A reader's word on one results page: good, bad, and why (findlearn.js). */
+  if (url.pathname === "/api/find/judge")
+    return findJudge(request, env, classify);
 
   if (request.method !== "GET" && request.method !== "HEAD") {
     return new Response("Method not allowed", {

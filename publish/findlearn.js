@@ -166,8 +166,9 @@ const LEARNED = new Map();
 const LEARNED_TTL = 10 * 60 * 1000;
 const LEARNED_MAX = 500;
 
-/* url → multiplier for this query, only pages over the floor. Empty map when
- * nothing qualifies or the tables are not there (the local twin). */
+/* url → multiplier for this query: pages over the floor, and pages a person
+ * marked ✓ or ✕ for these words (judgeMult). Empty map when nothing
+ * qualifies or the tables are not there (the local twin). */
 export async function learnedFor(db, q) {
   const qk = learnKey(q);
   const out = new Map();
@@ -176,11 +177,12 @@ export async function learnedFor(db, q) {
   if (hit && Date.now() - hit.at < LEARNED_TTL) return hit.map;
   try {
     const r = await db.prepare(
-      `SELECT url, shown, taps, pogo, via FROM learn WHERE qk = ? AND shown >= ? AND taps - pogo >= ?
-       ORDER BY taps DESC LIMIT 24`).bind(qk, FLOOR_SHOWN, FLOOR_TAPS).all();
+      `SELECT url, shown, taps, pogo, via, up, down FROM learn WHERE qk = ?
+         AND ((shown >= ? AND taps - pogo >= ?) OR up > 0 OR down > 0)
+       ORDER BY taps + up DESC LIMIT 24`).bind(qk, FLOOR_SHOWN, FLOOR_TAPS).all();
     for (const row of r.results || []) {
-      const s = learnLift(row);
-      if (s > 0) out.set(row.url, Math.round((1 + LIFT_MAX * s) * 1000) / 1000);
+      const m = Math.min(JUDGE_CAP, (1 + LIFT_MAX * learnLift(row)) * judgeMult(row.up, row.down));
+      if (m !== 1) out.set(row.url, Math.round(m * 1000) / 1000);
     }
   } catch { /* no table, or the index is busy: rank as before */ }
   if (LEARNED.size >= LEARNED_MAX) LEARNED.delete(LEARNED.keys().next().value);
@@ -188,4 +190,146 @@ export async function learnedFor(db, q) {
   return out;
 }
 
-/* ------------------------------------------------------------ the page side */
+/* ---- A READER'S WORD ON ONE RESULTS PAGE (Nan, 2026-10-20) -----------------
+ * "Would like to provide feedback directly after a bad search. … simple for
+ * users and provide machines with the kind of data they need to do better."
+ *
+ * The page (judgePanel in fleetsearch.js) posts one form to /api/find/judge:
+ *   q, qm the words as typed, and as matched (intent words lifted out)
+ *   v     good | bad
+ *   why   what went wrong, any of WHY
+ *   y, n  addresses of rows marked ✓ (this one) and ✕ (wrong)
+ *   want  the reader's own words for what they were after: a name, a Maps
+ *         link, a description
+ *   snap  the page as it was built: the words, the match that answered, the
+ *         loosening note, the intent lifted, the shelf door, the ten rows
+ *         with their ranks, the total. Same for every reader of a cached page.
+ * One row per send in motdang-search `judged` (fleetsearch/learn.sql), read
+ * by fleetsearch/judged.py, which turns them into cases a change to the
+ * ranking is scored against. A person's ✓/✕ also lands in learn.up/down and
+ * moves that query's order at once (judgeMult); a machine's is kept in
+ * `judged` with its label and moves nothing. */
+
+export const WHY = ["missing", "kind", "far", "closed", "buried", "words"];
+export const UP_X = 1 + LIFT_MAX;   // ✓ outnumbers ✕ for these words: × 1.25, as a full tap lift
+export const DOWN_X = 0.6;          // ✕ outnumbers ✓: × 0.6, down the list, never out of it
+export const JUDGE_CAP = 1 + 2 * LIFT_MAX;   // taps and ✓ together stay under a title tier (× 2)
+
+export function judgeMult(up, down) {
+  const u = Number(up) || 0, d = Number(down) || 0;
+  return u > d ? UP_X : d > u ? DOWN_X : 1;
+}
+
+/* 50 rows of addresses up to 240 characters each, and the match, fit. */
+const SNAP_MAX = 16000;
+const clip = (s, n) => String(s == null ? "" : s).replace(/[\u0000-\u001f]+/g, " ").trim().slice(0, n);
+const escH = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+
+/* The fields of one send, from a form post (no script) or JSON (the page's
+ * own fetch). Anything malformed is dropped, not refused. */
+export function judgeFields(d) {
+  const all = (k) => [].concat(d[k] == null ? [] : d[k]);
+  const urls = (k) => Array.from(new Set(all(k).map(okUrl).filter(Boolean))).slice(0, 10);
+  let snap = "";
+  try {
+    const s = JSON.parse(String(d.snap || ""));
+    if (s && typeof s === "object" && !Array.isArray(s)) {
+      const t = JSON.stringify(s);
+      if (t.length <= SNAP_MAX) snap = t;
+    }
+  } catch { /* none */ }
+  return {
+    q: clip(d.q, 200),
+    qm: clip(d.qm, 200),
+    v: d.v === "good" ? "good" : "bad",
+    why: all("why").filter((w) => WHY.includes(w)).filter((w, i, a) => a.indexOf(w) === i),
+    y: urls("y"),
+    n: urls("n"),
+    want: clip(d.want, 600),
+    lang: d.lang === "en" || d.lang === "th" ? d.lang : "",
+    snap,
+  };
+}
+
+export async function findJudge(request, env, classify) {
+  const url = new URL(request.url);
+  if (request.method !== "POST") return new Response(null, { status: 405, headers: { allow: "POST" } });
+  const ct = request.headers.get("content-type") || "";
+  const viaForm = !/json/i.test(ct);
+  let d = {};
+  try {
+    if (viaForm) {
+      const fd = await request.formData();
+      for (const k of new Set(fd.keys())) d[k] = fd.getAll(k).map(String);
+      for (const k of ["q", "qm", "v", "want", "snap", "lang"]) if (Array.isArray(d[k])) d[k] = d[k][0];
+    } else {
+      const text = await request.text();
+      if (text.length > 24576) throw new Error("big");
+      d = JSON.parse(text) || {};
+    }
+  } catch { d = {}; }
+  const f = judgeFields(d);
+  /* Marks move ranking only when they come from a motdang.net page and name
+   * rows that page showed. A post from elsewhere is kept, labelled, and moves
+   * nothing. */
+  const site = request.headers.get("sec-fetch-site");
+  let origin = "";
+  try { origin = new URL(request.headers.get("origin") || request.headers.get("referer") || "").host; } catch { /* none */ }
+  const sameSite = site ? site === "same-origin" : origin === url.host;
+  let shownRows = new Set();
+  try { shownRows = new Set((JSON.parse(f.snap || "{}").rows || []).map((r) => Array.isArray(r) ? r[1] : "")); } catch { /* none */ }
+  const moves = (u) => sameSite && shownRows.has(u);
+  /* Keyed by the words the ranking matched (intent words lifted out), the key
+   * learnedFor reads back. */
+  const qk = learnKey(f.qm) || learnKey(f.q);
+  const { category, agent } = classify(request.headers.get("user-agent") || "",
+    { asn: request.cf?.asn, headers: request.headers });
+  let id = 0, failed = false;
+  if (qk) {
+    try {
+      env.TRAFFIC && env.TRAFFIC.writeDataPoint({
+        blobs: [url.host, category, agent, "/api/find", request.cf?.country || "XX", "200", "(same site)",
+                "FIND", `judge-${f.v}`, qk.slice(0, 64), f.why.join(","), ""],
+        doubles: [0, 200, f.y.length, f.n.length, 1],
+        indexes: [url.host],
+      });
+    } catch { /* counting is never worth an error */ }
+    if (env.SEARCH) {
+      const db = env.SEARCH;
+      try {
+        /* The send and its marks land together or not at all. */
+        const ys = category === "human" ? f.y.filter(moves) : [];
+        const ns = category === "human" ? f.n.filter(moves) : [];
+        const mark = (col) => db.prepare(
+          `INSERT INTO learn(qk, url, ${col}) VALUES (?, ?, 1)
+           ON CONFLICT(qk, url) DO UPDATE SET ${col} = ${col} + 1, last = datetime('now')`);
+        const res = await db.batch([
+          db.prepare(
+            `INSERT INTO judged(qk, q, verdict, why, yes, no, want, snap, who, agent, country, lang)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`)
+            .bind(qk, f.q, f.v, f.why.join(","), JSON.stringify(f.y), JSON.stringify(f.n), f.want, f.snap,
+                  sameSite ? category : `${category}/cross-site`, String(agent || "").slice(0, 40),
+                  request.cf?.country || "", f.lang),
+          ...ys.map((u) => mark("up").bind(qk, u)), ...ns.map((u) => mark("down").bind(qk, u))]);
+        id = (res && res[0] && res[0].results && res[0].results[0] && res[0].results[0].id) || 0;
+        if (ys.length || ns.length) LEARNED.delete(qk);
+      } catch (e) {
+        failed = true;
+        console.log("findJudge", String(e && e.message || e).slice(0, 120));
+      }
+    }
+  }
+  if (!viaForm) {
+    /* A send the database did not keep says so: the page shows "did not send". */
+    return new Response(JSON.stringify({ ok: !!qk && !failed, id }), { status: failed ? 503 : 200, headers: {
+      "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
+  }
+  /* No script on the reader's side: a page that says it arrived and leads back. */
+  const back = `/find?q=${encodeURIComponent(f.q)}`;
+  return new Response(`<!DOCTYPE html><html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>ได้รับแล้ว · Got it · มดแดง</title>
+<style>html{background:#fbf7ee;color:#1d1a16;font:17px/1.5 Georgia,Thonburi,serif}body{margin:0 auto;padding:2em 1rem;max-width:38em}</style>
+</head><body><p>ได้รับแล้ว · Got it.</p><p><a href="${escH(back)}">← ${escH(f.q || "ค้นหา · search")}</a></p></body></html>`,
+    { status: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
+}

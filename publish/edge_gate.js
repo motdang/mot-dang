@@ -49,7 +49,7 @@ export function record(request, response, env, ms) {
   const url = new URL(request.url);
   /* A map beacon is not an arrival: mapSense writes its own rows. Nor is a
    * live share's position, sent every few seconds for an hour. */
-  if (url.pathname === "/api/map" || url.pathname === "/api/share" || url.pathname === "/api/find" || url.pathname.startsWith("/api/live")) return;
+  if (url.pathname === "/api/map" || url.pathname === "/api/share" || url.pathname.startsWith("/api/find") || url.pathname.startsWith("/api/live")) return;
   const { category, agent } = classify(request.headers.get("user-agent") || "",
     { asn: request.cf?.asn, headers: request.headers });
 

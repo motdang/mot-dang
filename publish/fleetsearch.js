@@ -1494,6 +1494,27 @@ label{display:inline-block;margin-right:.8em}
 .ans-health{border-color:#2f6f5f;background:#f5f8f4}.ans-health .vh{color:#2f6f5f}
 .ans-health .vd b{color:#2f6f5f;font-weight:600}.ans-health .vdo{font-size:.86em;color:var(--mute)}
 .ans-health .vline,.ans-health .vweb{padding:0;border-radius:0;background:none;color:#2f6f5f;font-weight:600;text-decoration:underline;margin-right:.9em}
+/* The good / not-it line under the count (judgePanel). The ✓ ✕ on the rows
+ * show only while "not it" is open. */
+.jl{display:flex;flex-wrap:wrap;align-items:center;gap:.45em;margin:.2em 0 .7em;font-size:.93em}
+.jl form{margin:0}.jl button{margin:0}
+.jl .jg button,details.jf>summary{display:inline-flex;align-items:center;gap:.3em;padding:.35em .85em;border:1px solid var(--rule);border-radius:1.3em;background:#fff;color:var(--ink);cursor:pointer;font:inherit;list-style:none;-webkit-tap-highlight-color:transparent}
+details.jf>summary::-webkit-details-marker{display:none}
+details.jf[open]{flex-basis:100%}details.jf[open]>summary{background:#fbe9e4;border-color:var(--red)}
+.jf form{margin:.5em 0 0;padding:.6em .8em;border:1px solid var(--rule);border-radius:.6em;background:#fffaf0;max-width:40em}
+.jf .jw{display:flex;flex-wrap:wrap;gap:.35em;margin:0 0 .5em}
+.jf .jw label,.jm label{position:relative;display:inline-flex;align-items:center;margin:0;padding:.3em .75em;border:1px solid var(--rule);border-radius:1.3em;background:#fff;cursor:pointer;white-space:nowrap}
+.jf .jw input,.jm input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.jf .jw label:has(input:checked){background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.jf .jw label:has(input:focus-visible),.jm label:has(input:focus-visible){outline:2px solid #0b57b3;outline-offset:1px}
+.jf input[name=want]{font:inherit;width:100%;padding:.35em .5em;border:1px solid var(--mute);background:#fff;color:var(--ink);box-sizing:border-box}
+.jf .jh{color:var(--mute);margin:0 0 .5em;font-size:.95em}.jf button[type=submit]{margin:.5em 0 0}
+.jm{display:none;gap:.3em;margin:0 0 0 .5em;vertical-align:.1em;font-size:.85em}
+body:has(#jfd[open]) .jm{display:inline-flex}
+.jm label{padding:.05em .6em}
+.jm label.jy:has(input:checked){background:#0b8a3a;border-color:#0b8a3a;color:#fff}
+.jm label.jn:has(input:checked){background:var(--red);border-color:var(--red);color:#fff}
+.jok{color:#0b6b3a;margin:.2em 0 .7em}
 `;
 
 function shell(title, body, robots) {
@@ -1904,7 +1925,7 @@ function resultList(rows, page, n, pin, aux, when) {
     const pic = thumbHtml(r) || ((parseJson(r.rich) || {}).sc
       ? `<a class="th" href="${esc(r.url)}" tabindex="-1" aria-hidden="true"></a>` : "");
     return `<li><div class="r" ${rowData(r)}>${pic}<div class="b">${PEEK_BTN}${crumbLine(r, rows)}` +
-           `<a class="t" href="${esc(r.url)}">${esc(r.title)}</a>${ownMark(r)}${(readingHtml(r) + sayLine(r, iv, when.minute)) || "<br>"}` +
+           `<a class="t" href="${esc(r.url)}">${esc(r.title)}</a>${ownMark(r)}${judgeMarks(r.url)}${(readingHtml(r) + sayLine(r, iv, when.minute)) || "<br>"}` +
            `${esc(r.abstract)}${stripHtml(r)}` +
            `${richLine(r, aux, when, { lamp: !iv }) || "<br>"}` +
            `<span class="u">${esc(r.url.replace(/^https?:\/\//, ""))}</span>` +
@@ -1949,6 +1970,54 @@ function pager(url, page, total, n) {
   for (let p = lo; p <= hi; p++) parts.push(p === page ? `<b>${p}</b>` : link(p, String(p)));
   if (page < last) parts.push(link(page + 1, "ถัดไป · Next »"));
   return `<p class="pages">หน้า · Pages: ${parts.join(" ")}</p>`;
+}
+
+/* GOOD / NOT IT (Nan, 2026-10-20: "Would like to provide feedback directly
+ * after a bad search."). One line under the count: 👍 sends at once; 👎 opens
+ * what went wrong, ✓ ✕ on each row, and a box for what the reader was after.
+ * Both are plain forms to /api/find/judge (findJudge in findlearn.js), so a
+ * browser with no script still sends; with script the line answers in place.
+ * snap is the page as built, the same for every reader of a cached page. */
+export const JUDGE_WHY = [
+  ["missing", "ไม่มีที่หา · not here"],
+  ["kind", "ผิดประเภท · wrong kind"],
+  ["far", "ไกลไป · too far"],
+  ["closed", "ปิดแล้ว ข้อมูลเก่า · closed or old"],
+  ["buried", "ที่ใช่อยู่ลึก · right one buried"],
+  ["words", "อ่านคำผิด · misread my words"],
+];
+
+export function judgePanel(q, qm, snap, hasRows) {
+  const hid = `<input type="hidden" name="q" value="${esc(q)}"><input type="hidden" name="qm" value="${esc(qm)}">` +
+              `<input type="hidden" name="snap" value="${esc(JSON.stringify(snap))}">`;
+  const why = JUDGE_WHY.map(([k, t]) => `<label><input type="checkbox" name="why" value="${k}">${esc(t)}</label>`).join("");
+  return `<div class="jl" id="jl"><form class="jg" method="post" action="/api/find/judge">${hid}<input type="hidden" name="v" value="good">` +
+    `<button type="submit"><span aria-hidden="true">👍</span> ใช่ · good</button></form>` +
+    `<details class="jf" id="jfd"><summary><span aria-hidden="true">👎</span> ไม่ใช่ · not it</summary>` +
+    `<form id="jf" method="post" action="/api/find/judge">${hid}<input type="hidden" name="v" value="bad">` +
+    `<div class="jw">${why}</div>` +
+    (hasRows ? `<p class="jh">แตะ ✓ ✕ ที่ผลด้านล่าง · tap ✓ right or ✕ wrong on the rows below</p>` : "") +
+    `<input name="want" maxlength="600" autocomplete="off" placeholder="หาอะไรอยู่ ชื่อ ลิงก์แผนที่ · what were you after? a name, a map link">` +
+    `<button type="submit">ส่ง · send</button></form></details></div>
+<script>(function(){
+var box=document.getElementById("jl");if(!box||!window.fetch)return;
+box.addEventListener("submit",function(e){var f=e.target;e.preventDefault();
+var o={},fd=new FormData(f),c=document.documentElement.classList,lang=c.contains("lang-en")?"en":c.contains("lang-th")?"th":"";
+fd.forEach(function(v,k){if(k==="why"||k==="y"||k==="n")(o[k]=o[k]||[]).push(v);else o[k]=v;});
+o.lang=lang;
+[].forEach.call(box.querySelectorAll("button"),function(b){b.disabled=true;});
+fetch(f.action,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(o)}).then(function(r){
+var p=document.createElement("p");p.className="jok";var en=document.documentElement.classList.contains("lang-en"),th=document.documentElement.classList.contains("lang-th");
+p.textContent=r.ok?(en?"Got it":th?"ได้รับแล้ว":"ได้รับแล้ว · got it"):(en?"Did not send":th?"ส่งไม่ได้":"ส่งไม่ได้ · did not send");
+box.replaceWith(p);document.querySelectorAll(".jm").forEach(function(m){m.remove();});
+}).catch(function(){[].forEach.call(box.querySelectorAll("button"),function(b){b.disabled=false;});});
+});})();</script>`;
+}
+
+/* The ✓ ✕ on one row, owned by the not-it form by its id. */
+function judgeMarks(u) {
+  return `<span class="jm"><label class="jy" title="ใช่อันนี้ · this one"><input type="checkbox" form="jf" name="y" value="${esc(u)}">✓</label>` +
+         `<label class="jn" title="ผิด · wrong"><input type="checkbox" form="jf" name="n" value="${esc(u)}">✕</label></span>`;
 }
 
 /* PLACE REFINE, as progressive enhancement. The fleet search answers pages;
@@ -2367,6 +2436,24 @@ async function answer(request, env, url, ctx, coreP, now) {
       "cache-control": `public, max-age=60, s-maxage=${CACHE_S}`, "x-fleet-ms": String(ms), "server-timing": timing } });
   }
 
+  /* The page as built, for the good / not-it line (judgePanel): what a
+   * machine needs to replay and score this answer later. */
+  const snapOf = () => ({
+    q, qm, mode: pl.mode, match: String(used || "").slice(0, 600), note: note || undefined,
+    said: intent.said.length ? intent.said : undefined, door: door ? door.url : undefined,
+    spelling: Object.keys(fixUsed).length ? fixUsed : undefined,
+    sort: st.sort, in: st.in, site: st.site || undefined, kind: st.kind || undefined, sec: st.sec || undefined,
+    has: st.has.length ? st.has : undefined, from: st.from || undefined, to: st.to || undefined,
+    /* Only a position the address carries (near=): a network guess differs by
+     * reader, and this page is cached for every reader of the address. */
+    near: st.pin && st.pin.exact ? [Math.round(st.pin.lat * 100) / 100, Math.round(st.pin.lon * 100) / 100] : undefined,
+    sites: siteHits.length ? siteHits.slice(0, 3).map((r) => r.u) : undefined,
+    answer: ansHit ? ansHit.a.en : undefined,
+    page, n: st.n, total,
+    rows: rows.map((r, i) => [(page - 1) * st.n + i + 1, r.url]),
+    rescued: page === 1 && meaning ? rescueRows(meaning, rows, total).map((h) => h.url) : undefined,
+    ms, built: new Date().toISOString(),
+  });
   let c = null;
   if (adv) { try { c = await counts(db); } catch { c = null; } }
   let body = head(adv) + (adv ? booleanForm(q, st, c) : simpleForm(q, st));
@@ -2389,9 +2476,11 @@ async function answer(request, env, url, ctx, coreP, now) {
     body += off.length
       ? `<p class="note">ตัวกรองที่ใช้อยู่ · filters in force: ${off.join(" · ")}${all}</p>`
       : `<p class="note">ลองคำอื่น สะกดอีกแบบ หรือตัดคำออก · try another word, another spelling, or fewer words.</p>`;
+    body += judgePanel(q, qm, snapOf(), false);
   } else {
     body += `<p class="count">พบ ${num(total)} หน้า · ${num(total)} pages found${total > MAX_PAGE * st.n ? ` · แสดง ${num(MAX_PAGE * st.n)} แรก · first ${num(MAX_PAGE * st.n)} shown` : ""}</p>`;
     if (note) body += `<p class="note">${esc(note)}</p>`;
+    body += judgePanel(q, qm, snapOf(), rows.length > 0);
     if (st.sort !== "rank" && total > WINDOW) {
       body += `<p class="note">เรียงใน ${num(WINDOW)} หน้าที่ตรงที่สุด · sorted within the ${num(WINDOW)} best matches</p>`;
     }

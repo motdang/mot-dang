@@ -16506,6 +16506,17 @@ def build_privacy_page():
          "page, this tab's recent searches and the results opened from them (in the tab's sessionStorage for two "
          "hours), the map view if a map is open, and a location you already gave the site in that tab; the "
          "answer uses them for that question."),
+        ("ใช่ · ไม่ใช่ ในผลค้นหา",
+         "Good / not it on /find",
+         "เมื่อคุณกด ใช่ หรือส่ง ไม่ใช่ ใต้จำนวนผลใน /find เว็บเก็บคำค้น หน้าผลตามที่แสดง "
+         "(คำที่ใช้จับคู่ ลิงก์ตามลำดับ จำนวนผล และบริเวณราวหนึ่งกิโลเมตรถ้าเรียงตามระยะ) เหตุผลที่คุณเลือก "
+         "ผลที่คุณกด ✓ หรือ ✕ คำที่คุณพิมพ์ในช่อง หาอะไรอยู่ ประเทศ และชื่อเบราว์เซอร์ "
+         "✓ และ ✕ จากเบราว์เซอร์ที่ตัวนับอ่านว่าเป็นคน เลื่อนผลนั้นขึ้นหรือลงสำหรับคำค้นนั้น",
+         "When you press good, or send not it, under the count on /find, the site records the words, the "
+         "results page as shown (the match used, the links in order, the count, and an area of about a "
+         "kilometre when sorted by distance), the reasons you picked, the rows you marked ✓ or ✕, what you "
+         "typed in the box, the country and the browser's name. A ✓ or ✕ from a browser the counter reads "
+         "as a person moves that result up or down for those words."),
         ("แผนที่",
          "The maps",
          "เมื่อคุณเลื่อนแผนที่แล้วหยุด เปิดที่บนแผนที่ ปักหมุด ส่งหมุด หรือวางรหัสที่หรือพิกัด "
