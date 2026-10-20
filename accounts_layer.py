@@ -114,8 +114,13 @@ function sync(){
 /* ---- the account on every page, and the panel on my.html (Nan 2026-10-20: "many more
    personalization and convenience features … with a LINE signin", and the week on LINE
    with a Gold month for people who opt in). The server half is publish/me.js. */
-function bi(th,en){return th+' · '+en;}
-function el(tag,css,text){var e=document.createElement(tag);if(css)e.className=css;if(text!=null)e.textContent=text;return e;}
+/* both languages as two spans; the page's ไทย | EN switch shows one (html.lang-th / html.lang-en) */
+function B(th,en){var s=document.createElement('span'),a=document.createElement('span'),b=document.createElement('span');
+  a.className='ma-th';a.lang='th';a.textContent=th;b.className='ma-en';b.lang='en';b.textContent=en;s.append(a,b);return s;}
+/* one string, for labels and dialogs: the page's language, or both */
+function bl(th,en){var c=document.documentElement.className;return /\blang-en\b/.test(c)?en:/\blang-th\b/.test(c)?th:th+' · '+en;}
+function el(tag,css,text){var e=document.createElement(tag);if(css)e.className=css;
+  if(text!=null){if(typeof text==='object')e.appendChild(text);else e.textContent=text;}return e;}
 function btn(css,text,fn){var b=el('button',css,text);b.type='button';if(fn)b.addEventListener('click',fn);return b;}
 function lnk(css,text,href,blank){var a=el('a',css,text);a.href=href;if(blank){a.target='_blank';a.rel='noopener';}return a;}
 function signIn(){return '/auth/line?back='+encodeURIComponent(location.pathname+location.search);}
@@ -132,6 +137,7 @@ var CSS='.ma-card{border:2px solid #2a1e16;border-radius:14px;padding:12px 14px;
   '.ma-list{list-style:none;padding:0;margin:.3em 0}.ma-list li{display:flex;gap:.5em;align-items:center;justify-content:space-between;padding:.35em 0;border-bottom:1px solid #eadfcb}'+
   '.ma-chip{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;margin-left:.4em;border-radius:50%;overflow:hidden;flex:none;background:#06c755;color:#fff;text-decoration:none;vertical-align:middle}'+
   '.ma-chip img{width:100%;height:100%;object-fit:cover}.ma-chip svg{width:20px;height:20px}'+
+  '.ma-th+.ma-en::before{content:" · "}html.lang-th .ma-en,html.lang-en .ma-th{display:none}html.lang-en .ma-en::before{content:none}'+
   '.ma-sheet{margin:.4em 0 .6em;padding:.6em 0 0;border-top:1px solid #eadfcb}.ma-sheet .ma-b{margin:0 .4em .4em 0}';
 function css(){if(document.getElementById('ma-css'))return;var s=el('style');s.id='ma-css';s.textContent=CSS;document.head.appendChild(s);}
 
@@ -139,40 +145,40 @@ function css(){if(document.getElementById('ma-css'))return;var s=el('style');s.i
 function chip(){var m=document.querySelector('header .mast');if(!m||!ME||!ME.line)return;css();
   var old=m.querySelector('.ma-chip');if(old)old.remove();
   var a=el('a','ma-chip');
-  if(ME.signedIn){a.href='/my.html#md-acct';a.setAttribute('aria-label',bi('บัญชีของฉัน','My account')+': '+(ME.name||'LINE'));
+  if(ME.signedIn){a.href='/my.html#md-acct';a.setAttribute('aria-label',bl('บัญชีของฉัน','My account')+': '+(ME.name||'LINE'));
     if(ME.picture){var i=el('img');i.alt='';i.src=ME.picture;i.referrerPolicy='no-referrer';a.appendChild(i);}
     else a.textContent=(ME.name||'?').slice(0,1);}
-  else{a.href=signIn();a.setAttribute('aria-label',bi('เข้าสู่ระบบด้วย LINE','Sign in with LINE'));a.addEventListener('click',forget);
+  else{a.href=signIn();a.setAttribute('aria-label',bl('เข้าสู่ระบบด้วย LINE','Sign in with LINE'));a.addEventListener('click',forget);
     a.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" fill="currentColor"/></svg>';}
   a.title=a.getAttribute('aria-label');m.appendChild(a);}
 
 /* "add Mot Dang as a LINE friend first", with a way back */
 function needFriend(host,oa,again){host.textContent='';
-  host.appendChild(el('p',null,bi('เพิ่ม มดแดง Mot Dang เป็นเพื่อนใน LINE ก่อน','Add มดแดง Mot Dang as a LINE friend first')));
-  var r=el('div','ma-row');r.append(lnk('ma-b ma-line',bi('เพิ่มเพื่อน','Add friend'),oa,true),btn('ma-b',bi('เพิ่มแล้ว ลองอีกครั้ง','Added — try again'),again));host.appendChild(r);}
+  host.appendChild(el('p',null,B('เพิ่ม มดแดง Mot Dang เป็นเพื่อนใน LINE ก่อน','Add มดแดง Mot Dang as a LINE friend first')));
+  var r=el('div','ma-row');r.append(lnk('ma-b ma-line',B('เพิ่มเพื่อน','Add friend'),oa,true),btn('ma-b',B('เพิ่มแล้ว ลองอีกครั้ง','Added — try again'),again));host.appendChild(r);}
 
 function box(){var b=document.getElementById('md-acct');chip();if(!b||!ME||!ME.line)return;css();
   b.textContent='';
   if(!ME.signedIn){var c=el('div','ma-card');
-    c.appendChild(el('h4',null,bi('เข้าสู่ระบบด้วย LINE','Sign in with LINE')));
+    c.appendChild(el('h4',null,B('เข้าสู่ระบบด้วย LINE','Sign in with LINE')));
     var ul=el('ul');[['ที่บันทึกไว้ แผน บุ๊กมาร์ก และการตั้งค่า ตามไปทุกเครื่องที่คุณเข้าสู่ระบบ','your saved places, plan, bookmarks and settings on every device you sign in on'],
       ['สัปดาห์นี้ในมดแดง ทาง LINE ทุกวันจันทร์ พร้อมทอง 1 เดือนฟรีสำหรับหน้าของคุณ','the week on Mot Dang on LINE each Monday, and a free Gold month for your own page'],
       ['ส่งหน้า ที่ หรือแผน เข้า LINE ของคุณเอง','send a page, a place or a plan to your own LINE'],
       ['ข้อความเข้า LINE ก่อนงานเริ่ม','event reminders on LINE before they start'],
-      ['แจ้งทาง LINE เมื่อน้ำหรือฝุ่นถึงบ้าน','river and dust at your home, on LINE']].forEach(function(x){ul.appendChild(el('li',null,bi(x[0],x[1])));});
-    c.appendChild(ul);var a=lnk('ma-b ma-line',bi('เข้าสู่ระบบด้วย LINE','Sign in with LINE'),signIn());a.addEventListener('click',forget);
+      ['แจ้งทาง LINE เมื่อน้ำหรือฝุ่นถึงบ้าน','river and dust at your home, on LINE']].forEach(function(x){ul.appendChild(el('li',null,B(x[0],x[1])));});
+    c.appendChild(ul);var a=lnk('ma-b ma-line',B('เข้าสู่ระบบด้วย LINE','Sign in with LINE'),signIn());a.addEventListener('click',forget);
     var r=el('div','ma-row');r.appendChild(a);c.appendChild(r);b.appendChild(c);return;}
   /* who */
   var who=el('div','ma-card ma-who');
   if(ME.picture){var im=el('img');im.alt='';im.src=ME.picture;im.referrerPolicy='no-referrer';who.appendChild(im);}
   var nm=el('b',null,(ME.name||'LINE'));who.appendChild(nm);
-  var o=btn('ma-b',bi('ออกจากระบบ','Sign out'));who.appendChild(o);
+  var o=btn('ma-b',B('ออกจากระบบ','Sign out'));who.appendChild(o);
   var q=new URLSearchParams(location.search),back=q.get('back');
-  if(back&&/^\/(?!\/)/.test(back))who.appendChild(lnk('ma-b',bi('← กลับไปหน้าเดิม','← back where you were'),back));
+  if(back&&/^\/(?!\/)/.test(back))who.appendChild(lnk('ma-b',B('← กลับไปหน้าเดิม','← back where you were'),back));
   b.appendChild(who);
   /* sign-out only after the account holds the latest; otherwise stay signed in and say so */
   o.addEventListener('click',function(){clearTimeout(T);o.disabled=true;sync().then(function(ok){
-    if(!ok){o.disabled=false;nm.textContent=bi('บันทึกล่าสุดยังส่งไม่ได้ ยังไม่ได้ออกจากระบบ','your latest changes did not reach the account; still signed in');return;}
+    if(!ok){o.disabled=false;nm.textContent='';nm.appendChild(B('บันทึกล่าสุดยังส่งไม่ได้ ยังไม่ได้ออกจากระบบ','your latest changes did not reach the account; still signed in'));return;}
     return fetch('/auth/logout',{method:'POST',credentials:'same-origin'}).then(function(r){if(!r.ok)throw 0;
       forget();wipe();put('md-acct',null);ME={signedIn:false,line:true};box();});
   }).catch(function(){o.disabled=false;});});
@@ -183,66 +189,66 @@ function panel(host,m,welcome){host.textContent='';
   /* the week on LINE, and the Gold month */
   var w=el('div','ma-card');host.appendChild(w);
   function week(){w.textContent='';
-    w.appendChild(el('h4',null,(welcome&&!m.weekly?bi('ยินดีต้อนรับ','Welcome')+' — ':'')+bi('สัปดาห์นี้ในมดแดง ทาง LINE','The week on Mot Dang, on LINE')));
+    w.appendChild(el('h4',null,welcome&&!m.weekly?B('ยินดีต้อนรับ — สัปดาห์นี้ในมดแดง ทาง LINE','Welcome — the week on Mot Dang, on LINE'):B('สัปดาห์นี้ในมดแดง ทาง LINE','The week on Mot Dang, on LINE')));
     if(!m.weekly){
-      w.appendChild(el('p',null,bi('ทุกวันจันทร์: งานในเมืองเจ็ดวันข้างหน้า','Mondays: the next seven days of events in town')));
-      w.appendChild(el('p',null,bi('ตอบรับแล้ว รับทอง '+m.goldMonths+' เดือนฟรีสำหรับหน้าของคุณบน sites.motdang.net','Say yes and get a free Gold month for your own page on sites.motdang.net')));
-      var r=el('div','ma-row'),y=btn('ma-b ma-gold',bi('รับทุกวันจันทร์','Yes, every Monday'),function(){y.disabled=true;
+      w.appendChild(el('p',null,B('ทุกวันจันทร์: งานในเมืองเจ็ดวันข้างหน้า','Mondays: the next seven days of events in town')));
+      w.appendChild(el('p',null,B('ตอบรับแล้ว รับทอง '+m.goldMonths+' เดือนฟรีสำหรับหน้าของคุณบน sites.motdang.net','Say yes and get a free Gold month for your own page on sites.motdang.net')));
+      var r=el('div','ma-row'),y=btn('ma-b ma-gold',B('รับทุกวันจันทร์','Yes, every Monday'),function(){y.disabled=true;
         api('weekly',{on:true}).then(function(j){y.disabled=false;
           if(j.needFriend){needFriend(r,j.oa||m.oa,function(){y.click();});return;}
           if(j.ok){m.weekly=true;m.gold=j.gold;week();}});});
       r.appendChild(y);w.appendChild(r);return;}
-    var on=el('div','ma-row');on.append(el('span','ma-ok','✓ '+bi('รับทุกวันจันทร์','Coming every Monday')),
-      btn('ma-b',bi('หยุด','Stop'),function(){api('weekly',{on:false}).then(function(j){if(j.ok){m.weekly=false;week();}});}));
+    var on=el('div','ma-row');on.append(el('span','ma-ok',B('✓ รับทุกวันจันทร์','✓ Coming every Monday')),
+      btn('ma-b',B('หยุด','Stop'),function(){api('weekly',{on:false}).then(function(j){if(j.ok){m.weekly=false;week();}});}));
     w.appendChild(on);
     var g=m.gold;if(!g||!g.code)return;
-    var gc=el('div','ma-card');gc.appendChild(el('h4',null,bi('ทอง '+m.goldMonths+' เดือนของคุณ','Your Gold month')));
-    if(g.used){gc.appendChild(el('p','ma-ok','✓ '+bi('ใช้แล้วกับ','used on')+' sites.motdang.net/'+(g.page||'')));}
+    var gc=el('div','ma-card');gc.appendChild(el('h4',null,B('ทอง '+m.goldMonths+' เดือนของคุณ','Your Gold month')));
+    if(g.used){gc.appendChild(el('p','ma-ok',B('✓ ใช้แล้วกับ sites.motdang.net/'+(g.page||''),'✓ used on sites.motdang.net/'+(g.page||''))));}
     else{gc.appendChild(el('p','ma-code',g.code));
-      var gr=el('div','ma-row');gr.append(lnk('ma-b ma-gold',bi('ใช้กับหน้าของฉัน','Use on my page'),'https://sites.motdang.net/g/'+g.code),
-        lnk('ma-b',bi('ยังไม่มีหน้า? สร้างหน้า','No page yet? Make one'),'https://sites.motdang.net/make'));gc.appendChild(gr);}
+      var gr=el('div','ma-row');gr.append(lnk('ma-b ma-gold',B('ใช้กับหน้าของฉัน','Use on my page'),'https://sites.motdang.net/g/'+g.code),
+        lnk('ma-b',B('ยังไม่มีหน้า? สร้างหน้า','No page yet? Make one'),'https://sites.motdang.net/make'));gc.appendChild(gr);}
     w.appendChild(gc);}
   week();
 
   /* river and dust at home */
   var h=el('div','ma-card');host.appendChild(h);
   function home(){h.textContent='';
-    h.appendChild(el('h4',null,bi('น้ำและฝุ่นที่บ้าน ทาง LINE','River and dust at home, on LINE')));
-    h.appendChild(el('p','ma-hint',bi('ข้อความเมื่อสถานีวัดน้ำในรัศมี 15 กม. ถึงระดับของสถานีเอง หรือ PM2.5 เกิน 75','a message when a river gauge within 15 km reaches its own alert level, or PM2.5 passes 75 µg/m³')));
+    h.appendChild(el('h4',null,B('น้ำและฝุ่นที่บ้าน ทาง LINE','River and dust at home, on LINE')));
+    h.appendChild(el('p','ma-hint',B('ข้อความเมื่อสถานีวัดน้ำในรัศมี 15 กม. ถึงระดับของสถานีเอง หรือ PM2.5 เกิน 75','a message when a river gauge within 15 km reaches its own alert level, or PM2.5 passes 75 µg/m³')));
     var r=el('div','ma-row');h.appendChild(r);
-    if(m.home){r.append(el('span',null,bi('บ้าน','Home')+': '+m.home.lat+', '+m.home.lng),
-      lnk('ma-b',bi('แผนที่','Map'),'/map.html#16/'+m.home.lat+'/'+m.home.lng),
-      btn('ma-b ma-red',bi('ล้าง','Clear'),function(){api('home',{clear:true}).then(function(){m.home=null;home();});}));return;}
+    if(m.home){r.append(el('span',null,B('บ้าน: '+m.home.lat+', '+m.home.lng,'Home: '+m.home.lat+', '+m.home.lng)),
+      lnk('ma-b',B('แผนที่','Map'),'/map.html#16/'+m.home.lat+'/'+m.home.lng),
+      btn('ma-b ma-red',B('ล้าง','Clear'),function(){api('home',{clear:true}).then(function(){m.home=null;home();});}));return;}
     function set(lat,lng){api('home',{lat:lat,lng:lng}).then(function(j){if(j.ok){m.home=j.home;home();}});}
-    var g=btn('ma-b ma-gold',bi('ที่นี่ ตอนนี้','Here, now'),function(){if(!navigator.geolocation)return;g.disabled=true;
+    var g=btn('ma-b ma-gold',B('ที่นี่ ตอนนี้','Here, now'),function(){if(!navigator.geolocation)return;g.disabled=true;
       navigator.geolocation.getCurrentPosition(function(p){set(p.coords.latitude,p.coords.longitude);},function(){g.disabled=false;},{enableHighAccuracy:true,timeout:15000});});
-    var f=el('form','ma-row'),inp=el('input');inp.placeholder='18.7883, 98.9853';inp.setAttribute('aria-label',bi('พิกัด','Coordinates'));
+    var f=el('form','ma-row'),inp=el('input');inp.placeholder='18.7883, 98.9853';inp.setAttribute('aria-label',bl('พิกัด','Coordinates'));
     inp.style.cssText='font:inherit;padding:.5em;border:2px solid #2a1e16;border-radius:10px;min-width:12em';
-    f.append(inp,btn('ma-b',bi('ใช้พิกัดนี้','Use these')));f.querySelector('button').type='submit';
+    f.append(inp,btn('ma-b',B('ใช้พิกัดนี้','Use these')));f.querySelector('button').type='submit';
     f.addEventListener('submit',function(e){e.preventDefault();var x=/(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/.exec(inp.value);if(x)set(+x[1],+x[2]);});
     r.appendChild(g);h.appendChild(f);}
   home();
 
   /* reminders and sending to my LINE */
   var s=el('div','ma-card');host.appendChild(s);
-  s.appendChild(el('h4',null,bi('เข้า LINE ของฉัน','To my LINE')));
-  s.appendChild(el('p',null,bi('แตะ ส่ง ที่มุมจอ แล้วเลือก ส่งเข้า LINE ของฉัน หรือบนงาน เลือก ⏰ ก่อนงาน','tap Send in the corner, then To my LINE; on an event, Remind me on LINE')));
+  s.appendChild(el('h4',null,B('เข้า LINE ของฉัน','To my LINE')));
+  s.appendChild(el('p',null,B('แตะ ส่ง ที่มุมจอ แล้วเลือก ส่งเข้า LINE ของฉัน หรือบนงาน เลือก ⏰ ก่อนงาน','tap Send in the corner, then To my LINE; on an event, Remind me on LINE')));
   var ul=el('ul','ma-list');s.appendChild(ul);
   function rems(){ul.textContent='';(m.reminders||[]).forEach(function(x){var li=el('li');
     li.append(el('span',null,'⏰ '+new Date(x.at).toLocaleString('th-TH',{timeZone:'Asia/Bangkok',dateStyle:'medium',timeStyle:'short'})+' · '+String(x.text||'').split('\n')[0]),
-      btn('ma-b',bi('ลบ','Remove'),function(){api('remind',{key:x.key,off:true}).then(function(){m.reminders=m.reminders.filter(function(y){return y.key!==x.key;});rems();});}));
+      btn('ma-b',B('ลบ','Remove'),function(){api('remind',{key:x.key,off:true}).then(function(){m.reminders=m.reminders.filter(function(y){return y.key!==x.key;});rems();});}));
     ul.appendChild(li);});}
   rems();
   if(!m.friend){var nf=el('div');s.appendChild(nf);needFriend(nf,m.oa,function(){location.reload();});}
 
   /* the reader's data */
   var d=el('div','ma-card');host.appendChild(d);
-  d.appendChild(el('h4',null,bi('ข้อมูลของฉัน','My data')));
-  d.appendChild(el('p','ma-hint',bi('ที่บันทึกไว้ แผน บุ๊กมาร์ก และการตั้งค่า ตามไปทุกเครื่องที่คุณเข้าสู่ระบบ','your saved places, plan, bookmarks and settings follow you to every device you sign in on')));
+  d.appendChild(el('h4',null,B('ข้อมูลของฉัน','My data')));
+  d.appendChild(el('p','ma-hint',B('ที่บันทึกไว้ แผน บุ๊กมาร์ก และการตั้งค่า ตามไปทุกเครื่องที่คุณเข้าสู่ระบบ','your saved places, plan, bookmarks and settings follow you to every device you sign in on')));
   var dr=el('div','ma-row');d.appendChild(dr);
-  dr.append(lnk('ma-b',bi('ดาวน์โหลด','Download'),'/api/me/export'),
-    btn('ma-b ma-red',bi('ลบบัญชี','Delete my account'),function(){
-      if(!confirm(bi('ลบบัญชี ที่บันทึกไว้ในบัญชี บ้าน และข้อความที่ตั้งไว้? ที่บันทึกในเครื่องนี้ยังอยู่','Delete the account, what it saved, home and reminders? What this browser holds stays.')))return;
+  dr.append(lnk('ma-b',B('ดาวน์โหลด','Download'),'/api/me/export'),
+    btn('ma-b ma-red',B('ลบบัญชี','Delete my account'),function(){
+      if(!confirm(bl('ลบบัญชี ที่บันทึกไว้ในบัญชี บ้าน และข้อความที่ตั้งไว้? ที่บันทึกในเครื่องนี้ยังอยู่','Delete the account, what it saved, home and reminders? What this browser holds stays.')))return;
       api('delete',{confirm:true}).then(function(j){if(!j.ok)return;forget();put('md-acct',null);ME={signedIn:false,line:true};box();});}));
   if(welcome)setTimeout(function(){var t=document.getElementById('md-acct');if(t&&t.scrollIntoView)t.scrollIntoView({block:'start'});},50);}
 
@@ -259,27 +265,30 @@ function sheetRow(body){
   if(mode==='event'&&!body.querySelector('[data-lp-ics]'))return; /* still drawing; the observer comes back */
   css();var row=el('div','ma-sheet'),out=el('p','ma-hint');out.setAttribute('aria-live','polite');
   if(!ME||!ME.line)return;
-  if(!ME.signedIn){var a=lnk('ma-b ma-line',bi('เข้าสู่ระบบด้วย LINE เพื่อส่งเข้า LINE ของคุณ','Sign in with LINE to send to your own LINE'),signIn());
+  if(!ME.signedIn){var a=lnk('ma-b ma-line',B('เข้าสู่ระบบด้วย LINE เพื่อส่งเข้า LINE ของคุณ','Sign in with LINE to send to your own LINE'),signIn());
     a.addEventListener('click',forget);row.appendChild(a);body.appendChild(row);return;}
   var U=window.MDSHARE&&MDSHARE.ui,ics=icsOf(body),ev=ics&&field(ics,'SUMMARY'),st=ics&&field(ics,'DTSTART'),url=ics&&field(ics,'URL');
   var title=ev?ev.v:(U?U.pageTitle():document.title),link=url?url.v:(U?U.pageUrl():location.href);
-  function said(j,ok){if(j.needFriend){needFriend(out,j.oa,function(){out.textContent='';});return;}
-    out.textContent=j.ok?'✓ '+ok:bi('ส่งไม่ได้ตอนนี้','could not send now');}
-  var mine=btn('ma-b ma-line',bi('ส่งเข้า LINE ของฉัน','To my LINE'),function(){mine.disabled=true;
-    api('line',{text:title+'\n'+link}).then(function(j){mine.disabled=false;said(j,bi('ส่งแล้ว','Sent'));});});
+  function said(j,th,en){if(j.needFriend){needFriend(out,j.oa,function(){out.textContent='';});return;}
+    out.textContent='';out.appendChild(j.ok?B('✓ '+th,'✓ '+en):B('ส่งไม่ได้ตอนนี้','could not send now'));}
+  var mine=btn('ma-b ma-line',B('ส่งเข้า LINE ของฉัน','To my LINE'),function(){mine.disabled=true;
+    api('line',{text:title+'\n'+link}).then(function(j){mine.disabled=false;said(j,'ส่งแล้ว','Sent');});});
   row.appendChild(mine);
   if(st){var all=/VALUE=DATE/.test(st.p),start=bkk(st.v),key='ev:'+(field(ics,'UID')||{v:title}).v.slice(0,80);
     var when=[['เช้าวันงาน 08:00','Morning of, 08:00',bkk(st.v,8,0),'@am']];
     if(!all)when.push(['ก่อน 1 ชั่วโมง','1 hour before',start-36e5,'@1h']);
     when.forEach(function(w){if(!(w[2]>Date.now()))return;
-      var b=btn('ma-b ma-gold','⏰ '+bi(w[0],w[1]),function(){b.disabled=true;
+      var b=btn('ma-b ma-gold',B('⏰ '+w[0],'⏰ '+w[1]),function(){b.disabled=true;
         var t='⏰ '+title+'\n'+new Date(start).toLocaleString('th-TH',{timeZone:'Asia/Bangkok',dateStyle:'medium',timeStyle:all?undefined:'short'})+'\n'+link;
-        api('remind',{key:key+w[3],at:w[2],text:t}).then(function(j){b.disabled=false;said(j,bi('จะส่งเข้า LINE '+w[0],'on your LINE, '+w[1].toLowerCase()));});});
+        api('remind',{key:key+w[3],at:w[2],text:t}).then(function(j){b.disabled=false;said(j,'จะส่งเข้า LINE '+w[0],'on your LINE, '+w[1].toLowerCase());});});
       row.appendChild(b);});}
   row.appendChild(out);body.appendChild(row);}
-var OBS=null;
-function watchSheet(){if(!document.addEventListener)return;document.addEventListener('click',function(){setTimeout(function(){var body=document.querySelector('.ls-wrap .ls-body');if(!body)return;
-  sheetRow(body);if(!OBS&&window.MutationObserver){OBS=new MutationObserver(function(){sheetRow(body);});OBS.observe(body,{childList:true});}},0);},true);}
+/* the sheet is made on first use (sharepic.js loads late), so watch for it, then for each new content */
+function watchSheet(){if(!window.MutationObserver||!document.querySelector)return;var hooked=null;
+  function hook(){var body=document.querySelector('.ls-wrap .ls-body');if(!body||body===hooked)return false;hooked=body;
+    new MutationObserver(function(){sheetRow(body);}).observe(body,{childList:true});sheetRow(body);return true;}
+  function start(){if(hook())return;new MutationObserver(function(_,o){if(hook())o.disconnect();}).observe(document.body,{childList:true});}
+  if(document.body)start();else document.addEventListener('DOMContentLoaded',start);}
 
 window.MDACCT={merge:merge,sync:sync,local:local,wipe:wipe};
 if(!/^(?:[a-z0-9-]+\.)*motdang\.net$/.test(location.hostname))return;
