@@ -84,6 +84,7 @@ test("sign in, save, read back, sign out", async () => {
     const me = await (await call(env, "/api/me", { headers: ck })).json();
     assert.equal(me.signedIn, true);
     assert.equal(me.name, "Nan");
+    assert.match(me.u, /^[A-Za-z0-9_-]{16}$/, "an opaque mark of the account");
 
     const data = { keys: { "md-city": { v: "cm", t: 1 } }, saved: [{ k: "cm:tulou-restaurant-405600680", t: 2 }], gone: [] };
     const same = { ...ck, "sec-fetch-site": "same-origin" };

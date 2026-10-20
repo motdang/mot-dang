@@ -30,3 +30,6 @@ const s3 = { keys: {}, saved: [{ k: "cm:a", t: now }], gone: [] };
 A(M.merge(s3, s2).saved.some((o) => o.k === "cm:a"), "a place saved again after its removal stays");
 A(M.merge({ gone: [{ k: "x", t: now - 200 * 864e5 }] }, {}).gone.length === 0, "removals older than 120 days are dropped");
 A(M.merge({ keys: { "evil-key": { v: 1, t: 9 } } }, {}).keys["evil-key"] === undefined, "only the kept settings travel");
+ls.setItem("md-saved", JSON.stringify([{ k: "cm:a", t: 1 }])); ls.setItem("md-acct", "A"); ls.setItem("md-lang", "en");
+M.wipe();
+A(ls.getItem("md-saved") === null && ls.getItem("md-city") === null && ls.getItem("md-lang") === null, "sign-out clears the synced things from this browser");

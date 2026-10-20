@@ -79,12 +79,19 @@ function me(){
   try{var c=JSON.parse(sessionStorage.getItem('md-me'));if(c&&Date.now()-c.at<3e5)return Promise.resolve(c.me);}catch(e){}
   return fetch('/api/me',{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(m){
     try{sessionStorage.setItem('md-me',JSON.stringify({at:Date.now(),me:m}));}catch(e){}return m;});}
-/* read, merge, send; a send refused as stale (another device wrote first) reads and merges again */
+/* This browser's synced things, cleared: on sign-out (they stay in the account), and before a different
+   account's copy comes in, so one person's saves never join another's account on a shared browser. */
+function wipe(){KEYS.concat(['md-saved','md-saved-gone',TK]).forEach(function(k){put(k,null);});
+  try{document.dispatchEvent(new CustomEvent('md-saved'));}catch(e){}}
+/* read, merge, send; a send refused as stale (another device wrote first) reads and merges again.
+   Things saved before anyone signed in on this browser join the first account that does. */
 function sync(){
   if(BUSY||!ME||!ME.signedIn)return Promise.resolve();BUSY=true;
+  var owner=get('md-acct');
+  if(owner&&owner!==ME.u)wipe();
   function round(n){
     return fetch('/api/me/saved',{credentials:'same-origin'}).then(function(r){return r.ok?r.json():null;}).then(function(srv){
-      if(!srv)return;var m=merge(local(),srv.data||{});apply(m);
+      if(!srv)return;var m=merge(local(),srv.data||{});apply(m);put('md-acct',ME.u||'');
       if(JSON.stringify(m)===JSON.stringify(srv.data||{}))return;
       return fetch('/api/me/saved',{method:'PUT',credentials:'same-origin',headers:{'content-type':'application/json'},
         body:JSON.stringify({data:m,ver:srv.ver||0})}).then(function(r){if(r.status===409&&n<3)return round(n+1);});});}
@@ -105,11 +112,12 @@ function box(){var b=document.getElementById('md-acct');if(!b||!ME||!ME.line)ret
     b.append(a,p);return;}
   var s=document.createElement('span');s.textContent=bi('เข้าสู่ระบบแล้ว','Signed in')+': '+(ME.name||'LINE')+' ';
   var o=document.createElement('button');o.type='button';o.textContent=bi('ออกจากระบบ','Sign out');
-  o.addEventListener('click',function(){fetch('/auth/logout',{method:'POST',credentials:'same-origin'}).then(function(){
-    try{sessionStorage.removeItem('md-me');}catch(e){}ME={signedIn:false,line:true};box();});});
+  o.addEventListener('click',function(){clearTimeout(T);sync().then(function(){
+    return fetch('/auth/logout',{method:'POST',credentials:'same-origin'});}).then(function(){
+    try{sessionStorage.removeItem('md-me');}catch(e){}wipe();put('md-acct',null);ME={signedIn:false,line:true};box();});});
   b.append(s,o);}
 
-window.MDACCT={merge:merge,sync:sync,local:local};
+window.MDACCT={merge:merge,sync:sync,local:local,wipe:wipe};
 if(!/^(?:[a-z0-9-]+\.)*motdang\.net$/.test(location.hostname))return;
 me().then(function(m){ME=m;box();if(m&&m.signedIn)sync();}).catch(function(){});
 })();

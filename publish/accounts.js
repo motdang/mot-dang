@@ -147,7 +147,10 @@ export async function accounts(request, env, url) {
 
   if (p === "/api/me") {
     const u = await whoIs(request, env);
-    return json(u ? { signedIn: true, name: u.name, picture: u.picture || undefined, line: on } : { signedIn: false, line: on });
+    /* u: an opaque mark of the account, so a browser can tell when a
+     * different person signs in on it (accounts_layer.py) */
+    return json(u ? { signedIn: true, u: (await sha256("acct:" + u.id)).slice(0, 16), name: u.name,
+                      picture: u.picture || undefined, line: on } : { signedIn: false, line: on });
   }
 
   if (p === "/api/me/saved") {
