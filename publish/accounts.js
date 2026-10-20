@@ -70,7 +70,7 @@ export async function whoIs(request, env) {
   if (!t || !env.ACCOUNTS) return null;
   try {
     return await env.ACCOUNTS.prepare(
-      `SELECT u.id, u.name, u.picture FROM sessions s JOIN users u ON u.id = s.user_id
+      `SELECT u.id, u.name, u.picture, u.friend, u.weekly FROM sessions s JOIN users u ON u.id = s.user_id
         WHERE s.hash = ? AND s.expires > datetime('now')`).bind(await sha256(t)).first();
   } catch { return null; }
 }
@@ -95,7 +95,10 @@ export async function accounts(request, env, url) {
     const q = new URLSearchParams({
       response_type: "code", client_id: env.LINE_LOGIN_ID, redirect_uri: callback, state,
       scope: "profile openid", nonce, code_challenge: b64u(await crypto.subtle.digest("SHA-256", enc.encode(verifier))),
-      code_challenge_method: "S256" });
+      code_challenge_method: "S256",
+      /* LINE's own tick box on the consent screen: add มดแดง Mot Dang (@964yxgnk,
+       * linked to this channel) as a friend — the door to the week on LINE (me.js) */
+      bot_prompt: "normal" });
     return new Response(null, { status: 302, headers: {
       location: `${AUTHORIZE}?${q.toString().replace(/\+/g, "%20")}`, "cache-control": "no-store",
       "set-cookie": setCookie(PENDING, JSON.stringify({ state, nonce, verifier, back }), 600, "/auth") } });
@@ -127,14 +130,21 @@ export async function accounts(request, env, url) {
     }
     const db = env.ACCOUNTS;
     const name = String(who.name || "").slice(0, 80), picture = String(who.picture || "").slice(0, 400);
+    const known = await db.prepare("SELECT id FROM users WHERE line_sub = ?").bind(who.sub).first();
+    /* "true": the reader ticked LINE's add-friend box just now */
+    const added = url.searchParams.get("friendship_status_changed") === "true";
     await db.prepare(`INSERT INTO users(line_sub, name, picture) VALUES (?, ?, ?)
       ON CONFLICT(line_sub) DO UPDATE SET name = excluded.name, picture = excluded.picture, last = datetime('now')`)
       .bind(who.sub, name, picture).run();
     const u = await db.prepare("SELECT id FROM users WHERE line_sub = ?").bind(who.sub).first();
+    if (added) await db.prepare("UPDATE users SET friend = 1 WHERE id = ?").bind(u.id).run();
     const token = rand(32);
     await db.prepare(`INSERT INTO sessions(hash, user_id, expires) VALUES (?, ?, datetime('now', '+${SESSION_DAYS} days'))`)
       .bind(await sha256(token), u.id).run();
-    const r = new Response(null, { status: 302, headers: { location: pend.back || "/my.html", "cache-control": "no-store" } });
+    const r = new Response(null, { status: 302, headers: { location: known ? (pend.back || "/my.html")
+      /* a first sign-in opens the welcome on My page: the week on LINE, the Gold month, the rest */
+      : "/my.html?welcome=1" + (pend.back && pend.back !== "/my.html" ? "&back=" + encodeURIComponent(pend.back) : "") + "#md-acct",
+      "cache-control": "no-store" } });
     r.headers.append("set-cookie", setCookie(COOKIE, token, SESSION_DAYS * 86400));
     r.headers.append("set-cookie", clear);
     return r;
@@ -152,7 +162,8 @@ export async function accounts(request, env, url) {
     /* u: an opaque mark of the account, so a browser can tell when a
      * different person signs in on it (accounts_layer.py) */
     return json(u ? { signedIn: true, u: await markOf(u.id), name: u.name,
-                      picture: u.picture || undefined, line: on } : { signedIn: false, line: on });
+                      picture: u.picture || undefined, friend: !!u.friend, weekly: !!u.weekly, line: on }
+                  : { signedIn: false, line: on });
   }
 
   if (p === "/api/me/saved") {

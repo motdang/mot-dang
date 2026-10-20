@@ -18,6 +18,8 @@
  * 0001_subscribers.sql). A test address with no row gets the list page instead.
  */
 
+import { weeklyOnLine } from "./me.js";
+
 const FROM = "nan@motdang.net";
 const SENDER_NAME = "Mot Dang · มดแดง";
 const BATCH = 100;   // Resend's batch endpoint takes up to 100 messages a call
@@ -89,12 +91,17 @@ async function handleSend(request, env, url) {
   const auth = request.headers.get("authorization") || "";
   if (!env.NEWSLETTER_TOKEN || auth !== "Bearer " + env.NEWSLETTER_TOKEN) return new Response("not found", { status: 404 });
   if (request.method !== "POST") return new Response("Method not allowed", { status: 405, headers: { allow: "POST" } });
-  if (!env.SUBSCRIBERS) return json({ ok: false, reason: "no-db" }, 503);
-  if (!env.RESEND_KEY) return json({ ok: false, reason: "no-resend-key" }, 503);
   let issue;
   try { issue = await request.json(); } catch { return json({ ok: false, reason: "bad-json" }, 400); }
   if (!issue || !/^\d{4}-\d{2}-\d{2}$/.test(issue.issue || "") || !issue.subject || !issue.text)
     return json({ ok: false, reason: "issue, subject and text are required" }, 400);
+  /* The same issue on LINE to readers who said yes when signed in (me.js);
+   * issue.line is its LINE text, else the plain text with the leaving link
+   * pointed at My page. */
+  const line = await weeklyOnLine(env, issue.issue,
+    String(issue.line || issue.text).split("{{UNSUB}}").join(`${url.origin}/my.html#md-acct`)).catch((e) => ({ error: String(e && e.message || e) }));
+  if (!env.SUBSCRIBERS) return json({ ok: false, reason: "no-db", line }, 503);
+  if (!env.RESEND_KEY) return json({ ok: false, reason: "no-resend-key", line }, 503);
 
   const db = env.SUBSCRIBERS;
   const rows = (await db.prepare(`SELECT email, token FROM subscribers WHERE status = 'confirmed'`).all()).results || [];
@@ -125,7 +132,7 @@ async function handleSend(request, env, url) {
     }
   }
   return json({ ok: failed.length === 0, live, issue: issue.issue, confirmed: rows.length,
-                already: to.length - todo.length, sent, failed });
+                already: to.length - todo.length, sent, failed, line });
 }
 
 export function ownsNewsletter(pathname) {
