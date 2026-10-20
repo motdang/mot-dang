@@ -33,3 +33,34 @@ A(M.merge({ keys: { "evil-key": { v: 1, t: 9 } } }, {}).keys["evil-key"] === und
 ls.setItem("md-saved", JSON.stringify([{ k: "cm:a", t: 1 }])); ls.setItem("md-acct", "A"); ls.setItem("md-lang", "en");
 M.wipe();
 A(ls.getItem("md-saved") === null && ls.getItem("md-city") === null && ls.getItem("md-lang") === null, "sign-out clears the synced things from this browser");
+
+/* A shared browser: A's unsent things are set aside when B signs in, B's account gets none of them,
+   and they reach A's account when A signs in here again. */
+async function boot(me, server) {
+  const ls2 = new Storage(), ss2 = new Storage();
+  return { ls2, ss2, run(seed) {
+    for (const [k, v] of Object.entries(seed || {})) ls2.m.set(k, v);
+    const g2 = { Storage, localStorage: ls2, sessionStorage: ss2, location: { hostname: "motdang.net", pathname: "/my.html", search: "" },
+      document: { getElementById() { return null; }, dispatchEvent() {} }, CustomEvent: class {},
+      fetch: async (u, init) => {
+        if (u === "/api/me") return { ok: true, json: async () => me };
+        if (u === "/api/me/saved" && (!init || !init.method)) return { ok: true, status: 200, json: async () => server[me.u] || { data: {}, ver: 0 } };
+        if (u === "/api/me/saved" && init.method === "PUT") { const b = JSON.parse(init.body); server[me.u] = { data: b.data, ver: b.ver + 1 }; return { ok: true, status: 200 }; }
+        return { ok: false, status: 404, json: async () => ({}) };
+      } };
+    g2.window = g2;
+    new Function(...Object.keys(g2), code)(...Object.values(g2));
+    return new Promise((r) => setTimeout(r, 50));
+  } };
+}
+const server = {};
+const t0 = Date.now();
+const b1 = await boot({ signedIn: true, u: "BBBBBBBBBBBBBBBB", line: true }, server);
+await b1.run({ "md-acct": "AAAAAAAAAAAAAAAA", "md-saved": JSON.stringify([{ k: "cm:a-only", t: t0 }]) });
+const bSaved = JSON.stringify((server.BBBBBBBBBBBBBBBB || {}).data || {});
+A(!bSaved.includes("a-only"), "B's account gets none of A's things");
+A((b1.ls2.getItem("md-acct-stash:AAAAAAAAAAAAAAAA") || "").includes("a-only"), "A's unsent things are set aside on the browser");
+const b2 = await boot({ signedIn: true, u: "AAAAAAAAAAAAAAAA", line: true }, server);
+await b2.run(Object.fromEntries(b1.ls2.m));
+A(JSON.stringify(server.AAAAAAAAAAAAAAAA.data).includes("a-only"), "A signing in again sends them to A's account");
+A(b2.ls2.getItem("md-acct-stash:AAAAAAAAAAAAAAAA") === null, "and the set-aside copy is gone");

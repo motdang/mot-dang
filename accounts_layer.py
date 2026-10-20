@@ -79,23 +79,30 @@ function me(){
   try{var c=JSON.parse(sessionStorage.getItem('md-me'));if(c&&Date.now()-c.at<3e5)return Promise.resolve(c.me);}catch(e){}
   return fetch('/api/me',{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(m){
     try{sessionStorage.setItem('md-me',JSON.stringify({at:Date.now(),me:m}));}catch(e){}return m;});}
-/* This browser's synced things, cleared: on sign-out (they stay in the account), and before a different
-   account's copy comes in, so one person's saves never join another's account on a shared browser. */
+/* This browser's synced things, cleared: after a confirmed last send on sign-out (they stay in the
+   account), and before a different account's copy comes in, so one person's saves never join another's
+   account on a shared browser. What the earlier account had not sent yet is set aside under its mark
+   (md-acct-stash:<mark>) and joins that account when it signs in here again. */
 function wipe(){KEYS.concat(['md-saved','md-saved-gone',TK]).forEach(function(k){put(k,null);});
   try{document.dispatchEvent(new CustomEvent('md-saved'));}catch(e){}}
+function stash(owner){try{SET.call(LS,'md-acct-stash:'+owner,JSON.stringify(local()));}catch(e){}}
 /* read, merge, send; a send refused as stale (another device wrote first) reads and merges again.
-   Things saved before anyone signed in on this browser join the first account that does. */
+   Things saved before anyone signed in on this browser join the first account that does.
+   Resolves true once the account holds this browser's state. */
 function sync(){
-  if(BUSY||!ME||!ME.signedIn)return Promise.resolve();BUSY=true;
+  if(BUSY||!ME||!ME.signedIn)return Promise.resolve(false);BUSY=true;
   var owner=get('md-acct');
-  if(owner&&owner!==ME.u)wipe();
+  if(owner&&owner!==ME.u){stash(owner);wipe();}
+  var kept=J('md-acct-stash:'+ME.u,null);
   function round(n){
     return fetch('/api/me/saved',{credentials:'same-origin'}).then(function(r){return r.ok?r.json():null;}).then(function(srv){
-      if(!srv)return;var m=merge(local(),srv.data||{});apply(m);put('md-acct',ME.u||'');
-      if(JSON.stringify(m)===JSON.stringify(srv.data||{}))return;
+      if(!srv)return false;var m=merge(merge(local(),kept||{}),srv.data||{});apply(m);put('md-acct',ME.u||'');
+      if(JSON.stringify(m)===JSON.stringify(srv.data||{}))return true;
       return fetch('/api/me/saved',{method:'PUT',credentials:'same-origin',headers:{'content-type':'application/json'},
-        body:JSON.stringify({data:m,ver:srv.ver||0})}).then(function(r){if(r.status===409&&n<3)return round(n+1);});});}
-  return round(0).catch(function(){}).then(function(){BUSY=false;});}
+        body:JSON.stringify({data:m,ver:srv.ver||0})}).then(function(r){
+          if(r.status===409&&n<3)return round(n+1);return r.ok;});});}
+  return round(0).catch(function(){return false;}).then(function(ok){
+    if(ok&&kept)put('md-acct-stash:'+ME.u,null);BUSY=false;return ok;});}
 
 /* the box on my.html */
 function bi(th,en){return th+' · '+en;}
@@ -112,9 +119,12 @@ function box(){var b=document.getElementById('md-acct');if(!b||!ME||!ME.line)ret
     b.append(a,p);return;}
   var s=document.createElement('span');s.textContent=bi('เข้าสู่ระบบแล้ว','Signed in')+': '+(ME.name||'LINE')+' ';
   var o=document.createElement('button');o.type='button';o.textContent=bi('ออกจากระบบ','Sign out');
-  o.addEventListener('click',function(){clearTimeout(T);sync().then(function(){
-    return fetch('/auth/logout',{method:'POST',credentials:'same-origin'});}).then(function(){
-    try{sessionStorage.removeItem('md-me');}catch(e){}wipe();put('md-acct',null);ME={signedIn:false,line:true};box();});});
+  /* sign-out only after the account holds the latest; otherwise stay signed in and say so */
+  o.addEventListener('click',function(){clearTimeout(T);o.disabled=true;sync().then(function(ok){
+    if(!ok){o.disabled=false;s.textContent=bi('บันทึกล่าสุดยังส่งไม่ได้ ยังไม่ได้ออกจากระบบ','your latest changes did not reach the account; still signed in')+' ';return;}
+    return fetch('/auth/logout',{method:'POST',credentials:'same-origin'}).then(function(r){if(!r.ok)throw 0;
+      try{sessionStorage.removeItem('md-me');}catch(e){}wipe();put('md-acct',null);ME={signedIn:false,line:true};box();});
+  }).catch(function(){o.disabled=false;});});
   b.append(s,o);}
 
 window.MDACCT={merge:merge,sync:sync,local:local,wipe:wipe};
