@@ -651,6 +651,24 @@ def prune_bound():
     return int(sys.argv[i + 1])
 
 
+def asset_versions():
+    """docs/data/asset-versions.json: every top-level .js and .css with the
+    first 10 hex of its md5. The Worker adds ?v=<that> to each page's
+    reference, and a ?v= address is kept by the browser for good, so a
+    changed script reaches a reader on their next page view rather than the
+    one after (gemba 2, Nan 2026-10-20). Returns the file's name under docs/."""
+    import hashlib, json
+    out = {}
+    for f in sorted(list(DOCS.glob("*.js")) + list(DOCS.glob("*.css"))):
+        out[f.name] = hashlib.md5(f.read_bytes()).hexdigest()[:10]
+    dest = DOCS / "data" / "asset-versions.json"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    text = json.dumps(out, sort_keys=True, separators=(",", ":"))
+    if not dest.exists() or dest.read_text() != text:
+        dest.write_text(text)
+    return "data/asset-versions.json"
+
+
 def main():
     go = "--yes" in sys.argv
     with_tiles = "--tiles" in sys.argv
@@ -663,6 +681,9 @@ def main():
         sys.exit("rclone not installed — brew install rclone")
 
     if files:
+        # a top-level script or stylesheet sent alone takes its new hash with it
+        if any("/" not in n and n.endswith((".js", ".css")) for n in files):
+            files = list(files) + [asset_versions()]
         print("mot-dang → r2://%s" % BUCKET)
         hits = [n for n in files if "/Users/" in (DOCS / n).read_text(errors="ignore")]
         if hits:
@@ -689,6 +710,7 @@ def main():
         return
 
     print("mot-dang → r2://%s" % BUCKET)
+    asset_versions()
     gate(only[0] if only else None)
     c = creds()
     env = rclone_env(c)

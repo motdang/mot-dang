@@ -224,12 +224,45 @@ export function ntConditional(reqHeaders) {
  * to come through here: an element holds one end-tag handler, so a second
  * onEndTag on <head> replaces this one and these tags fall through to before
  * <body>. */
-function noTranslate(rw, atHeadEnd = () => {}) {
+/* SCRIPTS NAMED BY CONTENT (gemba 2, 2026-10-20). A script is served "show
+ * the copy you hold, ask in the background" (cacheFor), so the first page
+ * view after a fix ran the old code: the map's Copy link went on sending 0,0
+ * for a reader who had the old mapfirst.js. deploy.py writes
+ * data/asset-versions.json (top-level .js/.css → content hash); every page's
+ * <script src> and stylesheet link to one of them gets ?v=<hash>, and a
+ * ?v= address is kept by the browser for good — a new hash is a new address.
+ * Read through the colo cache, at most once a minute per isolate. */
+let AV = {}, AV_AT = 0, AV_P = null;
+function assetVersions(env) {
+  if (Date.now() - AV_AT < 60_000) return Promise.resolve(AV);
+  if (!AV_P) AV_P = (async () => {
+    try {
+      const o = await cachedGet(env, "data/asset-versions.json", 60);
+      const j = o ? await o.json() : null;
+      if (j && typeof j === "object") AV = j;
+    } catch { /* keep what we had */ }
+    AV_AT = Date.now(); AV_P = null; return AV;
+  })();
+  return AV_P;
+}
+/* ref as written in a page at `base`; only a file at the site's top level
+ * (md.js, map.js, style.css …) is in the list. */
+export function versioned(ref, av = AV, base = "https://motdang.net/") {
+  if (!ref || /[?#]|^[a-z]+:/i.test(ref) || ref.startsWith("//")) return null;
+  let path;
+  try { path = new URL(ref, base).pathname; } catch { return null; }
+  const k = path.replace(/^\//, "");
+  return !k.includes("/") && av[k] ? `${ref}?v=${av[k]}` : null;
+}
+
+function noTranslate(rw, atHeadEnd = () => {}, base = "https://motdang.net/") {
   let done = false, google = false, robots = false, script = false, tp = false;
   const tags = () => (google ? "" : NT_META_GOOGLE) + (robots ? "" : NT_META_ROBOTS) +
                      (script ? "" : NT_SCRIPT) + (tp ? "" : TP_SCRIPT);
   const put = (write) => { if (!done) { done = true; write(tags()); } };
   return rw
+    .on("script[src]", { element(e) { const v = versioned(e.getAttribute("src"), AV, base); if (v) e.setAttribute("src", v); } })
+    .on('link[rel="stylesheet"][href]', { element(e) { const v = versioned(e.getAttribute("href"), AV, base); if (v) e.setAttribute("href", v); } })
     .on("html", {
       element(e) {
         e.setAttribute("translate", "no");
@@ -256,10 +289,10 @@ function noTranslate(rw, atHeadEnd = () => {}) {
 /* Last step for every response: a page not yet rewritten is rewritten, and
  * the header is appended (a page may already send noindex). A redirect has no
  * page to translate and keeps its headers as they were. */
-export function finish(res) {
+export function finish(res, base) {
   const type = res.headers.get("content-type") || "";
   const out = res.body && !NT_DONE.has(res) && /^text\/html/i.test(type)
-    ? noTranslate(new HTMLRewriter()).transform(res)
+    ? noTranslate(new HTMLRewriter(), undefined, base).transform(res)
     : new Response(res.body, res);
   if (!(out.status >= 301 && out.status <= 308 && out.status !== 304))
     out.headers.append("x-robots-tag", "notranslate");
@@ -384,7 +417,7 @@ function withWhere(res, request, size) {
   let metaSeen = false;
   const rw = noTranslate(new HTMLRewriter(), (end) => {
     if (!metaSeen) end.before(`<meta name="md-where" content="${esc(v)}">`, { html: true });
-  })
+  }, request.url)
     .on('meta[name="md-where"]', {
       element(e) { metaSeen = true; e.setAttribute("content", v); },
     });
@@ -1383,8 +1416,15 @@ export default {
   async fetch(request, env, ctx) {
     const started = Date.now();
 
+    try { await assetVersions(env); } catch { /* pages go out unversioned */ }
     /* The one thing that matters. Nothing below this line can fail it. */
-    const response = finish(toHttps(request) || sendToRules(request) || askCrawler(request, env) || await serve(request, env, ctx));
+    const response = finish(toHttps(request) || sendToRules(request) || askCrawler(request, env) || await serve(request, env, ctx), request.url);
+    /* a script or stylesheet asked for by its content hash never changes */
+    try {
+      const u = new URL(request.url);
+      if (response.status === 200 && u.searchParams.has("v") && /\.(js|css)$/.test(u.pathname))
+        response.headers.set("cache-control", "public, max-age=31536000, immutable");
+    } catch { /* headers as they were */ }
 
     try {
       ctx.waitUntil(Promise.resolve(record(request, response, env, Date.now() - started)));
