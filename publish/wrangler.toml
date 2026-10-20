@@ -114,6 +114,10 @@ MAILING_LIST_LIVE = "true"
 # The POST is checked against the NEWSLETTER_TOKEN secret (token get NEWSLETTER_TOKEN).
 NEWSLETTER_LIVE = "false"
 NEWSLETTER_TEST = "events@motdang.net"
+# The same issue on LINE to readers who said yes, signed in with LINE (me.js;
+# Nan 2026-10-20, her pick: the week on LINE each Monday and a Gold month).
+# Anything but "true" sends it only to the IDs in the NEWSLETTER_LINE_TEST secret.
+NEWSLETTER_LINE_LIVE = "true"
 # WHICH ROBOTS PAY (crawlpay.js, Nan 2026-10-04 "let's run a test"). "on" sends
 # training crawlers a 402 on one page in ten; anything else and they are served
 # as before. The two prices are hers to set; empty = no 402 even when "on".
@@ -166,3 +170,17 @@ zone_name = "motdang.net"
 binding = "LIVE"
 database_name = "motdang-live"
 database_id = "6afa7e56-c839-4eef-9688-0ace550018da"
+
+# More for a reader signed in with LINE (me.js, Nan 2026-10-20): the Mot Dang
+# LINE account's Worker (motdang-line, src/entry.js class Site) sends the pushes
+# and keeps home alerts and reminders; motdang-pages' database holds the Gold
+# month code a reader gets for saying yes to the week on LINE.
+[[services]]
+binding = "LINEBOT"
+service = "motdang-line"
+entrypoint = "Site"
+
+[[d1_databases]]
+binding = "PAGES_DB"
+database_name = "motdang-pages"
+database_id = "aa48eb0d-bfa8-449e-9041-a2de9906a452"

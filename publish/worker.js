@@ -77,6 +77,7 @@ import { shareSense } from "./sharesense.js";
 import { toHttps, sendToRules, askCrawler, record } from "./edge_gate.js";
 export { toHttps };
 import { accounts } from "./accounts.js";
+import { me, ownsMe } from "./me.js";
 import { trustedGuess } from "./where.js";
 import { findSense, findJudge } from "./findlearn.js";
 
@@ -1221,6 +1222,10 @@ async function serve(request, env, ctx) {
   /* A reader's word on one results page: good, bad, and why (findlearn.js). */
   if (url.pathname === "/api/find/judge")
     return findJudge(request, env, classify);
+  /* More for a reader signed in with LINE (me.js): the week on LINE, home
+   * alerts, send to my LINE, reminders, export, delete. */
+  if (ownsMe(url.pathname)) return me(request, env, url);
+
   /* Sign in with LINE and saved things across devices (accounts.js). */
   if (url.pathname.startsWith("/auth/") || url.pathname === "/api/me" || url.pathname === "/api/me/saved") {
     const r = await accounts(request, env, url);

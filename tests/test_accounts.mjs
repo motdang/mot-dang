@@ -6,7 +6,7 @@ import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import { accounts, safeBack, cookies } from "../publish/accounts.js";
 
-const SQL = readFileSync(new URL("../publish/migrations/0006_accounts.sql", import.meta.url), "utf8");
+const SQL = ["0006_accounts.sql", "0007_me.sql"].map((f) => readFileSync(new URL("../publish/migrations/" + f, import.meta.url), "utf8")).join("\n");
 function d1() {
   const db = new DatabaseSync(":memory:");
   db.exec(SQL);
@@ -54,6 +54,7 @@ test("sign in, save, read back, sign out", async () => {
   assert.equal(loc.searchParams.get("redirect_uri"), "https://motdang.net/auth/line/callback");
   assert.equal(loc.searchParams.get("scope"), "profile openid");
   assert.equal(loc.searchParams.get("code_challenge_method"), "S256");
+  assert.equal(loc.searchParams.get("bot_prompt"), "normal", "LINE's add-friend box on the consent screen");
   assert.ok(start.headers.get("location").includes("scope=profile%20openid"));
   const pending = cookieOf(start, "md-la");
   const pend = JSON.parse(pending);
@@ -69,10 +70,11 @@ test("sign in, save, read back, sign out", async () => {
     throw new Error("unexpected " + u);
   };
   try {
-    const cb = await call(env, `/auth/line/callback?code=abc&state=${pend.state}`,
+    const cb = await call(env, `/auth/line/callback?code=abc&state=${pend.state}&friendship_status_changed=true`,
       { headers: { cookie: `md-la=${encodeURIComponent(pending)}` } });
     assert.equal(cb.status, 302);
-    assert.equal(cb.headers.get("location"), "/map.html");
+    assert.equal(cb.headers.get("location"), "/my.html?welcome=1&back=%2Fmap.html#md-acct", "a first sign-in opens the welcome");
+    assert.equal(db.db.prepare("SELECT friend FROM users").get().friend, 1, "ticked LINE's add-friend box");
     assert.equal(sent[0][1].code_verifier, pend.verifier);
     assert.equal(sent[0][1].client_secret, "s3cret");
     assert.equal(sent[1][1].nonce, pend.nonce);
@@ -84,6 +86,8 @@ test("sign in, save, read back, sign out", async () => {
     const me = await (await call(env, "/api/me", { headers: ck })).json();
     assert.equal(me.signedIn, true);
     assert.equal(me.name, "Nan");
+    assert.equal(me.friend, true);
+    assert.equal(me.weekly, false);
     assert.match(me.u, /^[A-Za-z0-9_-]{16}$/, "an opaque mark of the account");
 
     const data = { keys: { "md-city": { v: "cm", t: 1 } }, saved: [{ k: "cm:tulou-restaurant-405600680", t: 2 }], gone: [] };
