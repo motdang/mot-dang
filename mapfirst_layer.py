@@ -261,6 +261,7 @@ function showPoint(lat,lng,title,pinIdx){
   h+=sendRow((title||'จุดนี้ · This point')+' · มดแดง',plusOf(lat,lng),title?String(title).slice(0,60):'');
   h+=coordsHtml(lat,lng,title,true)+nearHtml({lat:lat,lng:lng,plan:''});
   open(h);wireNear();setTimeout(function(){seen(lat,lng,false);},380);
+  if(pinIdx==null)placeHere(lat,lng);
   var nmI=$('mfpname');if(nmI)nmI.addEventListener('input',function(){S.pins[pinIdx].n=nmI.value;drawPins();save();
     /* the send row carries the name: redraw it with the new one */
     var row=body.querySelector('.mfsendrow'),nn=nmI.value.slice(0,60);
@@ -272,6 +273,26 @@ function showPoint(lat,lng,title,pinIdx){
   var dl=$('mfdel');if(dl)dl.addEventListener('click',function(){
     if(window.MDSAVED)MDSAVED.forget({lat:lat,lng:lng});S.pins.splice(pinIdx,1);drawPins();save();close();});
   var pp=$('mfpinpt');if(pp)pp.addEventListener('click',function(){addPin(lat,lng,title&&title.indexOf('·')<0?title:'',true);});
+}
+/* A point within ~25 m of a place Mot Dang knows offers that place at the top of its card: a shared Plus
+   Code or coordinates opened beside the place's own record, nameless (Nan, 2026-10-20, gemba 2: Tulou, 6 m). */
+function placeHere(lat,lng){
+  var mine=showSeq,d=0.00025,bb=[lng-d,lat-d,lng+d,lat+d].map(function(x){return x.toFixed(6);}).join(',');
+  fetch(R()+'api/v1/places?bbox='+bb+'&limit=10').then(function(r){return r.json();}).then(function(j){
+    if(mine!==showSeq||!body)return;
+    var h=(j.results||[]).filter(function(r){return r.lat!=null;}).map(function(r){
+      return [far({lat:r.lat,lng:r.lng},{lat:lat,lng:lng})*111320,r];}).filter(function(x){return x[0]<=25;})
+      .sort(function(a,b){return a[0]-b[0];});
+    if(!h.length)return;
+    var r=h[0][1],it=qItem(r),b=document.createElement('button');
+    b.type='button';b.className='mfhere';
+    b.style.cssText='display:block;width:100%;min-height:44px;margin:4px 0 8px;padding:8px 12px;border:2px solid #C2401C;'+
+      'border-radius:10px;background:#fff7f2;color:#7a2410;font:inherit;font-weight:600;text-align:left;cursor:pointer';
+    b.textContent='ตรงนี้คือ · This is '+it.name+' · '+Math.round(h[0][0])+' ม. · m';
+    b.addEventListener('click',function(){show(it,{fly:true});});
+    var p=document.createElement('p');p.appendChild(b);
+    var h2=body.querySelector('h2');if(h2)h2.after(p);else body.prepend(p);
+  }).catch(function(){});
 }
 function gotoPoint(lat,lng,zoom,title){
   var m=MDX.map;
