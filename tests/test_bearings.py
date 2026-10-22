@@ -180,7 +180,7 @@ def main():
     html = B.row_html(shop, bi, esc, href=lambda rec, prov: f"{rec['id']}.html", c=c)
     check("row renders a dt/dd", html.startswith("<dt>") and "</dd>" in html)
     check("landmark is linked to its own page", 'href="cm-osm-way-89039067.html"' in html, html[:200])
-    check("reading rides in .roman", 'class="roman"' in html)
+    check("no reading line under a bearing", 'class="roman"' not in html)
     check("a record with nothing to say renders nothing",
           B.row_html({"id": "cm-test-empty", "province": "cm", "geoPrecision": "needs-pin", "attrs": {}}, bi, esc, c=c) == "")
 
