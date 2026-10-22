@@ -2144,7 +2144,7 @@ li.shelf.fold ul.dir.cards{margin-top:.4rem}
 .wander{margin:.4rem 0 .8rem}
 .wander ul.wander-near{list-style:none;padding:0;margin:0;columns:2;column-gap:1.2rem}
 .wander ul.wander-near li{margin:.12rem 0;break-inside:avoid;font-size:.92rem}
-.wander .wander-same,.wander .wander-rand{margin:.3rem 0 0;font-size:.92rem}
+.wander .wander-same{margin:.3rem 0 0;font-size:.92rem}
 
 /* P1 — THE PAGE FITS THE ANSWER (Nan, 2026-09-07: "For 1-2 results, you
    shouldn't have to long-scroll. Never.")
@@ -2168,9 +2168,6 @@ body.mdshort footer{padding-top:.6rem;margin-top:.9rem}
    machine saying how the Thai sounds, so it is set quieter and in italic. */
 .roman{font-style:italic;opacity:.82}
 .ttag{white-space:nowrap}
-.gapdrawer{margin:1rem 0;color:var(--mute)}
-.gapdrawer summary{cursor:pointer}
-.gapdrawer p{margin:.4rem 0 0;line-height:1.9}
 .tellants{margin-top:.6rem}
 h1{font-size:1.6rem;margin:.4rem 0} h2{font-size:1.25rem;border-bottom:2px solid var(--soft);
 padding-bottom:.2rem;margin-top:1.6rem}
@@ -2557,12 +2554,6 @@ border:1px solid #C3D8B6;background:linear-gradient(180deg,#F3F8EF,#F8FAF5)}
    instead of on every place page beneath it. */
 .facetlede{margin:.4rem 0 .5rem;color:var(--mute);font-size:.92rem;max-width:66ch}
 .facetbar{margin-top:.4rem}
-/* WO-52: the one contribute door on a place page, after the record rather
-   than in front of it. Quiet on purpose — twelve loud ones returned nothing. */
-.addline{margin:1.1rem 0 .2rem;font-size:.9rem}
-.addline a{color:var(--mute);text-decoration:underline dotted;
-text-underline-offset:.2em;text-decoration-color:var(--gold)}
-.addline a:hover,.addline a:focus-visible{color:var(--ant);text-decoration-color:var(--ant)}
 .maptag{margin:-.3rem 0 .6rem}
 .fchip{cursor:pointer}
 /* 🏷 Tags — the cross-shelf pills under the facet row. Links, not filters:
@@ -6370,7 +6361,6 @@ btns.forEach(x=>x&&x.classList.remove('on'));btn.classList.add('on');});};
 const nm=(a,b)=>mdSortKey(a).localeCompare(mdSortKey(b),'th');
 const rk=li=>parseInt(li.dataset.rank||'0',10);
 reorder(document.getElementById('sort-rank'),(a,b)=>rk(b)-rk(a)||nm(a,b),true);
-reorder(document.getElementById('sort-love'),(a,b)=>rk(a)-rk(b)||nm(a,b),true);
 const rw=li=>parseInt(li.dataset.royal||'0',10);
 reorder(document.getElementById('sort-royal'),(a,b)=>rw(b)-rw(a)||nm(a,b));
 reorder(document.getElementById('sort-hon'),
@@ -10186,63 +10176,6 @@ def mark(label_html, th, en, cls=""):
             f'</details>')
 
 
-def add_link(r, depth=2):
-    """The ONE contribute door on a place page — now a DRAWER (2026-09-06).
-
-    Nan: "Important information should be visible, lack of information can be
-    hidden in a drawer better until info is added. It should be MUCH MUCH
-    easier to add information." So the gap is not narrated on the page; it is
-    folded: one summary line naming the fields this record lacks, and inside
-    it one link per field that opens suggest.html with the place and the
-    field already filled in. A record missing nothing gets only the
-    wrong-or-out-of-date line. WO-52's history (twelve asks, zero returns)
-    still holds: this promises nothing and explains nothing.
-    """
-    r_ = "../" * depth
-    if not r:
-        return (f'<p class="addline"><a href="{r_}add.html">🐜 '
-                + bi("เติมข้อมูล", "Add what you know") + "</a></p>")
-    rid = att(r["id"])
-    got = ant_bits(r)
-    # Short labels on purpose: this drawer lands on ~24,000 pages and
-    # tests/test_page_weight.py caps the median page at 140 words.
-    short = {"phone": ("เบอร์", "phone"), "line": ("LINE", "LINE"), "hours": ("เวลาเปิด", "hours"),
-             "web": ("เว็บ", "website"), "photo": ("รูป", "photo")}
-    # ASK THIS KIND OF PLACE FOR THE FACTS IT ACTUALLY OWES. This drawer used
-    # to ask all 24,000 records for a phone, a LINE and a website; on a wat or
-    # a cemetery that is the counter rule speaking to the reader in their own
-    # language. The four kind-slots supply their own labels from kinds.json,
-    # already bilingual and already short.
-    gaps = []
-    for key, th, en in kind_layer.ant_slots(r):
-        k = ant_slot_key(key)
-        if not got.get(k):
-            _sh = short.get(k)
-            gaps.append((k, "contact" if k in short else "fact",
-                         _sh[0] if _sh else th, _sh[1] if _sh else en))
-    if not got.get("photo"):
-        gaps.append(("photo", "photo", "รูป", "photo"))
-    if r.get("lat") is None:
-        gaps.append(("pin", "correction", "พิกัด", "pin"))
-    fix = (f'<a href="{r_}suggest.html?kind=correction&id={rid}">'
-           + bi("แจ้งผิด", "report an error") + "</a>")
-    if not gaps:
-        return f'<p class="addline">🐜 {fix}</p>'
-    # THE SAME LIST, TWICE. The summary named every gap and the drawer under
-    # it named them again as links — 531,540 word-instances site-wide for one
-    # list of fields. Nan's own rule (the docstring above) says the lack goes
-    # in the drawer, so the names go in the drawer, once, as the links that
-    # fill them. The summary is the count.
-    links = " · ".join(
-        f'<a href="{r_}suggest.html?kind={kind}&id={rid}&field={key}">'
-        f'{bi(th, en)}</a>' for key, kind, th, en in gaps)
-    return (f'<details class="gapdrawer"><summary>🐜 '
-            f'{bi(f"ยังไม่มี {len(gaps)}", f"{len(gaps)} missing")}</summary>'
-            f'<p>{links} · <a href="{r_}add.html?id={rid}">{bi("ยืนยันร้าน", "claim")}</a>'
-            f' · {fix}</p></details>')
-
-
-
 # ------------------------------------------------------------------- facets
 # A chain branch is not its brand. Two 7-Elevens 400m apart differ by whether
 # one has a cash machine and somewhere to sit — which is the entire reason a
@@ -10356,7 +10289,6 @@ def facet_panel(r):
       emptiness on 11,231 pages. An empty row already says that. It is now
       simply not drawn.
 
-    The correction door is gone with them: add_link() is the one door now.
     """
     pills = facet_pills(r, small=False)
     fs = facet_set_of(r)
@@ -10987,7 +10919,6 @@ def toolbar(records=None):
             f'<button id="sort-rank" title="{att(bi_text(_ANT_LEGEND_TH, _ANT_LEGEND_EN))}">'
             f'🐜 {bi("ข้อมูลครบสุด", "Most complete")}</button>'
             f'<button id="sort-fresh">🕘 {bi("เพิ่งอัปเดต", "Recently walked")}</button>'
-            f'<button id="sort-love">💛 {bi("ยังขาดข้อมูล", "Needs love")}</button>'
             + extra
             + "</div>")
 
@@ -11182,7 +11113,7 @@ def ad_box(path, depth):
             + bi("ลงโฆษณาที่นี่", "advertise here") + "</a></div>")
 
 
-def share_block(url, name, qr=False, card=None, pick=False):
+def share_block(url, name, qr=False, card=None):
     u, t = att(url), att(name)
     qr_html = ""
     if qr:
@@ -11217,14 +11148,7 @@ def share_block(url, name, qr=False, card=None, pick=False):
             f'data-label="🔗 {esc(bi_text("คัดลอกลิงก์", "Copy link"))}" '
             f'data-done="✓ {esc(bi_text("คัดลอกแล้ว", "Copied"))}">🔗 '
             + bi("คัดลอกลิงก์", "Copy link") + '</button>'
-            f'{card_html}{pick_btn() if pick else ""}</div>{qr_html}</div>')
-
-
-def pick_btn():
-    """Opens share_layer's pick-what-to-send sheet: every line on the page,
-    each with its own tick box (Nan, 2026-10-01)."""
-    return (f'<button type="button" class="pill copy" data-pick>{svg_icon("i-check", 16)} '
-            f'{bi("เลือกส่ง", "Pick what to send")}</button>')
+            f'{card_html}</div>{qr_html}</div>')
 
 
 CHANNEL_ICON = {"phone": "☎️", "line": "💬", "facebook": "f", "web": "🌐",
@@ -12981,15 +12905,6 @@ def detail_page(r, prov_cfg, photo_file=None, whatson="", related=None):
     # reading beside each. tests/test_no_blurbs.py holds it.
     blurb = ""
     # Every listing gets the same three plain doors and a concrete next step.
-    # This used to be a GitHub issue link shown only when contact was missing —
-    # which asked the one person most able to help, the owner, to open a
-    # developer account first.
-    # WO-52: next_ant's "🐜 Could you help add phone and LINE?" (six wordings
-    # across 12,300 pages) plus add_doors' three door cards and the fix-log
-    # promise under them (22,052 pages) collapse into one link. Between them
-    # they produced no claims, no photos and no reports — every fix on the
-    # ledger came from the ants' own audit or from off the site entirely.
-    contact_cta = add_link(r)
     if photo_file:
         # The bare name repeated the <h1> and said nothing about the picture.
         # These 114 credits carry no description field, so the alt is built from
@@ -13103,7 +13018,7 @@ def detail_page(r, prov_cfg, photo_file=None, whatson="", related=None):
         #   The alt text still says it, for the reader who cannot see it —
         #   which is the only reader for whom it was ever news.
         # * "Have a photo of this place? Send it" stood on 20,826 pages and
-        #   returned no photographs at all. It is folded into add_link().
+        #   returned no photographs at all.
         #
         # The placeholder image and its alt survive untouched; only the
         # paragraphs announcing them are gone.
@@ -13258,7 +13173,6 @@ def detail_page(r, prov_cfg, photo_file=None, whatson="", related=None):
             wander_html = (f'<div class="wander">'
                            + (f'<ul class="wander-near">{"".join(_nbs)}</ul>' if _nbs else "")
                            + _same
-                           + f'<p class="wander-rand"><a href="../../{RAND_FALLBACK}">🎲 {bi("สุ่มพาไป", "Take me somewhere")}</a></p>'
                            + '</div>')
     # A photograph shows what it looks like; the map shows where it is, and a
     # directory owes the reader both. Where the frame is already the map,
@@ -13296,14 +13210,13 @@ def detail_page(r, prov_cfg, photo_file=None, whatson="", related=None):
         img_tag = _band + (img_tag if _photo else "")
     body = (f"<h1>{name_bi(r)}</h1>{status_line(r)}{best_layer.line(r, bi)}{top_map}{plan_cta}{reach_block(r)}"
             f"{img_tag}{own_strip(r, photo_file)}{street_fig(r)}{street_view_btn(r)}{pano_layer.block(r, att, esc, bi, svg_icon)}{landmark_gallery(r)}{video_layer.block(r, att, esc, bi)}{around_pics(r)}{inat_layer.block(r, NET_HELPERS)}{waypics_layer.block(r, bi, svg_icon)}{hotel_layer.block(r, HOTEL_HELPERS)}"
-            f"{share_block(BASE + path, name_text(r), qr=True, pick=True)}"
             f"{honour_panel(r)}{facet_panel(r)}{seven_band(r)}{tag_pills(r)}"
             f"{landmark_history(r)}{wander_html}{blurb}"
             f"{whatson}<dl>{''.join(rows)}</dl>"
             f"{elsewhere_block(r)}{net_layer.block(r, NET_HELPERS)}"
-            f"{ad_box(path, 2)}{related_html}"
+            f"{related_html}"
             f'{feedback_layer.slot("place:" + r["id"])}'
-            f'<p class="prov">{prov_line}{fetched}{checked}</p>{contact_cta}'
+            f'<p class="prov">{prov_line}{fetched}{checked}</p>'
             + ownpage_layer.make_html(
                 r, bi, att, (lambda _p: _p[0] or _p[1])(name_pair(r)),
                 phone=str((claim or {}).get("phone") or r.get("phone") or ""),
@@ -19131,9 +19044,6 @@ def _jobs():
     return min(8, os.cpu_count() or 1)
 
 
-import anthill_layer  # noqa: E402  (the place pages' link to the bots' forum)
-
-
 # ------------------------------------------- place pages carried over a build
 # Every place page is rendered every build, but most come out byte for byte
 # what the last build wrote. Writing them all again cost 444 of 1,687 seconds on
@@ -19219,10 +19129,9 @@ def _place_chunk(idx):
         slug = place_slug(r)
         photo_file = photos.get(r["id"])
         # WO-71: nothing renders `related` any more (see detail_page).
-        # 🐜 each place page links its thread on รังมด · The Anthill
-        moved += _put_page(pdir / "p" / f"{slug}.html", anthill_layer.into_place(
-            detail_page(r, p, photo_file,
-                        whats_on_here(r["id"], EVENTS, depth=2), related=None), key, slug), written)
+        moved += _put_page(pdir / "p" / f"{slug}.html",
+                           detail_page(r, p, photo_file,
+                                       whats_on_here(r["id"], EVENTS, depth=2), related=None), written)
         if photo_file:
             images[f"{key}/p/{slug}.html"] = (BASE + f"photos/{photo_file}", name_text(r))
         # A predictable .json beside every .html. A reader that guesses the

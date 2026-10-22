@@ -690,8 +690,7 @@ def row_html(r, bi, esc, href=None, c=None, lines=None):
 
     `href(record, from_prov)` returns a relative link to a landmark's page or
     None; the build passes one built on place_slug(). Each line is bi(th, en)
-    so the language toggle works; the RTGS reading rides in `.roman` after the
-    English, exactly where name_bi() puts a reading."""
+    so the language toggle works."""
     c = c or ctx()
     lines = bearings(r, c) if lines is None else lines
     if not lines:
@@ -704,8 +703,6 @@ def row_html(r, bi, esc, href=None, c=None, lines=None):
         lm = by_key.get(ln["landmark"]) if ln.get("landmark") else None
         if lm:
             en = en.replace(esc(lm["en"]), _lm_html(lm, esc, href, prov), 1)
-        if ln.get("roman"):
-            en += f' <span class="roman">{esc(ln["roman"])}</span>'
         parts.append(bi(esc(ln["th"]), en, raw=True))
     unc = pin_uncertainty(r)
     if unc is not None and unc > LOOSE_PIN_M:

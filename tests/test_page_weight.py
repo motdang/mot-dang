@@ -49,7 +49,7 @@ DOCS = Path(os.environ.get("MD_DOCS") or (ROOT / "docs"))
 
 # WHAT THE MEDIANS WERE WHEN LAST MEASURED. Not caps — see check 2. These are
 # observations with a date on them, so that a number moving is visible in the
-# build log, and they are the only honest thing to compare against: WO-52
+# build log, and they are the only thing to compare against: WO-52
 # landed the site at 101 words of prose and 10 of lead-in, and the three
 # grades below were measured on 2026-09-07.
 # `of` is the number of place pages the site held when this was measured. It
@@ -107,12 +107,11 @@ def words(text):
     return latin + thai // 4
 
 
-# The two blocks that close every record by design: where the facts came from
-# (build.prov_line) and the single contribute link (build.add_link). Both are
-# repeated site-wide, both belong at the tail, and on a record thin enough to
-# hold nothing else they are the only prose on the page — so a lead-in check
-# that counted them would be measuring thinness, not clutter.
-TAIL_CLASSES = ("prov", "addline")
+# The block that closes every record by design: where the facts came from
+# (build.prov_line). It is repeated site-wide, belongs at the tail, and on a
+# record thin enough to hold nothing else it is the only prose on the page — so
+# a lead-in check that counted it would be measuring thinness, not clutter.
+TAIL_CLASSES = ("prov",)
 
 
 def visible_blocks(html, tags=None, skip_tail=False):
