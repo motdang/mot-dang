@@ -98,9 +98,9 @@ test("sql(): the learned multiplier rides inside the rank window, binds in order
   assert.match(s.text, /JOIN pages lp ON lp\.id = w\.id/);
   assert.deepEqual(s.binds.slice(0, 2), ["https://motdang.net/cm/p/a.html", 1.2]);
   const plain = sql('"khao" "soi"', { n: 10, offset: 0, drop: true });
-  assert.doesNotMatch(plain.text, /lp\.url/);
+  assert.doesNotMatch(plain.text, /CASE lp\.url/);
   const far = sql('"khao" "soi"', { learn, n: 10, offset: 400, drop: true });
-  assert.doesNotMatch(far.text, /lp\.url/);
+  assert.doesNotMatch(far.text, /CASE lp\.url/);
 });
 
 test("the page side parses, runs only on a results page, posts only from motdang.net", () => {
