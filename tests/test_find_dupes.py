@@ -144,5 +144,90 @@ with tempfile.TemporaryDirectory() as tmp:
           F.pair_id("cm-n1", "cm-n2") in F.known_skips(root)
           and F.pair_id("cm-k2", "cm-k3") in F.known_skips(root))
 
+# review fixes (PR 37)
+def labeled(root, out, pairs_answers, name):
+    """A sheet with the given [(a, b, answer)] rows, and the path to it."""
+    rows = []
+    for a, b, _ in pairs_answers:
+        rows.append({"pid": F.pair_id(a, b), "a": F.slim(rec(a, a)), "b": F.slim(rec(b, b)), "d": 5.0,
+                     "pts": 90, "band": F.band(90), "words": "w", "why": ["name"], "keep": "A",
+                     "url_a": "", "url_b": "", "map": "m"})
+    path = out / name
+    F.write_xlsx(path, rows)
+    from openpyxl import load_workbook
+    wb = load_workbook(path)
+    for n, (_, _, ans) in enumerate(pairs_answers, 2):
+        wb["Pairs"].cell(row=n, column=1).value = ans
+    wb.save(path)
+    return path
+
+
+def scratch(ids, merges):
+    tmp = tempfile.TemporaryDirectory()
+    root = Path(tmp.name)
+    (root / "data" / "canonical").mkdir(parents=True)
+    (root / "data" / "curated").mkdir(parents=True)
+    (root / "data" / "canonical" / "cm.json").write_text(json.dumps([rec(i, i) for i in ids]))
+    (root / "data" / "curated" / "merges.json").write_text(json.dumps(
+        {"_readme": "r", "merges": merges, "_why": {}}))
+    out = root / "_incoming" / "dupes"
+    out.mkdir(parents=True)
+    return tmp, root, out
+
+
+def apply_args(root, out, sheet):
+    return SimpleNamespace(data=str(root), out=str(out), apply=str(sheet), by="Test", dry=False)
+
+
+# a member already dropped under another keeper is not listed under two
+tmp, root, out = scratch(["cm-n1", "cm-n2", "cm-x", "cm-k"], {"cm-k": ["cm-x"]})
+sheet = labeled(root, out, [("cm-n1", "cm-x", F.SAME)], "s.xlsx")
+F.run_apply(apply_args(root, out, sheet))
+m = json.loads((root / "data" / "curated" / "merges.json").read_text())["merges"]
+drops = [d for v in m.values() for d in v]
+check("a dropped record is listed under one keeper only", len(drops) == len(set(drops)), m)
+check("the old keeper and its drops move together",
+      sorted([k for k in m] + drops) == ["cm-k", "cm-n1", "cm-x"] and len(m) == 1, m)
+tmp.cleanup()
+
+# contradictory answers write nothing
+for label, rows_, merges_ in (
+        ("A=B, B=C same and A=C different", [("cm-a", "cm-b", F.SAME), ("cm-b", "cm-c", F.SAME),
+                                           ("cm-a", "cm-c", F.DIFF)], {}),
+        ("one pair labeled both ways", [("cm-a", "cm-b", F.SAME), ("cm-b", "cm-a", F.DIFF)], {}),
+        ("Different against an older merge", [("cm-a", "cm-b", F.SAME), ("cm-a", "cm-z", F.DIFF)],
+         {"cm-b": ["cm-z"]})):
+    tmp, root, out = scratch(["cm-a", "cm-b", "cm-c", "cm-z"], merges_)
+    sheet = labeled(root, out, rows_, "s.xlsx")
+    before = (root / "data" / "curated" / "merges.json").read_text()
+    try:
+        F.run_apply(apply_args(root, out, sheet))
+        stopped = False
+    except SystemExit:
+        stopped = True
+    check(f"contradiction stops the apply: {label}", stopped)
+    check(f"nothing written: {label}", (root / "data" / "curated" / "merges.json").read_text() == before
+          and not (root / "data" / "curated" / "not_same.json").exists()
+          and not (out / "ledger.tsv").exists())
+    tmp.cleanup()
+
+# a name that starts with = stays text in the sheet
+bad = ["=HYPERLINK(\"http://x\",\"y\")", "+1+1", "-2", "@SUM(1)"]
+rows = []
+for i, nm in enumerate(bad):
+    rows.append({"pid": f"p{i}", "a": F.slim(rec(f"cm-i{i}a", nm, phone=nm)), "b": F.slim(rec(f"cm-i{i}b", nm)),
+                 "d": 1.0, "pts": 90, "band": F.band(90), "words": nm, "why": ["name"], "keep": "A",
+                 "url_a": "", "url_b": "", "map": "m"})
+with tempfile.TemporaryDirectory() as tmp:
+    path = Path(tmp) / "inj.xlsx"
+    F.write_xlsx(path, rows)
+    from openpyxl import load_workbook
+    ws = load_workbook(path)["Pairs"]
+    cells = [c for row in ws.iter_rows(min_row=2) for c in row if isinstance(c.value, str) and c.value[:1] in "=+-@"]
+    check("cells that start with = + - @ are present", len(cells) >= 12, len(cells))
+    check("none of them is a formula", all(c.data_type != "f" for c in cells),
+          [c.coordinate for c in cells if c.data_type == "f"])
+    check("each is marked as text", all(c.quotePrefix for c in cells))
+
 print(f"\n{'FAILED: ' + ', '.join(failures) if failures else 'all passed'}")
 sys.exit(1 if failures else 0)

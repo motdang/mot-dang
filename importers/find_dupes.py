@@ -469,6 +469,10 @@ def write_xlsx(path, rows):
             c = ws.cell(row=row, column=col)
             c.alignment = wrap
             c.font = body
+            if c.data_type == "f":      # a name that starts with "=" must stay text
+                c.data_type = "s"
+            if isinstance(c.value, str) and c.value and c.value[0] in "=+-@":
+                c.quotePrefix = True
         for col, text, url in ((9, "เปิด A · open", r["url_a"]), (10, "เปิด B · open", r["url_b"]),
                                (11, "แผนที่ · map", r["map"])):
             c = ws.cell(row=row, column=col)
@@ -666,24 +670,41 @@ def run_apply(args):
     mdoc = load_json(cur / "merges.json", {"_readme": "", "merges": {}, "_why": {}})
     merges = mdoc.setdefault("merges", {})
     drop_to_keep = {d: k for k, ds in merges.items() for d in ds}
+    ndoc = load_json(cur / "not_same.json", {
+        "_readme": "Pairs a person looked at and called two places. importers/find_dupes.py leaves them off the next sheet. The build does not read this file.",
+        "pairs": [], "_why": {}})
+    # Same and Different must not contradict each other, counting merges already
+    # on disk. Checked before anything is written.
+    joined = Groups()
+    for keeper, drops in merges.items():
+        for d in drops:
+            joined.join(keeper, d)
+    for members in comps.values():
+        for m in members:
+            joined.join(m, next(iter(members)))
+    touched = {m for members in comps.values() for m in members}
+    clash = [tuple(sorted((a, b))) for lab, a, b, _ in got
+             if lab == "different" and joined.find(a) == joined.find(b)]
+    clash += [tuple(sorted((a, b))) for a, b in ndoc["pairs"]
+              if (a in touched or b in touched) and joined.find(a) == joined.find(b)]
+    if clash:
+        sys.exit("Same and Different contradict each other; nothing written:\n"
+                 + "\n".join("  %s / %s" % c for c in sorted(set(clash))))
     added = []
     for members in comps.values():
         keeper = sorted(members, key=lambda m: (-votes[m], m))[0]
         keeper = drop_to_keep.get(keeper, keeper)          # follow an older merge
         for m in sorted(members):
-            if m == keeper or drop_to_keep.get(m) == keeper:
+            root = drop_to_keep.get(m, m)                   # m may sit under another keeper
+            if root == keeper:
                 continue
-            older = merges.pop(m, [])                       # m held others: they move too
+            older = merges.pop(root, [])                    # root held others: they move too
             slot = merges.setdefault(keeper, [])
-            for d in [m] + older:
+            for d in [root] + older:
                 if d != keeper and d not in slot:
                     slot.append(d)
                     drop_to_keep[d] = keeper
                     added.append((keeper, d))
-    # different -> not_same.json
-    ndoc = load_json(cur / "not_same.json", {
-        "_readme": "Pairs a person looked at and called two places. importers/find_dupes.py leaves them off the next sheet. The build does not read this file.",
-        "pairs": [], "_why": {}})
     seen = {pair_id(x, y) for x, y in ndoc["pairs"]}
     diffs = []
     for lab, a, b, _ in got:
