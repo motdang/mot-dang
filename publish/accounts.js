@@ -83,6 +83,41 @@ function sameSite(request, url) {
   catch { return false; }
 }
 
+/* ---- ONE SIGN-IN FOR THE TEAM PAGES (Michael, 2026-10-22) ------------------
+ * "he uses lots of devices and he wants one sign-in. We're all on LINE."
+ * The Team Wheel (pm.nanobotco.workers.dev) and the mail page (/mail) have no
+ * LINE callback of their own; LINE accepts only this site's. So:
+ *
+ *   GET /auth/team?to=wheel|mail
+ *     not signed in here → LINE, then back to this path
+ *     signed in          → that page, with a note after # good for two minutes:
+ *                          {s: LINE user ID, n: name, p: picture, to, x: expiry}
+ *                          signed with the TEAM_SIGNIN secret the two pages share
+ *
+ * The note says which LINE account signed in, nothing more. Each page decides
+ * whether that account is someone on the team. */
+const TEAM = { wheel: "https://pm.nanobotco.workers.dev/", mail: "/mail" };
+const TEAM_NOTE_SECONDS = 120;
+
+async function teamNote(secret, body) {
+  const data = b64u(enc.encode(JSON.stringify(body)));
+  const key = await crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  return data + "." + b64u(await crypto.subtle.sign("HMAC", key, enc.encode(data)));
+}
+
+async function team(request, env, url, on) {
+  const to = url.searchParams.get("to");
+  if (to !== "wheel" && to !== "mail") return page("ไม่รู้จักหน้านี้", "Unknown team page", "/", 400);
+  if (!on || !env.TEAM_SIGNIN) return page("การเข้าสู่ระบบด้วย LINE ยังไม่เปิด", "Sign in with LINE is not switched on yet", "/", 503);
+  const u = await whoIs(request, env);
+  const here = `/auth/team?to=${to}`;
+  if (!u) return new Response(null, { status: 302, headers: { location: "/auth/line?back=" + encodeURIComponent(here), "cache-control": "no-store" } });
+  const row = await env.ACCOUNTS.prepare("SELECT line_sub FROM users WHERE id = ?").bind(u.id).first();
+  const note = await teamNote(env.TEAM_SIGNIN, { s: row.line_sub, n: u.name, p: u.picture || "", to,
+    x: Math.floor(Date.now() / 1000) + TEAM_NOTE_SECONDS });
+  return new Response(null, { status: 302, headers: { location: TEAM[to] + "#line=" + note, "cache-control": "no-store" } });
+}
+
 export async function accounts(request, env, url) {
   const p = url.pathname;
   const on = !!(env.LINE_LOGIN_ID && env.LINE_LOGIN_SECRET && env.ACCOUNTS);
@@ -141,7 +176,7 @@ export async function accounts(request, env, url) {
     const token = rand(32);
     await db.prepare(`INSERT INTO sessions(hash, user_id, expires) VALUES (?, ?, datetime('now', '+${SESSION_DAYS} days'))`)
       .bind(await sha256(token), u.id).run();
-    const r = new Response(null, { status: 302, headers: { location: known ? (pend.back || "/my.html")
+    const r = new Response(null, { status: 302, headers: { location: known || pend.back.startsWith("/auth/team") ? (pend.back || "/my.html")
       /* a first sign-in opens the welcome on My page: the week on LINE, the Gold month, the rest */
       : "/my.html?welcome=1" + (pend.back && pend.back !== "/my.html" ? "&back=" + encodeURIComponent(pend.back) : "") + "#md-acct",
       "cache-control": "no-store" } });
@@ -149,6 +184,8 @@ export async function accounts(request, env, url) {
     r.headers.append("set-cookie", clear);
     return r;
   }
+
+  if (p === "/auth/team") return team(request, env, url, on);
 
   if (p === "/auth/logout") {
     if (request.method !== "POST" || !sameSite(request, url)) return json({ error: "POST from a motdang.net page" }, 405);
