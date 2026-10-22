@@ -675,18 +675,19 @@ def run_apply(args):
         "pairs": [], "_why": {}})
     # Same and Different must not contradict each other, counting merges already
     # on disk. Checked before anything is written.
-    joined = Groups()
+    joined, before = Groups(), Groups()
     for keeper, drops in merges.items():
         for d in drops:
             joined.join(keeper, d)
+            before.join(keeper, d)
     for members in comps.values():
         for m in members:
             joined.join(m, next(iter(members)))
-    touched = {m for members in comps.values() for m in members}
     clash = [tuple(sorted((a, b))) for lab, a, b, _ in got
              if lab == "different" and joined.find(a) == joined.find(b)]
+    # a stored Different pair that this sheet's Same answers bring into one group
     clash += [tuple(sorted((a, b))) for a, b in ndoc["pairs"]
-              if (a in touched or b in touched) and joined.find(a) == joined.find(b)]
+              if joined.find(a) == joined.find(b) and before.find(a) != before.find(b)]
     if clash:
         sys.exit("Same and Different contradict each other; nothing written:\n"
                  + "\n".join("  %s / %s" % c for c in sorted(set(clash))))

@@ -211,6 +211,21 @@ for label, rows_, merges_ in (
           and not (out / "ledger.tsv").exists())
     tmp.cleanup()
 
+# a stored Different pair inside two older groups that a new Same joins
+tmp, root, out = scratch(["cm-k1", "cm-d1", "cm-k2", "cm-d2"], {"cm-k1": ["cm-d1"], "cm-k2": ["cm-d2"]})
+(root / "data" / "curated" / "not_same.json").write_text(json.dumps(
+    {"_readme": "r", "pairs": [["cm-d1", "cm-d2"]], "_why": {}}))
+sheet = labeled(root, out, [("cm-k1", "cm-k2", F.SAME)], "s.xlsx")
+before = (root / "data" / "curated" / "merges.json").read_text()
+try:
+    F.run_apply(apply_args(root, out, sheet))
+    stopped = False
+except SystemExit:
+    stopped = True
+check("a Same that joins two groups holding a stored Different pair stops the apply",
+      stopped and (root / "data" / "curated" / "merges.json").read_text() == before)
+tmp.cleanup()
+
 # a name that starts with = stays text in the sheet
 bad = ["=HYPERLINK(\"http://x\",\"y\")", "+1+1", "-2", "@SUM(1)"]
 rows = []
