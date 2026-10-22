@@ -38,6 +38,9 @@ export MD_INCR_LAST=$SSTATE/incremental-last.json
 export MD_INCR_STAMPS=$SSTATE/incremental-stamps.json
 export MD_INCR_FULL_NOW=$SSTATE/full-now                # touch it for a full draw of every place page next build
 export MD_PUBLISHED_MANIFEST=$SSTATE/published-manifest.json
+# Pages drawn for a changed record go up before the gates when this file exists (publish/early.py):
+#   ssh nan@motdang-server touch /srv/state/early-places         (off unless Nan says)
+export MD_EARLY_FLAG=$SSTATE/early-places
 # One file turns the incremental draw and the incremental publish off together:
 #   ssh nan@motdang-server touch /srv/state/incremental-off      (rm it to turn them on)
 [[ -e "$SSTATE/incremental-off" ]] && export MD_INCREMENTAL=0 MD_INCREMENTAL_PUBLISH=0
