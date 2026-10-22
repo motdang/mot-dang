@@ -131,7 +131,7 @@ def main():
     d = inc.decide(st, dict(f1, **{"data/new.json": "q"}), "2026-10-22", NOW, off=False, full_now=False)
     check("a file read for the first time is recorded, not compared", not d.full, repr(d))
     d = inc.decide(st, f1, "2026-10-23", NOW, off=False, full_now=False)
-    check("a new day alone is not a reason (pages with a date in their record are drawn)", not d.full, repr(d))
+    check("a new day alone is not a reason", not d.full, repr(d))
     old = dict(st, full_at="2026-10-10T00:00:00+00:00")
     d = inc.decide(old, f1, "2026-10-22", NOW, off=False, full_now=False)
     check("a state 12 days old is still incremental (the audit draws every page instead)", not d.full, repr(d))
@@ -187,16 +187,15 @@ def main():
     check("a changed id-table entry draws that page", drawn4 == ["cm/p/a"], str(drawn4))
     state4 = rnd4.state_out()
 
-    # the date moves: only a page whose record holds a date can count from it
-    town.recs["d"] = dict(town.recs["d"], confirmedAt="2026-10-01")
-    rnd4b, _, drawn4b = run_round(town, state4, f1)
-    state4 = rnd4b.state_out()
+    # the date moves: nothing a page prints counts from it; the sample is larger that day
     town.date = "2026-10-23"
-    rnd5, plan5, drawn5 = run_round(town, state4, f1)
-    check("a new day draws the page whose record holds a date, and no other",
-          not rnd5.decision.full and drawn5 == ["cm/p/d"], "%r %s" % (rnd5.decision, drawn5))
-    check("record_info says which records hold a date",
-          inc.record_info({"a": "x", "confirmedAt": "2026-10-01"})[1] and not inc.record_info({"a": "2026"})[1])
+    town.date = "2026-10-22"
+    rnd5a, _, _ = run_round(town, state4, f1, canary=1)
+    town.date = "2026-10-23"
+    rnd5, plan5, drawn5 = run_round(town, state4, f1, canary=1)
+    check("a new day draws nothing", not rnd5.decision.full and drawn5 == [], "%r %s" % (rnd5.decision, drawn5))
+    check("and checks four times the sample", rnd5a.tally.sampled == 1 and rnd5.tally.sampled == 4,
+          "%d then %d" % (rnd5a.tally.sampled, rnd5.tally.sampled))
     state4 = rnd5.state_out()
     town.date = "2026-10-22"
 

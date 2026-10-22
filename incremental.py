@@ -11,8 +11,7 @@ A page is carried when four things match what the last build saw:
            records) and LIVE (files no place page reads). Found by watching
            what the build opens, so a file the build starts to read joins the
            stamp without a list to edit.
-  record   the page's own record and its photo; and BUILD_DATE too when the
-           record holds a date, since a page can count from it.
+  record   the page's own record and its photo.
   tables   what each id-keyed table in the build holds for it: claims, streets,
            events, tags, inside-members, ... Found by looking for dicts and
            sets keyed by place ids, not from a list.
@@ -25,14 +24,14 @@ model: a page whose four things matched but whose bytes moved is a miss, counted
 and named in cache/incremental-last.json.
 
 Not seen: a layer that reads other places' records through a call rather than a
-table, and a page that counts from the date without a date in its record. So a
-sample of the pages about to be carried is drawn anyway (CANARY) and compared
-with the last build's bytes, and once AUDIT_DAYS have passed since every page
-was last drawn, all of them are: the weekly full draw, inside an incremental
+table, and anything that reads BUILD_DATE. (3,000 pages drawn on two dates three
+days apart were byte for byte the same, 2026-10-22; the events a page lists reach
+it through PLACE_EVENTS, a table.) So a sample of the pages about to be carried
+is drawn anyway (CANARY, four times that on the first build of a new day) and
+compared with the last build's bytes, and once AUDIT_DAYS have passed since every
+page was last drawn, all of them are: the weekly full draw, inside an incremental
 round, as the check. A page that moved turns that round into a full one and is
-named in cache/incremental-last.json. The first build of a new day draws the
-pages whose records hold a date and carries the rest, and its sample is the
-test of that.
+named in cache/incremental-last.json.
 
     python3 incremental.py            # what cache/incremental-state.json holds
 """
@@ -111,19 +110,10 @@ def digest(obj):
     return _h(stable(obj).encode("utf-8"))
 
 
-DATE_IN_RECORD = re.compile(r'"\d{4}-\d\d-\d\d')
-
-
-def record_info(r, photo_file=None):
-    """(what a place's own data was, whether it holds a date). The first is the
-    16 hex deploy's weekly place round keeps. A record with a date in it can
-    print something counted from today ("confirmed 12 days ago")."""
-    text = json.dumps([r, photo_file], sort_keys=True, default=str, ensure_ascii=False)
-    return hashlib.sha1(text.encode()).hexdigest()[:16], bool(DATE_IN_RECORD.search(text))
-
-
 def record_digest(r, photo_file=None):
-    return record_info(r, photo_file)[0]
+    """What a place's own data was: the 16 hex deploy's weekly place round keeps."""
+    return hashlib.sha1(json.dumps([r, photo_file], sort_keys=True, default=str,
+                                   ensure_ascii=False).encode()).hexdigest()[:16]
 
 
 def bytes_digest(raw):
@@ -469,8 +459,8 @@ class Round:
             got.append(asked[k])
         return digest(got)
 
-    def base(self, r, rec_dg, dated=False):
-        return digest([rec_dg, self.B.date if dated else "", table_values(self.tables, r["id"])])
+    def base(self, r, rec_dg):
+        return digest([rec_dg, table_values(self.tables, r["id"])])
 
     def province(self, key, records, photos):
         """Plan the pages of one province: {page key: Page}."""
@@ -482,8 +472,8 @@ class Round:
         for r in records:
             slug = self.B.slug(r)
             pk = "%s/p/%s" % (key, slug)
-            rec_dg, dated = record_info(r, photos.get(r["id"]))
-            base = self.base(r, rec_dg, dated)
+            rec_dg = record_digest(r, photos.get(r["id"]))
+            base = self.base(r, rec_dg)
             old = was.get(pk)
             clean = False
             trace = []
@@ -519,7 +509,8 @@ class Round:
         by = {self.B.slug(r): r for r in records}
         cand = [k for k, pg in plan.items() if pg.carry]
         audit = self.audit_due()
-        n = len(cand) if audit else CANARY
+        new_day = (self.state or {}).get("date") != self.B.date
+        n = len(cand) if audit else CANARY * (4 if new_day else 1)
         bad = []
         for pk in sample_of(cand, n, seed):
             r = by[pk.rsplit("/", 1)[1]]
