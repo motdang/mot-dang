@@ -5,6 +5,7 @@
 #                        in .handoff-at, when the copy began (UTC): the publish
 #                        leaves alone live files uploaded after it
 #   push_rest            cache/walk-rest mirrored to /srv/state/walk-rest
+#   replay_direct_uploads  ledger lines a direct upload could not send, sent now
 #   (no copy-back: the server's docs/ stays on the server, her word 2026-10-10)
 #
 # The server copies the staging folder into its working tree only between
@@ -85,6 +86,23 @@ hand_to_server() {
     --rsync-path="flock $SSTATE/stage.lock rsync" ./ "$SERVER:$STAGE/" || return 1
   "${SSH[@]}" "$SERVER" "flock $SSTATE/stage.lock sh -c 'echo $at > $STAGE/.handoff-at && echo $id > $STAGE/.handoff'" || return 1
   say "sent to the server as $id"
+}
+
+# Ledger lines deploy.py could not send over ssh when it uploaded (publish/deploy.py
+# record_direct_uploads keeps them in cache/direct-uploads.pending.tsv). The server
+# reads its ledger when a round publishes, so a line sent within one walk reaches
+# the round that is building now.
+replay_direct_uploads() {
+  [[ -f cache/build-on-server && -s cache/direct-uploads.pending.tsv ]] || return 0
+  local f=cache/direct-uploads.pending.tsv
+  mv -f "$f" "$f.sending" || return 0
+  if "${SSH[@]}" "$SERVER" "mkdir -p $SSTATE && cat >> $SSTATE/direct-uploads.tsv" < "$f.sending" 2>/dev/null; then
+    say "sent $(wc -l < "$f.sending" | tr -d ' ') direct-upload line(s) to the server's ledger"
+    rm -f "$f.sending"
+  else
+    cat "$f.sending" >> "$f" && rm -f "$f.sending"
+    say "⚠️  the server's ledger of direct uploads did not answer; the lines wait for the next walk"
+  fi
 }
 
 push_rest() {

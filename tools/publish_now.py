@@ -167,9 +167,15 @@ def upload(tmp, rel):
     p = subprocess.run(["rclone", "copy", str(tmp / rel), dest, "--checksum",
                         "--transfers", "16", "--stats-one-line", "--stats", "0", "-v"],
                        env=env, text=True, capture_output=True)
-    sent = len(re.findall(r": Copied \(", p.stderr))
+    keys = re.findall(r"INFO  : (.*?): Copied \(", p.stderr)
+    sent = len(keys)
     if p.returncode:
         sys.stderr.write(p.stderr[-2000:])
+    elif keys:
+        # a server round building from an older source keeps these (publish/deploy.py)
+        import datetime
+        deploy.record_direct_uploads(["%s/%s" % (rel, k) for k in keys],
+                                     datetime.datetime.now(datetime.timezone.utc))
     return p.returncode, sent
 
 

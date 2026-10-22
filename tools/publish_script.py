@@ -67,6 +67,10 @@ def upload(tmp, names):
                         "--checksum", "--s3-no-head", "-v"], env=env, text=True, capture_output=True)
     if p.returncode:
         sys.stderr.write(p.stderr[-2000:])
+    else:
+        # a server round building from an older source keeps these (publish/deploy.py)
+        import datetime
+        deploy.record_direct_uploads(list(names), datetime.datetime.now(datetime.timezone.utc))
     return p.returncode
 
 

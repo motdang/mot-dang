@@ -142,10 +142,15 @@ if typeset -f pre_deploy >/dev/null; then pre_deploy || exit 1; fi
 (( ${+PRUNE_ARGS} )) || PRUNE_ARGS=()   # server_walk.sh sets it (a one-time deletion bound)
 # --defer-deletions: a refused deletion check puts the deletions off and the
 # new and changed files still go up (publish/deploy.py; Nan, 2026-10-11).
+# --incremental: compare docs/ with the manifest of the last publish and send what moved
+# (publish/incpublish.py). With no manifest yet it publishes in full and writes one.
+# MD_INCREMENTAL_PUBLISH=0 publishes in full as before.
+INCR_ARGS=(--incremental)
+[[ "${MD_INCREMENTAL_PUBLISH:-1}" == 0 ]] && INCR_ARGS=()
 if [[ -f "$TOWER" ]]; then
-  python3 "$TOWER" wrap cloudflare-deploy --patience 45 -- python3 publish/deploy.py --yes --defer-deletions "${PRUNE_ARGS[@]}"
+  python3 "$TOWER" wrap cloudflare-deploy --patience 45 -- python3 publish/deploy.py --yes --defer-deletions "${INCR_ARGS[@]}" "${PRUNE_ARGS[@]}"
 else
-  python3 publish/deploy.py --yes --defer-deletions "${PRUNE_ARGS[@]}"     # the server has no tower; nothing else there publishes
+  python3 publish/deploy.py --yes --defer-deletions "${INCR_ARGS[@]}" "${PRUNE_ARGS[@]}"     # the server has no tower; nothing else there publishes
 fi
 RC=$?
 if (( RC == 75 )); then
