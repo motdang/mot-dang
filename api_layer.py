@@ -767,4 +767,26 @@ def _emit_grid(g, docs):
     if r.returncode:
         return (f"\n  ! grid not written (node exit {r.returncode}) — ?bbox= walks the index\n"
                 + r.stderr.strip()[-400:])
-    return "\n" + r.stdout.rstrip()
+    return "\n" + r.stdout.rstrip() + _carry_retired_chunks(docs)
+
+
+def _carry_retired_chunks(docs):
+    """Chunk files the last build had and this one does not name, copied over.
+
+    Chunks are named by cell (since 2026-10-13), so a cell that splits or
+    empties leaves its old file live. A publish never deletes under api/
+    (publish/safety.py, NEVER_PRUNE), and one refused deletion defers every
+    deletion of the round: from 10-13 to 10-22 nothing was deleted from the
+    site. The Worker opens only the files meta.json names, so a retired chunk
+    is never read; carrying it keeps the build equal to the live bucket."""
+    import shutil
+    out = docs / "api" / "v1" / "grid"
+    prev = ROOT / "docs" / "api" / "v1" / "grid"
+    if not out.is_dir() or not prev.is_dir() or prev.resolve() == out.resolve():
+        return ""
+    n = 0
+    for f in prev.glob("*.json"):
+        if f.name != "meta.json" and not (out / f.name).exists():
+            shutil.copy2(f, out / f.name)
+            n += 1
+    return f"\n  grid: {n} retired chunk(s) carried from the last build" if n else ""
