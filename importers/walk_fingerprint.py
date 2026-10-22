@@ -63,6 +63,14 @@ VOLATILE_KEYS = {"generated", "fetched", "fetchedAt", "updated", "updatedAt",
                  "source_published_at"}
 
 
+# Files that reach the live site on their own, hourly, by the direct-upload path
+# (importers/make_weather.py --publish, which fetches air.json and sends both
+# with deploy.py --files). A new reading is not a reason to build and publish
+# the whole site: air.json changed in 90 of 321 hand-offs in one week, and each
+# started a build. The next build for another reason carries the file it finds.
+NOT_NEWS = {"data/air.json", "data/air.meta.json"}
+
+
 def digest(path):
     """A hash of what this file MEANS, with the clock taken out of it.
 
@@ -125,6 +133,8 @@ def manifest(root="."):
         if any(part in SKIP_DIRS or part.startswith(".") for part in rel.parts):
             continue
         if from_commit and build_code.is_code(rel.as_posix()):
+            continue
+        if rel.as_posix() in NOT_NEWS:
             continue
         try:
             out[str(rel)] = digest(p)

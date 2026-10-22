@@ -150,6 +150,7 @@ source importers/server_link.sh
 say "== เดินเก็บเรื่อย ๆ begins"
 
 push_rest   # the server publishes too, so it rests with the laptop
+replay_direct_uploads   # direct uploads the server's ledger has not heard of yet
 
 # --- is the walk resting? ------------------------------------------------
 # Read first, before anything can cost time or touch the network. An empty

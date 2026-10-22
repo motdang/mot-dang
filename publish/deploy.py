@@ -33,6 +33,12 @@
     python3 publish/deploy.py --yes --no-delete
                                          # upload new and changed files,
                                          # delete nothing
+    python3 publish/deploy.py --yes --incremental
+                                         # compare docs/ with the manifest of the
+                                         # last publish (cache/published-manifest.json)
+                                         # and send only what moved: no bucket
+                                         # listing. Without a manifest it publishes
+                                         # in full and writes one. publish/incpublish.py
     python3 publish/safety.py            # is docs/ a whole site? (no network)
     python3 publish/safety.py --smoke    # is the LIVE site answering?
 
@@ -95,6 +101,7 @@ import safety                                    # noqa: E402  (same directory)
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
 import holdback                                  # noqa: E402  pages held back this round
 import placeround                                # noqa: E402  the weekly place round
+import incpublish                                # noqa: E402  what changed since the last publish
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
@@ -582,30 +589,56 @@ def keep_young(young, gone, places):
     return globs, gone, places
 
 
+# Between tries when the server does not answer; the tests set it to 0.
+RETRY_PAUSE = 5
+# Lines the server could not take, sent by the next standing walk
+# (importers/server_link.sh replay_direct_uploads).
+PENDING_UPLOADS = ROOT / "cache" / "direct-uploads.pending.tsv"
+
+
 def record_direct_uploads(keys, when):
     """Tell motdang-server what --files just uploaded, so a round building
     from an older source keeps these live copies (safety.direct_uploads_since
-    says why). Only while the site builds there (cache/build-on-server). A
-    ledger that cannot be written is said, never a failed publish."""
+    says why). Only while the site builds there (cache/build-on-server).
+
+    Three tries, and a line the server never took waits in PENDING_UPLOADS for
+    the next standing walk. 2026-10-20 00:00 one ssh timed out at 30 s while the
+    server built (deploy.log: NOT NOTED), the note was lost, and a round built
+    from an older source put its copies back. A ledger that cannot be written
+    is said, never a failed publish; the incremental publish asks the bucket
+    for the keys it would overwrite (publish/incpublish.py) and needs no ledger.
+    """
     if not (ROOT / "cache" / "build-on-server").exists():
         return
     dest = safety.DIRECT_UPLOADS_PATH
-    try:
-        p = subprocess.run(
-            ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
-             safety.DIRECT_UPLOADS_HOST,
-             "mkdir -p %s && cat >> %s" % (os.path.dirname(dest), dest)],
-            input=safety.direct_upload_lines(keys, when), text=True,
-            capture_output=True, timeout=30)
-        ok, why = p.returncode == 0, (p.stderr or "").strip()[-200:]
-    except (OSError, subprocess.TimeoutExpired) as e:
-        ok, why = False, str(e)
+    lines = safety.direct_upload_lines(keys, when)
+    ok, why = False, ""
+    for attempt in range(3):
+        try:
+            p = subprocess.run(
+                ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
+                 safety.DIRECT_UPLOADS_HOST,
+                 "mkdir -p %s && cat >> %s" % (os.path.dirname(dest), dest)],
+                input=lines, text=True, capture_output=True, timeout=60)
+            ok, why = p.returncode == 0, (p.stderr or "").strip()[-200:]
+        except (OSError, subprocess.TimeoutExpired) as e:
+            ok, why = False, str(e)
+        if ok:
+            break
+        time.sleep(RETRY_PAUSE * (attempt + 1))
     if ok:
         note("  %d upload(s) noted in %s:%s" % (len(keys), safety.DIRECT_UPLOADS_HOST, dest))
-    else:
-        note("  NOT NOTED in %s:%s (%s): a server round building now puts its older "
-             "copies back; publish these again once it has published"
-             % (safety.DIRECT_UPLOADS_HOST, dest, why or "no reason given"))
+        return
+    try:
+        PENDING_UPLOADS.parent.mkdir(parents=True, exist_ok=True)
+        with PENDING_UPLOADS.open("a", encoding="utf-8") as fh:
+            fh.write(lines)
+        kept = "kept in %s for the next walk to send" % PENDING_UPLOADS.name
+    except OSError as e:
+        kept = "and not kept either (%s)" % e
+    note("  NOT NOTED in %s:%s (%s): %s; a server round building now puts its older "
+         "copies back unless its publish finds these newer in the bucket"
+         % (safety.DIRECT_UPLOADS_HOST, dest, why or "no reason given", kept))
 
 
 def in_source(rel):
@@ -799,8 +832,25 @@ def main():
     # were never counted or shown. Now they are, and a mass deletion needs
     # --prune said out loud, or a bound (--prune-up-to N) that the
     # whole-site check has earned.
-    print("\n  listing the bucket to see what this would delete…")
-    gone, added = safety.diff_preview(dest, env, run)
+    inc = "--incremental" in sys.argv
+    prev = incpublish.load() if inc else None
+    cur = None
+    if inc and prev is None:
+        note("  --incremental: no manifest of the last publish, or one over %d days old; "
+             "publishing in full and writing one" % incpublish.MAX_AGE_DAYS)
+    if prev is not None:
+        print("\n  comparing docs/ with the manifest of the last publish…")
+        cur = incpublish.scan(DOCS, prev, skip=safety.preview_excludes())
+        changed, gone, added = incpublish.diff(prev, cur)
+        gone_all = list(gone)
+        note("  manifest: %s file(s) in docs/, %s changed or new, %s gone"
+             % (f"{len(cur):,}", f"{len(changed):,}", f"{len(gone):,}"))
+    else:
+        print("\n  listing the bucket to see what this would delete…")
+        gone, added = safety.diff_preview(dest, env, run)
+        if inc or os.path.exists(incpublish.MANIFEST):
+            # the old entries only spare reading a file whose size and mtime are as they were
+            cur = incpublish.scan(DOCS, (incpublish._doc() or {}).get("files"), skip=safety.preview_excludes())
     # What the change said would come and go (publish/expected.json).
     announced, said = safety.load_expected()
     for line in said + safety.additions_lines(added, announced):
@@ -808,7 +858,17 @@ def main():
     # Files uploaded after this build's source was taken are newer than the
     # build: it keeps its hands off them (safety.uploaded_since says why).
     since, how = safety.source_time()
-    young = safety.uploaded_since(dest, env, run, gone, since)
+    young = safety.uploaded_since(dest, env, run, gone, since) if prev is None else []
+    if prev is not None:
+        # The files this publish would overwrite as well as delete, asked of the
+        # bucket itself: a direct upload after the source is newer than the
+        # build, and the ledger of it may not have reached this host.
+        # only the files this publish would write or delete: not a page waiting for the weekly round
+        _pl = placeround.plan()
+        _ups = set(_pl[1]) if _pl else set()
+        _cand = [k for k in list(changed) + list(gone)
+                 if not holdback.held(k) and not (_pl and placeround.covered(k) and k not in _ups)]
+        young = sorted(set(incpublish.young_keys(dest, env, run, _cand, since, prev, cur)))
     # And files deploy.py --files put up after the source, which the build
     # would overwrite as well as delete (safety.direct_uploads_since).
     # The server's walk names the ledger; a walk started by the previous
@@ -866,7 +926,35 @@ def main():
     note(msg)
     DEFERRED.unlink(missing_ok=True)
     keep = ["--exclude-from", str(keep_list)] if keep_list else []
-    if defer:
+    waiting = set()
+    places_before = places
+    ups_all = list(places[1]) if places else []
+    if prev is not None:
+        # Only what moved since the last publish is read from or written to the bucket.
+        cur.pop(av_rel, None)
+        ups_set = set(places[1]) if places else set()
+        waiting = {k for k in cur if holdback.held(k)}
+        if places:
+            waiting |= {k for k in cur if placeround.covered(k) and k not in ups_set}
+        skip_send = set(young) | waiting | {av_rel}
+        send_keys = sorted({k for k in changed if k not in skip_send}
+                           | {k for k in ups_set if k in cur and k not in skip_send})
+        if defer:
+            DEFERRED.write_text("".join(k + "\n" for k in gone))
+            note("\n  DELETIONS DEFERRED — uploading new and changed files only; "
+                 "%s live file(s) kept, listed in %s" % (f"{len(gone):,}", DEFERRED))
+        note("\n  sending %s changed file(s) of %s…" % (f"{len(send_keys):,}", f"{len(cur):,}"))
+        incpublish.send(DOCS, dest, env, lambda a, e: mirror(a, e), send_keys)
+        if not defer:
+            used = safety.expected_used(safety.expected_split(gone, announced)[1])
+            if gone:
+                incpublish.delete(dest, env, run, gone)
+            note("  site updated, %s deleted" % f"{len(gone):,}")
+            if used:
+                safety.mark_expected_done(used)
+                note("  announced cuts done, no longer applied: %s" % ", ".join(used))
+        places = (places[0], []) if places else places
+    elif defer:
         DEFERRED.write_text("".join(k + "\n" for k in gone))
         note("\n  DELETIONS DEFERRED — uploading new and changed files only; "
              "%s live file(s) kept, listed in %s"
@@ -893,7 +981,24 @@ def main():
         note("  place pages with changed records copied")
     run(["rclone", "copyto", str(DOCS / av_rel), "%s/%s" % (dest, av_rel), "--checksum", "--s3-no-head"], env)
     note("  script versions published")
-    placeround.record(full=places is None, uploaded=places[1] if places else ())
+    placeround.record(full=places is None, uploaded=ups_all)
+    if cur is not None:
+        # What is live now: everything this publish sent or found equal, and
+        # what it left alone keeps the entry it had (none: asked again next time).
+        if prev is None:
+            ups_set = set(ups_all)
+            waiting = {k for k in cur if holdback.held(k)}
+            if places_before:
+                waiting |= {k for k in cur if placeround.covered(k) and k not in ups_set}
+            cur.pop(av_rel, None)
+        # a key that left docs/ and is still live (deferred, kept young, waiting for the
+        # weekly place round) keeps its entry, so a later publish asks about it again
+        deleted = set() if defer else set(gone)
+        incpublish.save(incpublish.next_manifest(
+            prev or {}, cur, kept=set(young) | waiting,
+            deferred=[k for k in (gone_all if prev is not None else gone) if k not in deleted]),
+            full=prev is None)
+        note("  manifest of this publish: %s file(s)" % f"{len(cur):,}")
 
     if with_tiles:
         archives = declared_archives()

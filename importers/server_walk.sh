@@ -31,6 +31,19 @@ export MD_PLACE_PUBLISHED=$SSTATE/place-published.json   # publish/placeround.py
 export MD_PLACE_FULL_NOW=$SSTATE/place-full-now          # touch it for a full place round next publish
 # Announced cuts that landed (publish/safety.py, 2b) stay used up across hand-offs.
 export MD_EXPECT_DONE=$SSTATE/expected-done.txt
+# Which place pages a round draws (incremental.py) and what the last publish left live
+# (publish/incpublish.py): outside the working tree, which each hand-off replaces.
+export MD_INCR_STATE=$SSTATE/incremental-state.json
+export MD_INCR_LAST=$SSTATE/incremental-last.json
+export MD_INCR_STAMPS=$SSTATE/incremental-stamps.json
+export MD_INCR_FULL_NOW=$SSTATE/full-now                # touch it for a full draw of every place page next build
+export MD_PUBLISHED_MANIFEST=$SSTATE/published-manifest.json
+# Pages drawn for a changed record go up before the gates when this file exists (publish/early.py):
+#   ssh nan@motdang-server touch /srv/state/early-places         (off unless Nan says)
+export MD_EARLY_FLAG=$SSTATE/early-places
+# One file turns the incremental draw and the incremental publish off together:
+#   ssh nan@motdang-server touch /srv/state/incremental-off      (rm it to turn them on)
+[[ -e "$SSTATE/incremental-off" ]] && export MD_INCREMENTAL=0 MD_INCREMENTAL_PUBLISH=0
 
 mkdir -p "$SSTATE"
 if [[ -f "$LOG" ]] && (( $(stat -c %s "$LOG") > 5242880 )); then mv -f "$LOG" "$LOG.1"; fi
@@ -153,6 +166,16 @@ fi
 # site answers 404 for, enough to refuse any build.
 pre_deploy() {
   local rc out why
+  # A publish that compares docs/ with the manifest of the last one has nothing to list;
+  # deploy.py puts the keys that left docs/ through the same deletion check and the same
+  # ceiling (MD_DELETE_CEILING). MD_INCREMENTAL_PUBLISH=0 lists the bucket as before.
+  # The ceiling on unannounced deletions below applies to that publish as it did here.
+  export MD_DELETE_CEILING=$MISSING_CEILING
+  if [[ "${MD_INCREMENTAL_PUBLISH:-1}" != 0 && -s "$MD_PUBLISHED_MANIFEST" ]]; then
+    say "bucket not listed: the manifest of the last publish is used"
+    rm -f "$SSTATE/.deferred-why"
+    return 0
+  fi
   # Deletions an announcement covers (publish/expected.json) are held to its
   # number, ±10%; MISSING_CEILING counts the rest (publish/safety.py, 2b).
   out=$(python3 - "$SSTATE/missing.txt" "$MISSING_CEILING" <<'PY'

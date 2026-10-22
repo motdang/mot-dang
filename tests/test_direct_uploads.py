@@ -135,6 +135,8 @@ def main():
         try:
             deploy.note = notes.append
             deploy.ROOT = tmp / "repo"
+            deploy.RETRY_PAUSE = 0
+            deploy.PENDING_UPLOADS = deploy.ROOT / "cache" / "direct-uploads.pending.tsv"
             (deploy.ROOT / "cache").mkdir(parents=True)
 
             def fake_ok(args, **kw):

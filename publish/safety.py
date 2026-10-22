@@ -140,7 +140,7 @@ SUBTREE_FLOORS = {
 # form the standing walk can pass unattended (2026-09-10: a hand publish
 # needed 4,115 and the walk, which cannot type --prune, could not have done
 # it).
-DELETE_CEILING = 2000
+DELETE_CEILING = int(os.environ.get("MD_DELETE_CEILING") or 2000)
 
 # These prefixes are never deleted as a side effect of anything. Losing them
 # does not degrade the site, it breaks it silently: no vendored MapLibre means

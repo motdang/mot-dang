@@ -14,6 +14,8 @@ because self-hosting them had been written off in a comment in map_shell.py.
 Four static PBF files later (assets/glyphs/NotoSans/, 2026-08-20) the tiles AND
 the glyphs come from our own bucket.
 """
+import incremental  # which place pages a round has to draw (incremental.py)
+incremental.watch()  # first, so the files read at import are noted
 import atexit
 import base64
 import datetime
@@ -9815,6 +9817,9 @@ def _neighbour_grid():
     return _NEIGHBOUR_GRID
 
 
+_NB_TRACE = None        # a list while a place page is drawn: the queries it makes
+
+
 def neighbours_in(lat, lng, dlat, dlng, exclude_id, limit=7):
     """Our own places standing inside this frame, nearest first.
 
@@ -9824,6 +9829,8 @@ def neighbours_in(lat, lng, dlat, dlng, exclude_id, limit=7):
     phone number — is the thing the directory spent a year gathering, and it
     is exactly what a person looks for when they look at a map of a shop.
     """
+    if _NB_TRACE is not None:
+        _NB_TRACE.append([lat, lng, dlat, dlng, limit])
     grid = _neighbour_grid()
     out = []
     la0, la1 = lat - dlat / 2, lat + dlat / 2
@@ -19113,37 +19120,172 @@ def _kept_write(keep):
     tmp.replace(PAGES_KEPT)
 
 
+def _draw_place(r, p, key, photo_file, slug):
+    """A place page and its json twin, as text. The one place both are made."""
+    html = detail_page(r, p, photo_file, whats_on_here(r["id"], EVENTS, depth=2), related=None)
+    return html, json.dumps(place_json(r, photo_file), ensure_ascii=False)
+
+
+def _carry_pair(pdir, slug, out):
+    """Move last build's html and json for this place into this build without
+    drawing them. False, and nothing moved, unless both files are still exactly
+    what the last build wrote (the same test _put_page applies)."""
+    if _FINAL_DOCS is None or _FINAL_DOCS == DOCS:
+        return False
+    rels = [(pdir / "p" / f"{slug}.{ext}").relative_to(DOCS).as_posix() for ext in ("html", "json")]
+    for rel in rels:
+        was = _KEPT_WAS.get(rel)
+        try:
+            st = (_FINAL_DOCS / rel).stat()
+        except OSError:
+            return False
+        if not was or [st.st_size, st.st_mtime_ns] != was[1:]:
+            return False
+    for rel in rels:
+        os.rename(_FINAL_DOCS / rel, DOCS / rel)
+        out[rel] = _KEPT_WAS[rel]
+    return True
+
+
+class _IncrHost:
+    """What incremental.Round asks build.py (incremental.py says what for)."""
+    date = BUILD_DATE
+    skip = ()
+
+    @staticmethod
+    def near_view(r):
+        """Everything a place page takes from a place it names nearby: the
+        values of the calls place_map and the nearby list make on it
+        (tests/test_incremental.py checks the list against those two blocks)."""
+        return [name_text(r), name_bi(r), name_th(r), name_en(r), ant_rank(r), plan_key(r),
+                place_slug(r), (r.get("cat") or [None])[0], r.get("province"),
+                r.get("lat"), r.get("lng")]
+
+    @staticmethod
+    def own_view(r):
+        """What a page takes from its own record through a clock: the ant rank
+        (_is_fresh counts 180 days back from today)."""
+        return [ant_rank(r)]
+
+    @staticmethod
+    def all_ids():
+        return PLACE_BY_ID.keys()
+
+    @staticmethod
+    def namespaces():
+        out = {}
+        for name, mod in list(sys.modules.items()):
+            f = getattr(mod, "__file__", None)
+            if f and os.path.abspath(f).startswith(str(ROOT) + os.sep) and "/tests/" not in f:
+                out["build" if name == "__main__" else name] = vars(mod)
+        return out
+
+    @staticmethod
+    def slug(r):
+        return place_slug(r)
+
+    @staticmethod
+    def replay(a, exclude_id):
+        lat, lng, dlat, dlng, limit = a
+        return neighbours_in(lat, lng, dlat, dlng, exclude_id, limit=limit)
+
+    @staticmethod
+    def last_digest(rel):
+        """The digest of last build's file at `rel` when it can be carried."""
+        was = _KEPT_WAS.get(rel)
+        if not was or _FINAL_DOCS is None:
+            return None
+        try:
+            st = (_FINAL_DOCS / rel).stat()
+        except OSError:
+            return None
+        return was[0] if [st.st_size, st.st_mtime_ns] == was[1:] else None
+
+    @staticmethod
+    def last_bytes(rel):
+        try:
+            return (_FINAL_DOCS / rel).read_bytes()
+        except (OSError, TypeError):
+            return None
+
+
+_INCR = {"round": None, "tried": False}
+
+
+def _incr_round():
+    """The state of this build's place pages, or None for a scratch build
+    (nothing to carry from) or when MD_INCREMENTAL=0 and there is no state."""
+    if _FINAL_DOCS is None or _FINAL_DOCS == DOCS or os.environ.get("MD_KEEP_PAGES", "1") == "0":
+        return None
+    if not _INCR["tried"]:
+        _INCR["tried"] = True
+        host = _IncrHost
+        host.skip = (id(PLACE_BY_ID),)
+        _INCR["round"] = incremental.Round(host)
+    return _INCR["round"]
+
+
 def _place_chunk(idx):
-    global _lock_held
+    global _lock_held, _NB_TRACE
     if os.getpid() != _PP.get("parent"):
         _lock_held = False          # a child must never hand back the parent's lock
     recs, pdir, key, p, photos = (_PP["records"], _PP["pdir"], _PP["key"],
                                   _PP["p"], _PP["photos"])
+    plan, rnd = _PP.get("plan"), _PP.get("round")
     _UNKNOWN_CATS.clear()
     images = {}
     written = {}
     inputs = {}
-    moved = 0
+    fresh = {}
+    misses = []
+    own = []
+    moved = carried = 0
     for i in idx:
         r = recs[i]
         slug = place_slug(r)
         photo_file = photos.get(r["id"])
-        # WO-71: nothing renders `related` any more (see detail_page).
-        moved += _put_page(pdir / "p" / f"{slug}.html",
-                           detail_page(r, p, photo_file,
-                                       whats_on_here(r["id"], EVENTS, depth=2), related=None), written)
+        pk = f"{key}/p/{slug}"
+        pg = plan.get(pk) if plan else None
         if photo_file:
             images[f"{key}/p/{slug}.html"] = (BASE + f"photos/{photo_file}", name_text(r))
+        if pg:
+            inputs[f"{key}/p/{slug}.html"] = inputs[f"{key}/p/{slug}.json"] = pg.rec
+            if pg.carry and _carry_pair(pdir, slug, written):
+                moved += 2
+                carried += 1
+                continue
+        # WO-71: nothing renders `related` any more (see detail_page).
+        _NB_TRACE = []
+        try:
+            html, js = _draw_place(r, p, key, photo_file, slug)
+        finally:
+            trace, _NB_TRACE = _NB_TRACE, None
+        moved += _put_page(pdir / "p" / f"{slug}.html", html, written)
         # A predictable .json beside every .html. A reader that guesses the
         # URL is right, every time, and the endpoint answers without a key.
-        moved += _put_page(pdir / "p" / f"{slug}.json",
-                           json.dumps(place_json(r, photo_file), ensure_ascii=False), written)
-        # What this place's own data was, for publish/deploy.py's weekly place round
-        # (Nan, 2026-10-13): a page whose record is unchanged waits for the full round.
-        h = hashlib.sha1(json.dumps([r, photo_file], sort_keys=True, default=str,
-                                    ensure_ascii=False).encode()).hexdigest()[:16]
-        inputs[f"{key}/p/{slug}.html"] = inputs[f"{key}/p/{slug}.json"] = h
-    return images, dict(_UNKNOWN_CATS), written, moved, inputs
+        moved += _put_page(pdir / "p" / f"{slug}.json", js, written)
+        if pg:
+            fresh[pk] = [pg.base, rnd.nearby(r, trace), pg.rec, trace]
+            if rnd.decision.check and pg.clean:
+                # the model said these bytes would not move; they did (date taken out)
+                dates = incremental.date_forms(rnd.B.date) + incremental.date_forms(
+                    (rnd.state or {}).get("date"))
+                for ext, text in (("html", html), ("json", js)):
+                    old = rnd.B.last_bytes(f"{pk}.{ext}")
+                    if old is not None and incremental.normalise(old, dates) != incremental.normalise(
+                            text.encode("utf-8"), dates):
+                        misses.append(f"{pk}.{ext}")
+            if pg.rec != ((rnd.state or {}).get("pages", {}).get(pk) or [0, 0, None])[2]:
+                own.append(pk)
+        else:
+            # What this place's own data was, for publish/deploy.py's weekly place round
+            # (Nan, 2026-10-13): a page whose record is unchanged waits for the full round.
+            h = incremental.record_digest(r, photo_file)
+            inputs[f"{key}/p/{slug}.html"] = inputs[f"{key}/p/{slug}.json"] = h
+    # a worker's own list of files read is lost with it: send what it opened beyond the parent's
+    reads = (sorted(set(incremental.reads()) - _PP.get("reads0", set()))
+             if os.getpid() != _PP.get("parent") else [])
+    return images, dict(_UNKNOWN_CATS), written, moved, inputs, fresh, misses, carried, own, reads
 
 
 PLACE_INPUTS = {}                                   # "<prov>/p/<slug>.html|json" -> record hash
@@ -19158,19 +19300,32 @@ def write_place_pages(records, pdir, key, p, photos, sitemap_images):
     PLACE_CODES.update(placecode.assign([r["id"] for r in records]))
     for r in records:
         _CODE_PATHS[r["id"]] = f"{key}/{place_slug(r)}"
+    rnd = _incr_round()
+    plan = None
+    if rnd:
+        plan = _incr_plan(rnd, records, pdir, key, p, photos)
     _PP.update(records=records, pdir=pdir, key=key, p=p, photos=photos,
-               parent=os.getpid())
+               parent=os.getpid(), plan=plan, round=rnd, reads0=set(incremental.reads()))
     chunks = [list(range(i, min(i + 200, len(records))))
               for i in range(0, len(records), 200)]
     jobs = _jobs()
 
     def take(result):
-        images, unknown, written, moved, inputs = result
+        images, unknown, written, moved, inputs, fresh, misses, carried, own, reads = result
         PLACE_INPUTS.update(inputs)
         sitemap_images.update(images)
         _KEPT_NOW.update(written)
         _KEPT_N[0] += moved
         _KEPT_N[1] += len(written) - moved
+        if rnd:
+            for pk, row in fresh.items():
+                rnd.note_drawn(pk, *row)
+            rnd.tally.carried += carried
+            rnd.tally.drawn += len(fresh)
+            rnd.tally.own += len(own)
+            rnd.tally.misses += misses
+            rnd.own_keys += own
+            rnd.note_reads(reads)
         for k, ids in unknown.items():
             prior.setdefault(k, []).extend(ids)
 
@@ -19196,6 +19351,45 @@ def write_place_pages(records, pdir, key, p, photos, sitemap_images):
     tmp = PLACE_INPUTS_FILE.with_suffix(".tmp")
     tmp.write_text(json.dumps(PLACE_INPUTS, sort_keys=True))
     tmp.replace(PLACE_INPUTS_FILE)
+    if rnd and rnd.decision is not None and not rnd.decision.full:
+        _early_places(rnd, key)
+
+
+def _early_places(rnd, key):
+    """The pages drawn this province for a changed record go up now when
+    cache/early-places says so (publish/early.py says why that is opt-in)."""
+    sys.path.insert(0, str(ROOT / "publish"))
+    try:
+        import early
+        if not early.enabled():
+            return
+        mine = [pk for pk in rnd.own_keys if pk.startswith(key + "/p/")]
+        rels = [f"{pk}.{ext}" for pk in mine for ext in ("html", "json")]
+        rels = [r for r in rels if (DOCS / r).exists()]
+        early.push(DOCS, rels, say=lambda m: print(m, flush=True))
+    except (Exception, SystemExit) as e:      # deploy.run exits when rclone fails; the round publishes them anyway
+        print("  early: not sent (%s: %s); the round carries them" % (type(e).__name__, e))
+
+
+def _incr_plan(rnd, records, pdir, key, p, photos):
+    """Which of this province's pages to draw (incremental.py). Drawn pages are
+    named before any is carried, so a canary that moves can turn the round full."""
+    def draw(r, photo_file):
+        prior = {k: list(v) for k, v in _UNKNOWN_CATS.items()}
+        global _NB_TRACE
+        _NB_TRACE = None
+        try:
+            return _draw_place(r, p, key, photo_file, place_slug(r))
+        finally:
+            _UNKNOWN_CATS.clear()
+            _UNKNOWN_CATS.update(prior)
+
+    if rnd.decision is None:
+        rnd.settle(records, photos, draw)
+    plan = rnd.province(key, records, photos)
+    rnd.tally.removed += rnd.removed(key, plan)
+    rnd.canary(plan, records, photos, draw, "canary" + BUILD_DATE + key)
+    return plan
 
 
 def home_next_page():
@@ -19211,6 +19405,24 @@ def home_next_page():
     return front_layer.render(home_ld=home_next.HOME_LD, lang_head=homebits.LANG_HEAD, lang_css=homebits.LANG_CSS,
                               lang_switch=homebits.LANG_SWITCH, lang_js=homebits.LANG_JS,
                               built="Rebuilt %s · พ.ศ. %d" % (home_next.TODAY.isoformat(), home_next.TODAY.year + 543))
+
+
+def sitemap_page(f, rel, st, seen, fpv, fingerprint):
+    """(fingerprint, address) of one page for the sitemap; address None for a
+    page that is noindex. The last build's entry stands when the file has the
+    size and mtime it had then and `fpv` (the method's own hash) is the same,
+    so a carried place page is not read again."""
+    if (seen and len(seen) >= 6 and seen[5] == fpv
+            and seen[2] == st.st_size and seen[3] == st.st_mtime_ns):
+        return seen[0], seen[4]
+    text = f.read_text(encoding="utf-8")
+    if 'content="noindex' in text:
+        return None, None
+    # The sitemap names the address the page itself calls canonical: the
+    # front page is /, not /index.html, and a page that points elsewhere
+    # is that other page's copy, not an entry of its own.
+    _cm = SITEMAP_CANON.search(text[:20000])
+    return fingerprint(text), (_cm.group(1).replace("&amp;", "&") if _cm else BASE + rel)
 
 
 def build():
@@ -23658,26 +23870,31 @@ def build():
 
     sitemap_urls, sitemap_dates = [], []
     sitemap_seen = set()
+    # A page the last build read and nothing has touched since (a carried place
+    # page keeps its size and mtime) keeps its fingerprint and address without
+    # being read again: reading 98,000 files was about a fifth of the build.
+    # The method's own hash rides in each entry, so a change to _fingerprint
+    # or its patterns reads every page once.
+    import inspect
+    _fpv = hashlib.blake2b((inspect.getsource(_fingerprint) + "".join(
+        x.pattern for x in (_FP_LD, _FP_MAIN, _FP_DROP, _FP_DESC, _FP_IMG, _FP_TAG))
+        + SITEMAP_CANON.pattern).encode(), digest_size=4).hexdigest()
     for f in sorted(DOCS.rglob("*.html")):
         rel = f.relative_to(DOCS).as_posix()
         # WO-75 — get/ holds the toys THEMSELVES (see below)
         if rel.startswith("get/"):
             continue
-        text = f.read_text(encoding="utf-8")
-        if 'content="noindex' in text:
+        st = f.stat()
+        seen = _lm_was.get(rel)
+        fp, loc = sitemap_page(f, rel, st, seen, _fpv, _fingerprint)
+        if loc is None:
+            _lm_now[rel] = [None, "", st.st_size, st.st_mtime_ns, None, _fpv]
             continue
-        # The sitemap names the address the page itself calls canonical: the
-        # front page is /, not /index.html, and a page that points elsewhere
-        # is that other page's copy, not an entry of its own.
-        _cm = SITEMAP_CANON.search(text[:20000])
-        loc = _cm.group(1).replace("&amp;", "&") if _cm else BASE + rel
         if not loc.startswith(BASE) or loc in sitemap_seen:
             continue
         sitemap_seen.add(loc)
-        fp = _fingerprint(text)
-        seen = _lm_was.get(rel)
         lastmod = seen[1] if seen and seen[0] == fp else BUILD_DATE
-        _lm_now[rel] = [fp, lastmod]
+        _lm_now[rel] = [fp, lastmod, st.st_size, st.st_mtime_ns, loc, _fpv]
         sitemap_urls.append(f"<url><loc>{att(loc)}</loc>"
                             f"<lastmod>{lastmod}</lastmod>{_image_ext(rel)}</url>")
         sitemap_dates.append(lastmod)
@@ -24523,6 +24740,13 @@ coordinates, channels and ant rank, no markup to strip. {len(all_recs):,} lines.
         _swap_into_place()
         _kept_write(_kept)
         print(f"place pages: {_KEPT_N[0]:,} carried over from the last build, {_KEPT_N[1]:,} written")
+        _rnd = _INCR["round"]
+        if _rnd and _rnd.decision is not None:
+            incremental.save_state(_rnd.state_out())
+            if _rnd.drew_all():
+                incremental.FULL_NOW.unlink(missing_ok=True)
+            print("  " + _rnd.tally.line())
+            _rnd.tally.write()
     n_pages = sum(1 for _ in DOCS.rglob("*.html"))
     print(f"built {n_pages:,} pages -> {DOCS.name}/")
 
