@@ -751,7 +751,24 @@ def emit(g, data, photos, tags):
     mb = (v1 / "index.json").stat().st_size / 1e6
     return (f'{index["count"]:,} places · {len(index["schedules"])} schedules · '
             f'{index["hours"]["withKnownHours"]:,} with hours · index {mb:.1f} MB'
-            + _emit_grid(g, docs))
+            + _emit_grid(g, docs) + _emit_rows(docs))
+
+
+def _emit_rows(docs):
+    """api/v1/rows/ beside index.json (publish/emit_rows.mjs): the packed rows
+    /api/v1/search keeps in the isolate. Without it the search reads index.json
+    again on every question, 7-15 s."""
+    import subprocess
+    script = ROOT / "publish" / "emit_rows.mjs"
+    try:
+        r = subprocess.run(["node", "--max-old-space-size=4096", str(script), str(docs)],
+                           capture_output=True, text=True, timeout=600)
+    except (OSError, subprocess.TimeoutExpired) as e:
+        return f"\n  ! rows not written ({e.__class__.__name__}) — /api/v1/search reads the index"
+    if r.returncode:
+        return (f"\n  ! rows not written (node exit {r.returncode}) — /api/v1/search reads the index\n"
+                + r.stderr.strip()[-400:])
+    return "\n" + r.stdout.rstrip()
 
 
 def _emit_grid(g, docs):

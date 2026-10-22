@@ -414,6 +414,7 @@ function tables(index) {
 }
 
 export function findPlace(index, key) {
+  if (index.find) return index.find(key);       // the packed rows (rowstore.js)
   const k = String(key || "").trim();
   if (!k) return null;
   const t = tables(index);
@@ -425,8 +426,36 @@ export function findPlace(index, key) {
 
 /* The records a shared slug could have meant — empty unless it is shared. */
 export function slugCandidates(index, key) {
+  if (index.slugRows) return index.slugRows(key);
   const rows = tables(index).bySlug.get(String(key || "").trim());
   return rows && rows.length > 1 ? rows : [];
+}
+
+/* ------------------------------------------------------- refine words */
+
+/* The words the search's refine chips look for in a row's text (worker.js,
+ * refineFacets). Here so publish/rowstore.js can mark each row with them at
+ * build time and the Worker need not hold the match blob. */
+export const RF_CUISINE = ("japanese korean thai chinese italian indian burmese vietnamese mexican "
+  + "french american isan northern lanna muslim halal vegetarian vegan seafood noodle sushi "
+  + "ramen shabu sukiyaki bbq buffet steak pizza burger dimsum izakaya khaosoi curry dessert "
+  + "bakery coffee tea").split(" ");
+export const RF_SERVICE = ("alterations mend hemming zip repair tailoring dermatology cosmetic dental "
+  + "braces massage laundry printing framing").split(" ");
+export const RF_FEATURE = { outdoor: ["outdoor", "นั่งนอก"], wifi: ["wifi", "ไวไฟ"], halal: ["halal", "ฮาลาล"],
+  delivery: ["delivery", "ส่งถึง"], parking: ["parking", "จอดรถ"], aircon: ["air-con", "แอร์"],
+  "24h": ["24"], takeaway: ["takeaway", "กลับบ้าน"] };
+/* One list, one bit each: [group, word] in a fixed order. */
+export const REFINE_WORDS = [
+  ...RF_CUISINE.map((word) => ({ group: "cuisine", word })),
+  ...RF_SERVICE.map((word) => ({ group: "service", word })),
+  ...Object.entries(RF_FEATURE).map(([word, needles]) => ({ group: "feature", word, needles })),
+];
+const REFINE_AT = new Map(REFINE_WORDS.map((w, k) => [w.group + ":" + w.word, k]));
+export function refineBit(bits, group, word) {
+  const k = REFINE_AT.get(group + ":" + word);
+  if (k === undefined) return false;
+  return k < 32 ? ((bits[0] >>> k) & 1) === 1 : ((bits[1] >>> (k - 32)) & 1) === 1;
 }
 
 /* ------------------------------------------------------------ the grid */

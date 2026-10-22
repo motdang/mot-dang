@@ -47,7 +47,9 @@
 import { SCHEMA_VERSION, queryPlaces, findPlace, slugCandidates, minuteOfWeek,
          present, liftProvince, norm, parseQuery, rowMatches,
          gridEligible, queryPlacesGrid, cmpPlaceName, cmpPlaceDefault,
+         RF_CUISINE, RF_SERVICE, RF_FEATURE, refineBit,
          LIMIT_DEFAULT, LIMIT_MAX } from "./api.js";
+import { RowStore } from "./rowstore.js";
 import SEARCHCORE from "./searchcore.js";
 import { fleetSearch } from "./fleetsearch.js";
 import { translateApi } from "./quickanswer.js";
@@ -616,15 +618,6 @@ function edgeIndex(env) {
  * writes, the shelf, the match blob — never a new column. A value every row
  * shares is dropped: it narrows nothing. Kept small on purpose: six per group,
  * and only groups that split the set. */
-const RF_CUISINE = ("japanese korean thai chinese italian indian burmese vietnamese mexican "
-  + "french american isan northern lanna muslim halal vegetarian vegan seafood noodle sushi "
-  + "ramen shabu sukiyaki bbq buffet steak pizza burger dimsum izakaya khaosoi curry dessert "
-  + "bakery coffee tea").split(" ");
-const RF_SERVICE = ("alterations mend hemming zip repair tailoring dermatology cosmetic dental "
-  + "braces massage laundry printing framing").split(" ");
-const RF_FEATURE = { outdoor: ["outdoor", "นั่งนอก"], wifi: ["wifi", "ไวไฟ"], halal: ["halal", "ฮาลาล"],
-  delivery: ["delivery", "ส่งถึง"], parking: ["parking", "จอดรถ"], aircon: ["air-con", "แอร์"],
-  "24h": ["24"], takeaway: ["takeaway", "กลับบ้าน"] };
 const RF_CATLABEL = { food: ["ร้านอาหาร", "food & eats"], medical: ["คลินิก-โรงพยาบาล", "clinics & hospitals"],
   shopping: ["ร้านค้า", "shops"], repair: ["ซ่อม", "repair"], beauty: ["ความงาม", "beauty"],
   hotel: ["ที่พัก", "stays"], school: ["โรงเรียน", "schools"], transport: ["เดินทาง", "transport"],
@@ -652,13 +645,18 @@ export function refineFacets(rows, qwords) {
   };
   for (const r of rows) {
     const cat = r.cat || [], sub = r.sub || [], tags = r.tags || [];
-    const hay = ((r.q || "") + " " + (r.name || "") + " " + (r.nameEn || "")).toLowerCase();
+    /* A row from the packed store (rowstore.js) has no `q`; its _rf masks
+     * say which refine words its text carries, worked out the same way. */
+    const bits = r._rf;
+    const hay = bits ? "" : ((r.q || "") + " " + (r.name || "") + " " + (r.nameEn || "")).toLowerCase();
+    const has = (group, w) => bits ? refineBit(bits, group, w)
+      : group === "feature" ? RF_FEATURE[w].some(nd => hay.includes(nd)) : (tags.includes(w) || rfWord(hay, w));
     for (const c of cat) { const l = RF_CATLABEL[c]; bump("type", c, l ? l[1] : c, l ? l[0] : c, l ? l[1] : c); }
     for (const s of sub) bump("kind", s, s, s, s);
     if (cat.includes("food")) for (const cz of RF_CUISINE)
-      if (tags.includes(cz) || rfWord(hay, cz)) bump("cuisine", cz, cz, cz, cz);
-    for (const sv of RF_SERVICE) if (tags.includes(sv) || rfWord(hay, sv)) bump("service", sv, sv, sv, sv);
-    for (const f in RF_FEATURE) if (RF_FEATURE[f].some(nd => hay.includes(nd))) bump("feature", f, RF_FEATURE[f][0], f, f);
+      if (has("cuisine", cz)) bump("cuisine", cz, cz, cz, cz);
+    for (const sv of RF_SERVICE) if (has("service", sv)) bump("service", sv, sv, sv, sv);
+    for (const f in RF_FEATURE) if (has("feature", f)) bump("feature", f, RF_FEATURE[f][0], f, f);
     for (const t of tags) {
       if (t.startsWith("in-mueang-")) { const a = t.slice(3).replace(/-/g, " "); bump("area", a, a, a, a); }
       else if (t.startsWith("tambon-")) { const a = "tambon " + t.slice(7).replace(/-/g, " "); bump("area", a, t.slice(7).replace(/-/g, " "), a, a); }
@@ -822,6 +820,52 @@ function loadIndex(env) {
   return INDEX_P;
 }
 
+/* THE PACKED ROWS (2026-10-22, ticket "search · answer in under a second").
+ * index.json no isolate can keep, so the search, /places/<id>, /health and
+ * the descriptor read api/v1/rows/ instead (publish/rowstore.js): ~36 MB held,
+ * read once per isolate through the colo cache and re-checked once a minute
+ * like the grid. Missing or out of step, they walk the index as before. */
+let ROWS_P = null;
+let ROWS_ETAG = null;
+let ROWS_CHECKED = 0;
+
+async function revalidateRows(env) {
+  const now = Date.now();
+  if (!ROWS_P || now - ROWS_CHECKED < REVALIDATE_MS) return;
+  ROWS_CHECKED = now;
+  try {
+    const head = await env.SITE.head("api/v1/rows/text.json");
+    if ((head ? head.httpEtag : null) !== ROWS_ETAG) { ROWS_P = null; ROWS_ETAG = null; }
+  } catch { /* keep what we have; try again next window */ }
+}
+
+function loadRows(env) {
+  if (!ROWS_P) {
+    ROWS_CHECKED = Date.now();
+    ROWS_P = (async () => {
+      const head = await env.SITE.head("api/v1/rows/text.json");
+      if (!head) return null;                      // not deployed: the index answers
+      const t = await cachedGet(env, "api/v1/rows/text.json", 86400, head.httpEtag);
+      if (!t) return null;
+      const text = await t.json();
+      const b = await cachedGet(env, "api/v1/rows/cols.bin", 86400, text.bv);
+      if (!b) return null;
+      const buf = await b.arrayBuffer();
+      const sum = [...new Uint8Array(await crypto.subtle.digest("SHA-1", buf))]
+        .map((x) => x.toString(16).padStart(2, "0")).join("").slice(0, 12);
+      if (sum !== text.bv) { console.error("api/v1/rows out of step", sum, text.bv); return null; }
+      ROWS_ETAG = head.httpEtag;
+      return new RowStore(text, buf);
+    })().catch((e) => { ROWS_P = null; ROWS_ETAG = null; console.error("api/v1/rows fault", e && e.message); return null; });
+  }
+  return ROWS_P;
+}
+
+/* The rows when they are deployed, else the index. */
+async function loadLean(env) {
+  return (await loadRows(env)) || loadIndex(env);
+}
+
 /* THE BOX INDEX (2026-10-11). api/v1/grid/, written by publish/emit_grid.mjs:
  * meta.json (3.6 MB, held per isolate) answers a bbox query's filter and
  * count, and the page's rows come from a few of the chunk files. See "the
@@ -981,6 +1025,7 @@ async function api(request, env, url, path, ctx) {
    * that it runs once per API request instead of once per loadIndex call —
    * a single request can make three. */
   await revalidateIndex(env);
+  await revalidateRows(env);
 
   /* The descriptor, the spec and the schema are baked files — served straight
    * from the bucket so that what the API says about itself is written by the
@@ -999,9 +1044,9 @@ async function api(request, env, url, path, ctx) {
    * bulk file keeps its own address, named right here so it is one hop away. */
   if (path === "" || path === "/") {
     let ix;
-    try { ix = await loadIndex(env); }
+    try { ix = await loadLean(env); }
     catch (e) { return apiError(503, "api not deployed", String(e.message)); }
-    const { places, schedules, ...head } = ix;
+    const { places, schedules, ...head } = ix.head || ix;
     return apiJson({ ...head,
       bulk: { url: ix.base + "api/v1/index.json", places: ix.count,
               note: "the whole query index in one file — take it and stop asking us" } });
@@ -1009,7 +1054,7 @@ async function api(request, env, url, path, ctx) {
 
   if (path === "/health") {
     try {
-      const ix = await loadIndex(env);
+      const ix = await loadLean(env);
       return apiJson({ schemaVersion: SCHEMA_VERSION, ok: true,
                        generated: ix.generated, places: ix.places.length,
                        minuteOfWeekBangkok: minuteOfWeek() });
@@ -1075,9 +1120,10 @@ async function api(request, env, url, path, ctx) {
   let ix;
   /* What a cold isolate pays, said in the answer (gemba 2, 2026-10-20: the
    * search took 5–14 s a query). */
-  const coldIx = !INDEX_P, coldEdge = !EDGE_P, tIx = Date.now();
+  const lean = path !== "/places";             // only /places?q= reads the match blob
+  const coldIx = lean ? !ROWS_P : !INDEX_P, coldEdge = !EDGE_P, tIx = Date.now();
   try {
-    ix = await loadIndex(env);
+    ix = lean ? await loadLean(env) : await loadIndex(env);
   } catch (e) {
     return apiError(503, "index unavailable", String(e.message));
   }
@@ -1098,7 +1144,7 @@ async function api(request, env, url, path, ctx) {
       const tS = Date.now(); const r0 = { ...R2N };
       const body = await searchHandler(env, ix, url.searchParams);
       const res = apiJson(body);
-      res.headers.set("server-timing", `index;dur=${msIx};desc="${coldIx ? "cold" : "warm"}", ` +
+      res.headers.set("server-timing", `${ix instanceof RowStore ? "rows" : "index"};dur=${msIx};desc="${coldIx ? "cold" : "warm"}", ` +
         `engine;dur=${Date.now() - tS};desc="${coldEdge ? "cold" : "warm"}", ` +
         `reads;dur=${R2N.ms - r0.ms};desc="${R2N.n - r0.n} bucket reads"`);
       /* How many answered, for the counter (record(): a search that found
