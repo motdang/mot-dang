@@ -16,7 +16,7 @@
  *
  *   node publish/emit_grid.mjs [docs-dir]
  */
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, unlinkSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
@@ -40,8 +40,9 @@ const v = h.digest("hex").slice(0, 12);
 
 mkdirSync(OUT, { recursive: true });
 const name = (c) => meta.cn[c] + ".json";
-const keep = new Set(["meta.json", ...chunks.map((_, c) => name(c))]);
-for (const f of readdirSync(OUT)) if (!keep.has(f)) unlinkSync(join(OUT, f));
+// A chunk this run does not name stays where it is: a publish never deletes
+// under api/ (publish/safety.py), and the Worker opens only what meta names.
+// api_layer.py carries retired chunks from the last build into docs.next/.
 bodies.forEach((b, c) => writeFileSync(join(OUT, name(c)), `{"v":"${meta.cv[c]}","rows":${b}}`));
 writeFileSync(join(OUT, "meta.json"), JSON.stringify({ v, ...meta }));
 
