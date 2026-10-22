@@ -574,6 +574,160 @@
    "h": 630,
    "title": "Ho Phaya Mangrai — Ghost Chiang Mai"
   },
+  "/ghost/stops/ang-kaew.html": {
+   "img": "ghost-stop-ang-kaew.jpg",
+   "alt": "Card: Ghost Chiang Mai · Ang Kaew, Chiang Mai University, over a photograph of a misty hill above the Ang Kaew reservoir",
+   "w": 1200,
+   "h": 630,
+   "title": "Ang Kaew, Chiang Mai University — Ghost Chiang Mai"
+  },
+  "/ghost/stops/doi-suthep.html": {
+   "img": "ghost-stop-doi-suthep.jpg",
+   "alt": "Card: Ghost Chiang Mai · Wat Phra That Doi Suthep, over a photograph of the gold chedi of Doi Suthep under temple bells and a blue sky",
+   "w": 1200,
+   "h": 630,
+   "title": "Wat Phra That Doi Suthep — Ghost Chiang Mai"
+  },
+  "/ghost/stops/foreign-cemetery.html": {
+   "img": "ghost-stop-foreign-cemetery.jpg",
+   "alt": "Card: Ghost Chiang Mai · Chiang Mai Foreign Cemetery, over a photograph of Rev. Daniel McGilvary's grave, with his portrait on the cross",
+   "w": 1200,
+   "h": 630,
+   "title": "Chiang Mai Foreign Cemetery — Ghost Chiang Mai"
+  },
+  "/ghost/stops/nawarat-bridge.html": {
+   "img": "ghost-stop-nawarat-bridge.jpg",
+   "alt": "Card: Ghost Chiang Mai · Nawarat Bridge and the Ping, over a photograph of the Ping river, brown under a cloudy sky",
+   "w": 1200,
+   "h": 630,
+   "title": "Nawarat Bridge and the Ping — Ghost Chiang Mai"
+  },
+  "/ghost/stops/pratu-chiang-mai.html": {
+   "img": "ghost-stop-pratu-chiang-mai.jpg",
+   "alt": "Card: Ghost Chiang Mai · Chiang Mai Gate, over a photograph of the brick bastion of the Chiang Mai Gate beside a road",
+   "w": 1200,
+   "h": 630,
+   "title": "Chiang Mai Gate — Ghost Chiang Mai"
+  },
+  "/ghost/stops/pratu-suan-prung.html": {
+   "img": "ghost-stop-pratu-suan-prung.jpg",
+   "alt": "Card: Ghost Chiang Mai · Suan Prung Gate, over a photograph of a street beside the Suan Prung Gate wall",
+   "w": 1200,
+   "h": 630,
+   "title": "Suan Prung Gate — Ghost Chiang Mai"
+  },
+  "/ghost/stops/tham-chiang-dao.html": {
+   "img": "ghost-stop-tham-chiang-dao.jpg",
+   "alt": "Card: Ghost Chiang Mai · Tham Chiang Dao, over a photograph of the view from inside the mouth of the Chiang Dao cave",
+   "w": 1200,
+   "h": 630,
+   "title": "Tham Chiang Dao — Ghost Chiang Mai"
+  },
+  "/ghost/stops/wat-chiang-man.html": {
+   "img": "ghost-stop-wat-chiang-man.jpg",
+   "alt": "Card: Ghost Chiang Mai · Wat Chiang Man, over a photograph of a carved gable at Wat Chiang Man among palms",
+   "w": 1200,
+   "h": 630,
+   "title": "Wat Chiang Man — Ghost Chiang Mai"
+  },
+  "/ghost/stops/wat-chiang-yuen.html": {
+   "img": "ghost-stop-wat-chiang-yuen.jpg",
+   "alt": "Card: Ghost Chiang Mai · Wat Chiang Yuen, over a photograph of the white octagonal ubosot of Wat Chiang Yuen under power lines",
+   "w": 1200,
+   "h": 630,
+   "title": "Wat Chiang Yuen — Ghost Chiang Mai"
+  },
+  "/ghost/stops/wat-inthakhin-sadue-muang.html": {
+   "img": "ghost-stop-wat-inthakhin-sadue-muang.jpg",
+   "alt": "Card: Ghost Chiang Mai · Wat Inthakhin Sadue Muang, over a photograph of the gold-trimmed viharn of Wat Inthakhin Sadue Muang",
+   "w": 1200,
+   "h": 630,
+   "title": "Wat Inthakhin Sadue Muang — Ghost Chiang Mai"
+  },
+  "/ghost/stops/wat-ku-tao.html": {
+   "img": "ghost-stop-wat-ku-tao.jpg",
+   "alt": "Card: Ghost Chiang Mai · Wat Ku Tao, over a photograph of a viharn roof with green naga bargeboards",
+   "w": 1200,
+   "h": 630,
+   "title": "Wat Ku Tao — Ghost Chiang Mai"
+  },
+  "/ghost/stops/wat-lok-molee.html": {
+   "img": "ghost-stop-wat-lok-molee.jpg",
+   "alt": "Card: Ghost Chiang Mai · Wat Lok Molee, over a photograph of carved naga sculptures at Wat Lok Molee",
+   "w": 1200,
+   "h": 630,
+   "title": "Wat Lok Molee — Ghost Chiang Mai"
+  },
+  "/ghost/stops/wat-pa-pao.html": {
+   "img": "ghost-stop-wat-pa-pao.jpg",
+   "alt": "Card: Ghost Chiang Mai · Wat Pa Pao, over a photograph of a thatched gate over the lane to Wat Pa Pao",
+   "w": 1200,
+   "h": 630,
+   "title": "Wat Pa Pao — Ghost Chiang Mai"
+  },
+  "/ghost/stops/wat-pha-lat.html": {
+   "img": "ghost-stop-wat-pha-lat.jpg",
+   "alt": "Card: Ghost Chiang Mai · Wat Pha Lat, over a photograph of the weathered white arched hall of Wat Pha Lat among trees",
+   "w": 1200,
+   "h": 630,
+   "title": "Wat Pha Lat — Ghost Chiang Mai"
+  },
+  "/ghost/stops/wat-phan-tao.html": {
+   "img": "ghost-stop-wat-phan-tao.jpg",
+   "alt": "Card: Ghost Chiang Mai · Wat Phan Tao, over a photograph of a young monk in orange walking past the dark teak hall of Wat Phan Tao",
+   "w": 1200,
+   "h": 630,
+   "title": "Wat Phan Tao — Ghost Chiang Mai"
+  },
+  "/ghost/stops/wat-phra-singh.html": {
+   "img": "ghost-stop-wat-phra-singh.jpg",
+   "alt": "Card: Ghost Chiang Mai · Wat Phra Singh, over a photograph of the chedi and viharn of Wat Phra Singh at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "Wat Phra Singh — Ghost Chiang Mai"
+  },
+  "/ghost/stops/wat-suan-dok.html": {
+   "img": "ghost-stop-wat-suan-dok.jpg",
+   "alt": "Card: Ghost Chiang Mai · Wat Suan Dok, over a photograph of the gold gable of a hall at Wat Suan Dok at dusk",
+   "w": 1200,
+   "h": 630,
+   "title": "Wat Suan Dok — Ghost Chiang Mai"
+  },
+  "/ghost/stops/wat-umong-maha-therachan.html": {
+   "img": "ghost-stop-wat-umong-maha-therachan.jpg",
+   "alt": "Card: Ghost Chiang Mai · Wat Umong Maha Therachan, over a photograph of temple bells hanging beside old brick ruins",
+   "w": 1200,
+   "h": 630,
+   "title": "Wat Umong Maha Therachan — Ghost Chiang Mai"
+  },
+  "/ghost/stops/wat-umong.html": {
+   "img": "ghost-stop-wat-umong.jpg",
+   "alt": "Card: Ghost Chiang Mai · Wat Umong, over a photograph of the arched brick tunnel entrance at Wat Umong",
+   "w": 1200,
+   "h": 630,
+   "title": "Wat Umong — Ghost Chiang Mai"
+  },
+  "/ghost/stops/wiang-kum-kam.html": {
+   "img": "ghost-stop-wiang-kum-kam.jpg",
+   "alt": "Card: Ghost Chiang Mai · Wiang Kum Kam, over a photograph of a gilded viharn with naga stair rails",
+   "w": 1200,
+   "h": 630,
+   "title": "Wiang Kum Kam — Ghost Chiang Mai"
+  },
+  "/ghost/stops/laddaland.html": {
+   "img": "ghost-stop-laddaland.jpg",
+   "alt": "Card: Ghost Chiang Mai · Laddaland, the title on a cream card with a large violet letter",
+   "w": 1200,
+   "h": 630,
+   "title": "Laddaland — Ghost Chiang Mai"
+  },
+  "/ghost/stops/white-lion-house.html": {
+   "img": "ghost-stop-white-lion-house.jpg",
+   "alt": "Card: Ghost Chiang Mai · The White Lion house, the title on a cream card with a large violet letter",
+   "w": 1200,
+   "h": 630,
+   "title": "The White Lion house — Ghost Chiang Mai"
+  },
   "/ghost/walk/": {
    "img": "ghost-walk.jpg",
    "alt": "Card: Ghost Chiang Mai · On foot",
