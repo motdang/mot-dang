@@ -135,7 +135,12 @@ t("the fat rows are read only for the page being shown", () => {
   for (const o of [{ n: 10, offset: 0 }, { sort: "new", n: 10, offset: 0 }]) {
     const text = fs.sql('"a"', o).text;
     const inner = text.slice(text.indexOf("FROM (") + 6, text.lastIndexOf(") "));
-    eq(/JOIN pages/.test(inner), false, "pages is joined before the cut: " + inner.slice(0, 120));
+    /* Best match reads each row's address inside its 200-row window, to tell a
+     * Mot Dang list from a place (DIR_SQL); keys.kind cannot say. Measured on
+     * the twin 2026-10-22 over 759 searches: median 7-9 ms either way, p99
+     * 52-75 ms. Anything wider stays out. */
+    const narrow = inner.replace(/ JOIN pages lp ON lp\.id = w\.id/g, "");
+    eq(/JOIN pages/.test(narrow), false, "pages is joined before the cut: " + narrow.slice(0, 120));
   }
 });
 
@@ -359,6 +364,38 @@ t("distance never sinks a named page, and a network guess keeps a floor (Tulou, 
   eq(/max\(0\.5, 1\.6 \//.test(gs.text), true, "a guess keeps half an unpinned row");
   eq(gs.binds.length, ex.binds.length - 4, "binds line up");
 });
+t("a Mot Dang list takes no title tier, and page 2 of a list sinks (museums, 2026-10-22)", () => {
+  const s = fs.sql('"museum"', { names: ["museum"], n: 10, offset: 0 });
+  eq(/AND NOT \(lp\.url GLOB 'https:\/\/motdang\.net\/c\[mr\]\/\*'/.test(s.text), true, "the 3.0 and 2.5 tiers skip lists");
+  eq(/THEN 0\.25 ELSE 1\.0 END/.test(s.text), true, "a paged list counts a quarter");
+  eq(JSON.stringify(s.binds.slice(0, 3)), JSON.stringify([" · museum · ", " · museum", "museum"]), "binds in tier order");
+});
+
+t("a city said last is where, not what (2026-10-22)", () => {
+  eq(JSON.stringify(fs.cityOf("museum chiang rai")), JSON.stringify({ city: "cr", rest: "museum" }), "English");
+  eq(JSON.stringify(fs.cityOf("วัดเชียงราย")), JSON.stringify({ city: "cr", rest: "วัด" }), "Thai, joined");
+  eq(JSON.stringify(fs.cityOf("Chiang Mai University library")), JSON.stringify(null), "said first, part of a name");
+  eq(JSON.stringify(fs.cityOf("chiang mai")), JSON.stringify(null), "the city alone");
+});
+
+t("English word forms: plural to singular, British and American (2026-10-22)", () => {
+  eq(JSON.stringify(fs.englishForms("museums")), JSON.stringify(["museum"]), "museums");
+  eq(fs.englishForms("centre").includes("center"), true, "centre");
+  eq(fs.englishForms("cultural").includes("culture"), true, "cultural");
+  eq(JSON.stringify(fs.englishForms("temple")), JSON.stringify([]), "no plural added");
+  eq(JSON.stringify(fs.englishForms("bus")), JSON.stringify([]), "bus is not a plural");
+});
+
+t("a dictionary gloss adds its one translation, never its other senses (Baan Dam, 2026-10-22)", () => {
+  const thes = { groups: [["dam", "dike", "เขื่อน"], ["abbey", "wat", "วัด"]] };
+  thes.index = new Map([["dam", new Set([0])], ["dike", new Set([0])], ["เขื่อน", new Set([0])], ["วัด", new Set([1])]]);
+  eq(JSON.stringify(fs.variantsOf("dam", thes)), JSON.stringify(["เขื่อน"]), "dam → เขื่อน, not dike");
+  eq(JSON.stringify(fs.variantsOf("วัด", thes)), JSON.stringify(["wat"]), "วัด → wat, its sound, not abbey");
+  const names = { groups: [["nakhon", "nakorn", "นคร"]] };
+  names.index = new Map([["nakorn", new Set([0])]]);
+  eq(fs.variantsOf("nakorn", names).includes("nakhon"), true, "spellings of one name stay together");
+});
+
 t("a title piece that starts with the words ranks over one that only carries them (EFEO, 2026-10-22)", () => {
   const s = fs.sql('"efeo"', { n: 10, offset: 0, names: ["efeo"] });
   eq(/THEN 3\.0 WHEN .* THEN 2\.5 WHEN .* THEN 2\.0/.test(s.text), true, "exact piece 3, starts 2.5, carries 2");

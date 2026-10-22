@@ -1,0 +1,6854 @@
+[
+{
+"set": "name",
+"q": "ต.สะเต๊ะ",
+"want": [
+"https://motdang.net/cm/p/313383084319386147732.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ร้านดอกฮัก",
+"want": [
+"https://motdang.net/cm/p/664469304848624750239.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "Himsuan Coffee house",
+"want": [
+"https://motdang.net/cm/p/himsuan-coffee-house-066933044823587794370.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ผัดไทยหอยทอด หน้าโรงแรมสตาร์โฮมฮอด",
+"want": [
+"https://motdang.net/cm/p/50381410654759930911.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ครัวป้าฟองป่าแดด",
+"want": [
+"https://motdang.net/cm/p/9674530243584717438608.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ส้มตำเจ้น้ำ",
+"want": [
+"https://motdang.net/cm/p/3311585481.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Krug Kerun Bakery",
+"want": [
+"https://motdang.net/cr/p/krug-kerun-bakery-960685172.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "ร้าน P&P หมูสด",
+"want": [
+"https://motdang.net/cr/p/p-p-195294376725874517.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Triple A Coffee",
+"want": [
+"https://motdang.net/cr/p/triple-a-coffee-04231055241095084919679.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "บ้านข้าวแต๋นสวนเย็นใจ",
+"want": [
+"https://motdang.net/cr/p/05145584483898176.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ก๋วยเตี๋ยวเรือบ้านคุณยาย",
+"want": [
+"https://motdang.net/cr/p/675958116402981390558.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Fresh and Coffee ร้านน้ำ ชา นม กาแฟ",
+"want": [
+"https://motdang.net/cr/p/fresh-and-coffee-144803646933274440.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Fruit Pulse",
+"want": [
+"https://motdang.net/cm/p/fruit-pulse-492846790.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "บ้านคำหล้า โฮสเทล",
+"want": [
+"https://motdang.net/cm/p/28915643994684895341.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "เดอะ เบส ไฮท์ เชียงใหม่",
+"want": [
+"https://motdang.net/cm/p/47021323493043211949091.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Enchanted Garden Bungalows",
+"want": [
+"https://motdang.net/cm/p/enchanted-garden-bungalows-7138493885.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ไร่วรมินทร์  อำเภอสะเมิง",
+"want": [
+"https://motdang.net/cm/p/091250424723241697.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Baan Vartika at ping",
+"want": [
+"https://motdang.net/cm/p/baan-vartika-at-ping-04019384975901433565.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "โรงเรียนสันติวิทยา เชียงราย",
+"want": [
+"https://motdang.net/cr/p/51595194861972414.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Hill Top Home",
+"want": [
+"https://motdang.net/cr/p/hill-top-home-6120924104.html"
+],
+"top": 1,
+"note": "duplicate record of the same place (own 2-3 pages <600 m apart)"
+},
+{
+"set": "name",
+"q": "บ้านม่วงเจ็ดต้น อ.เชียงของ จ.เชียงราย",
+"want": [
+"https://motdang.net/cr/p/2897773348358114335976910.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "OYO Baan Sawasdee",
+"want": [
+"https://motdang.net/cr/p/oyo-baan-sawasdee-1109542728.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "บ้านสวัสดี OYO",
+"want": [
+"https://motdang.net/cr/p/oyo-baan-sawasdee-1109542728.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Apinsaya House",
+"want": [
+"https://motdang.net/cr/p/apinsaya-house-8594831469147047.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "บ้านก้อนทรัพย์ แม่สาย",
+"want": [
+"https://motdang.net/cr/p/5499749852749249.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Nakhonping Municipal office",
+"want": [
+"https://motdang.net/cm/p/nakhonping-municipal-office-2649653894.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "สำนักงาน แขวงนครพิงค์",
+"want": [
+"https://motdang.net/cm/p/nakhonping-municipal-office-2649653894.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Flash Home",
+"want": [
+"https://motdang.net/cm/p/flash-home-10141139795.html"
+],
+"top": 1,
+"note": "chain/branch: same-name siblings fill the top"
+},
+{
+"set": "name",
+"q": "Doi Saket Turn Off sign",
+"want": [
+"https://motdang.net/cm/p/doi-saket-turn-off-sign-6067652488.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "น้ำดื่มทรีสตาร์",
+"want": [
+"https://motdang.net/cm/p/004492124008280512.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "สถาบันวิจัยและพัฒนา มหาวิทยาลัยราชภัฏเชียงใหม่",
+"want": [
+"https://motdang.net/cm/p/0901785493986931725153.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "สมสิริเภสัช",
+"want": [
+"https://motdang.net/cm/p/92634470642089349773784.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "7-Eleven",
+"want": [
+"https://motdang.net/cr/p/7-eleven-60442397141176543.html"
+],
+"top": 1,
+"note": "chain/branch: same-name siblings fill the top"
+},
+{
+"set": "name",
+"q": "Plastic things",
+"want": [
+"https://motdang.net/cr/p/plastic-things-4693779290.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ร้าน อนันต์โอสถ",
+"want": [
+"https://motdang.net/cr/p/4785374286788599.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "สถานีไฟฟ้าเชียงราย 2",
+"want": [
+"https://motdang.net/cr/p/2-5232924249476445689.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Scb เชียงราย",
+"want": [
+"https://motdang.net/cr/p/scb-830284846993129485567.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "7-Eleven",
+"want": [
+"https://motdang.net/cr/p/7-eleven-3840319436.html"
+],
+"top": 1,
+"note": "chain/branch: same-name siblings fill the top"
+},
+{
+"set": "name",
+"q": "Studio San",
+"want": [
+"https://motdang.net/cm/p/studio-san-2442073894684149548694.html"
+],
+"top": 1,
+"note": "synonym expansion/AND dilution (quoted phrase fixes it)"
+},
+{
+"set": "name",
+"q": "Mudmee Thai Silk",
+"want": [
+"https://motdang.net/cm/p/mudmee-thai-silk-cmcuratedmudmeethaisilk.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "Earth Republic Studio",
+"want": [
+"https://motdang.net/cm/p/earth-republic-studio-94036074212287116.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Mango",
+"want": [
+"https://motdang.net/cm/p/mango-0741762437845487609.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "ร้านยายดวงสบแฝก",
+"want": [
+"https://motdang.net/cm/p/303239746855426026.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "DonTailor",
+"want": [
+"https://motdang.net/cm/p/dontailor-67985098409767423527.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "เพจพ่อวีย์ “รีวิว”ใช้จริง",
+"want": [
+"https://motdang.net/cr/p/2967354545093516189114.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ข้าวซอยตัดตรายานอวกาศ",
+"want": [
+"https://motdang.net/cr/p/4623234409002450320.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ห้างทองเยาวราช สาขา เซ็ลทัลเชียงราย",
+"want": [
+"https://motdang.net/cr/p/11569743970459455222.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ร้านนู๋มลธิรา สาขาเชียงราย",
+"want": [
+"https://motdang.net/cr/p/62863464396382975266.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "AIIZ",
+"want": [
+"https://motdang.net/cr/p/aiiz-76976966411292067938.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "น้ำดื่มนิตยาr.o",
+"want": [
+"https://motdang.net/cr/p/r-o-76291314536532437406.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Pepsi-Cola Thai Trading Co.,Ltd.",
+"want": [
+"https://motdang.net/cm/p/pepsi-cola-thai-trading-co-ltd-08394995937208077353.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ROBOWASH ローボー ウォッシュสาขา Mahidol",
+"want": [
+"https://motdang.net/cm/p/robowash-mahidol-3893389855484258097243.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ฐิตาภรณ์วัสดุก่อสร้าง",
+"want": [
+"https://motdang.net/cm/p/1470147441754.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "อู่ พัฒนาเซอร์วิส ช่างพัฒ",
+"want": [
+"https://motdang.net/cm/p/0449440674971721.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "ร้านเปี๊ยกยางยนต์",
+"want": [
+"https://motdang.net/cm/p/2045304726954118.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "59Car Care ขัดเคลือบสี เคลือบแก้วเซรามิค",
+"want": [
+"https://motdang.net/cm/p/59car-care-16812384836730095.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ร้านช่างแม่สาย บ้านจ้อง",
+"want": [
+"https://motdang.net/cr/p/43960855441774467400.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "บริษัท ทวียนต์ มาร์เก็ตติ้ง จำกัด",
+"want": [
+"https://motdang.net/cr/p/70664384353532625.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "พีเอสบี สมบูรณ์ยนต์",
+"want": [
+"https://motdang.net/cr/p/2079431207426177178148.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "พี แอร์เซอร์วิส",
+"want": [
+"https://motdang.net/cr/p/5686646817818.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ร้านชัยยานยนต์ รถมือสอง เชียงราย",
+"want": [
+"https://motdang.net/cr/p/63730789415740176035.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "อู่บีบี ออโต้เซอร์วิส",
+"want": [
+"https://motdang.net/cr/p/136582757614670967261245.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "อาคารเพ็นเทคอส  Pentecost Building",
+"want": [
+"https://motdang.net/cm/p/pentecost-building-971122348431991478852785.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "โรงเรียนวัดนาเม็ง",
+"want": [
+"https://motdang.net/cm/p/1050130377.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "กวดวิชา สายป่าน",
+"want": [
+"https://motdang.net/cm/p/38797476207054176.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Chiangmai Cedar International School",
+"want": [
+"https://motdang.net/cm/p/chiangmai-cedar-international-school-1293012275.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "MBA Maejo University",
+"want": [
+"https://motdang.net/cm/p/mba-maejo-university-934791042333803109519.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "Skratch Chef",
+"want": [
+"https://motdang.net/cm/p/skratch-chef-4159474454836552458.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Christian Sangpratheep School",
+"want": [
+"https://motdang.net/cr/p/christian-sangpratheep-school-30155885139464986123.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Chiang Rai Rajabhat University",
+"want": [
+"https://motdang.net/cr/p/chiang-rai-rajabhat-university-1024441024.html"
+],
+"top": 1,
+"note": "duplicate record of the same place (own 2-3 pages <600 m apart)"
+},
+{
+"set": "name",
+"q": "มหาวิทยาลัยราชภัฏเชียงราย",
+"want": [
+"https://motdang.net/cr/p/chiang-rai-rajabhat-university-1024441024.html"
+],
+"top": 1,
+"note": "duplicate record of the same place (own 2-3 pages <600 m apart)"
+},
+{
+"set": "name",
+"q": "Learning English by Kru Ann",
+"want": [
+"https://motdang.net/cr/p/learning-english-by-kru-ann-426714438897166470670.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "คิงแมทส์สาขาเทิง",
+"want": [
+"https://motdang.net/cr/p/9221760547359410655013.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "โรงเรียนอนุบาลโป่งงาม",
+"want": [
+"https://motdang.net/cr/p/415555925442408688578524316.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Mareeruk School",
+"want": [
+"https://motdang.net/cr/p/mareeruk-school-967419266.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "โรงเรียนมารีย์รักษ์ เชียงราย",
+"want": [
+"https://motdang.net/cr/p/mareeruk-school-967419266.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ฮักร่มไม้ หางดง เชียงใหม่",
+"want": [
+"https://motdang.net/cm/p/7746910441581697642660.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "สำนักงาน นพนภัส ทนายความเชียงใหม่",
+"want": [
+"https://motdang.net/cm/p/6334272589439964531273222.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "แสวงชัย โรงน้ำแข็งห้องเย็น",
+"want": [
+"https://motdang.net/cm/p/452491480150680688.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ช.ไลท์ติ้ง ซัพพลาย",
+"want": [
+"https://motdang.net/cm/p/619359983947007683204.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "บริษัท ส้มปรีชา-ฝาง 1991 จำกัด",
+"want": [
+"https://motdang.net/cm/p/1991-19848730543272016080621.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Hydrofresh Garden",
+"want": [
+"https://motdang.net/cm/p/hydrofresh-garden-103416190968133009.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ม่านหมอก",
+"want": [
+"https://motdang.net/cr/p/757608945559034193638748.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "บ้านนา ไผ่ล้อมรัก-เกษตรอินทรีย์",
+"want": [
+"https://motdang.net/cr/p/548483504920672296910.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "บ้านสวนชมภู Chomphu Garden",
+"want": [
+"https://motdang.net/cr/p/chomphu-garden-50715338434046723255.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ร้านฟูเจา",
+"want": [
+"https://motdang.net/cr/p/85679650444008613.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "บ้านต้นกล้าเชียงราย จำหน่ายต้นกล้าผักสวนครัวทุกชนิดปลีก-ส่ง",
+"want": [
+"https://motdang.net/cr/p/140084789561096493351.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ระบายแสง สตูดิโอ",
+"want": [
+"https://motdang.net/cr/p/7793048779075467.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Panda Tour & C.M.E.C",
+"want": [
+"https://motdang.net/cm/p/panda-tour-c-m-e-c-205972418270273.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Car park — Babara · 470 m from Tha Phae Gate",
+"want": [
+"https://motdang.net/cm/p/car-park-babara-470-m-from-tha-phae-gate-3414272492.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ลานจอดรถ Babara · ใกล้ประตูท่าแพ 470 ม.",
+"want": [
+"https://motdang.net/cm/p/car-park-babara-470-m-from-tha-phae-gate-3414272492.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Bicycle parking · 290 m south-west of the middle of Chiang Mai University (CMU)",
+"want": [
+"https://motdang.net/cm/p/bicycle-parking-290-m-south-west-of-the-middle-of-chiang-mai-7947528810.html"
+],
+"top": 1,
+"note": "long auto-generated landmark-distance label: own page unreachable, tag/list pages win"
+},
+{
+"set": "name",
+"q": "ที่จอดจักรยาน · ห่างกลางมหาวิทยาลัยเชียงใหม่ (มช.) 290 ม. ไปทางตะวันตกเฉียงใต้",
+"want": [
+"https://motdang.net/cm/p/bicycle-parking-290-m-south-west-of-the-middle-of-chiang-mai-7947528810.html"
+],
+"top": 1,
+"note": "long auto-generated landmark-distance label: own page unreachable, tag/list pages win"
+},
+{
+"set": "name",
+"q": "Jimmy Travel 1980  Chiangmai Thailand",
+"want": [
+"https://motdang.net/cm/p/jimmy-travel-1980-chiangmai-thailand-8368756941745388497862.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "Bamboo Rafting Maewang Chiangmai",
+"want": [
+"https://motdang.net/cm/p/bamboo-rafting-maewang-chiangmai-277428424809847224500.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Car park — Hidden Garden Hostel · 250 m from Chiang Mai Gate",
+"want": [
+"https://motdang.net/cm/p/car-park-hidden-garden-hostel-250-m-from-chiang-mai-gate-1214267660.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ลานจอดรถ Hidden Garden Hostel · ใกล้ประตูเชียงใหม่ 250 ม.",
+"want": [
+"https://motdang.net/cm/p/car-park-hidden-garden-hostel-250-m-from-chiang-mai-gate-1214267660.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ร้านไม้ มอเตอร์",
+"want": [
+"https://motdang.net/cr/p/501244634862085533553.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Bangchak",
+"want": [
+"https://motdang.net/cr/p/bangchak-537550945.html"
+],
+"top": 1,
+"note": "chain/branch: same-name siblings fill the top"
+},
+{
+"set": "name",
+"q": "บางจาก",
+"want": [
+"https://motdang.net/cr/p/bangchak-537550945.html"
+],
+"top": 1,
+"note": "chain/branch: same-name siblings fill the top"
+},
+{
+"set": "name",
+"q": "Bangchak",
+"want": [
+"https://motdang.net/cr/p/bangchak-1013505706.html"
+],
+"top": 1,
+"note": "chain/branch: same-name siblings fill the top"
+},
+{
+"set": "name",
+"q": "บางจาก",
+"want": [
+"https://motdang.net/cr/p/bangchak-1013505706.html"
+],
+"top": 1,
+"note": "chain/branch: same-name siblings fill the top"
+},
+{
+"set": "name",
+"q": "Parking · 3.8 km east of Chiang Rai Clock Tower",
+"want": [
+"https://motdang.net/cr/p/parking-3-8-km-east-of-chiang-rai-clock-tower-961314546.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ที่จอดรถ · ห่างหอนาฬิกาเชียงราย 3.8 กม. ทางตะวันออก",
+"want": [
+"https://motdang.net/cr/p/parking-3-8-km-east-of-chiang-rai-clock-tower-961314546.html"
+],
+"top": 1,
+"note": "long auto-generated landmark-distance label: own page unreachable, tag/list pages win"
+},
+{
+"set": "name",
+"q": "Street-side parking · 1.6 km south-west of Chiang Rai Clock Tower",
+"want": [
+"https://motdang.net/cr/p/street-side-parking-1-6-km-south-west-of-chiang-rai-clock-to-959698682.html"
+],
+"top": 1,
+"note": "long auto-generated landmark-distance label: own page unreachable, tag/list pages win"
+},
+{
+"set": "name",
+"q": "ที่จอดริมถนน · ห่างหอนาฬิกาเชียงราย 1.6 กม. ทางตะวันตกเฉียงใต้",
+"want": [
+"https://motdang.net/cr/p/street-side-parking-1-6-km-south-west-of-chiang-rai-clock-to-959698682.html"
+],
+"top": 1,
+"note": "long auto-generated landmark-distance label: own page unreachable, tag/list pages win"
+},
+{
+"set": "name",
+"q": "Bicycle parking · 1.0 km due west of Singha Park",
+"want": [
+"https://motdang.net/cr/p/bicycle-parking-1-0-km-due-west-of-singha-park-12479910527.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "ที่จอดจักรยาน · ห่างสิงห์ปาร์ค 1.0 กม. ไปทางตะวันตก",
+"want": [
+"https://motdang.net/cr/p/bicycle-parking-1-0-km-due-west-of-singha-park-12479910527.html"
+],
+"top": 1,
+"note": "long auto-generated landmark-distance label: own page unreachable, tag/list pages win"
+},
+{
+"set": "name",
+"q": "House of Spirit",
+"want": [
+"https://motdang.net/cm/p/house-of-spirit-5593688307.html"
+],
+"top": 1,
+"note": "wichaa.net place page ranks above motdang page"
+},
+{
+"set": "name",
+"q": "วัดแช่ช้าง",
+"want": [
+"https://motdang.net/cm/p/578124499959661359.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "วัดกลางเวียง",
+"want": [
+"https://motdang.net/cm/p/6237584643190746686722.html"
+],
+"top": 1,
+"note": "same title on different places (name collision)"
+},
+{
+"set": "name",
+"q": "วัดใหม่ธรรมชัยญาราม หัวหลิม",
+"want": [
+"https://motdang.net/cm/p/4226584027181087139.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "วัดหลังถ้ำ",
+"want": [
+"https://motdang.net/cm/p/54030844960846284642.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "วัดเทพอำนวย",
+"want": [
+"https://motdang.net/cm/p/64762862458424270528.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "มาดตะวรรณ์",
+"want": [
+"https://motdang.net/cr/p/43021895482889587436.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "บ้านประตูล้อ ตำบลป่าอ้อดอนชัย จังหวัดเชียงราย",
+"want": [
+"https://motdang.net/cr/p/9967483716049986.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "สำนักสงฆ์แสนสุขอาข่าเขตวนาราม",
+"want": [
+"https://motdang.net/cr/p/60032904507377362.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "วัดชมภู",
+"want": [
+"https://motdang.net/cr/p/85634246168685337529.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Wat Si Yang Chum",
+"want": [
+"https://motdang.net/cr/p/wat-si-yang-chum-2337430318.html"
+],
+"top": 1,
+"note": "wichaa.net place page ranks above motdang page"
+},
+{
+"set": "name",
+"q": "Wat Tham Pa Acha Thong",
+"want": [
+"https://motdang.net/cr/p/wat-tham-pa-acha-thong-3840465325.html"
+],
+"top": 1,
+"note": "wichaa.net place page ranks above motdang page"
+},
+{
+"set": "name",
+"q": "Emergency Medicine Department, Cmu",
+"want": [
+"https://motdang.net/cm/p/emergency-medicine-department-cmu-320418434028656206262.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "คลินิกเด็กหมอแป้งหอม สันป่าตอง-หางดง Panghomclinic",
+"want": [
+"https://motdang.net/cm/p/panghomclinic-9691882749780690282517344.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "หทัยจักษุคลินิกเวชกรรมเฉพาะทาง",
+"want": [
+"https://motdang.net/cm/p/1212139014901142143558.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Top Charoen Optical",
+"want": [
+"https://motdang.net/cm/p/top-charoen-optical-3289874302.html"
+],
+"top": 1,
+"note": "chain/branch: same-name siblings fill the top"
+},
+{
+"set": "name",
+"q": "แว่นท็อปเจริญ",
+"want": [
+"https://motdang.net/cm/p/top-charoen-optical-3289874302.html"
+],
+"top": 1,
+"note": "chain/branch: same-name siblings fill the top"
+},
+{
+"set": "name",
+"q": "Dr. Prayot",
+"want": [
+"https://motdang.net/cm/p/dr-prayot-2889032501.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "คลินิกหมอประโยชน์",
+"want": [
+"https://motdang.net/cm/p/dr-prayot-2889032501.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "คลินิกรักศักดิ์ทันตแพทย์",
+"want": [
+"https://motdang.net/cm/p/4175124340058.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Dental Home",
+"want": [
+"https://motdang.net/cr/p/dental-home-73567742612448168.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "วีรันดา คลินิก",
+"want": [
+"https://motdang.net/cr/p/7597365854441812324288.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "คลินิกแพทย์พิชญ์วิทย์ สูตินรีเวช",
+"want": [
+"https://motdang.net/cr/p/636204058786843.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Dr.NATxTINN Dental Clinic",
+"want": [
+"https://motdang.net/cr/p/dr-natxtinn-dental-clinic-940074871354361452.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Wiang Ciang Rung Hospital",
+"want": [
+"https://motdang.net/cr/p/wiang-ciang-rung-hospital-1033387176.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "คลินิคหมอสมชาติ",
+"want": [
+"https://motdang.net/cr/p/88167183543792111979.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Health Me Clinic",
+"want": [
+"https://motdang.net/cm/p/health-me-clinic-6991662448524692064.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "BaanThongsuk บ้านทองสุข ทำเล็บ สักคิ้ว สักปาก ต่อขนตา",
+"want": [
+"https://motdang.net/cm/p/baanthongsuk-23643084401909.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Studio YokYok",
+"want": [
+"https://motdang.net/cm/p/studio-yokyok-0136499406974411200.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "คุณหมอบิวตี้แคร์แม่โจ้",
+"want": [
+"https://motdang.net/cm/p/190718604678522399882959.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Brows&Nails by Pim",
+"want": [
+"https://motdang.net/cm/p/brows-nails-by-pim-930824226442159052433623.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Salon H",
+"want": [
+"https://motdang.net/cm/p/salon-h-0554047946884919611156.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Nan beauty & Spa",
+"want": [
+"https://motdang.net/cr/p/nan-beauty-spa-404547134648315072409.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ต้นอ้อบิวตี้ สักคิ้ว ลบคิ้ว จี้ไฝ ต่อขนตา แม่จันเชียงราย",
+"want": [
+"https://motdang.net/cr/p/60087374672769596523.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "อ้วน บิวตี้ซาลอน",
+"want": [
+"https://motdang.net/cr/p/204680456862384533.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Thebelleclinic chiangrai",
+"want": [
+"https://motdang.net/cr/p/thebelleclinic-chiangrai-546471146521532352839.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Ch.k barbershop",
+"want": [
+"https://motdang.net/cr/p/ch-k-barbershop-68371565044492096271112.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "คิ้วสวยปากสวย",
+"want": [
+"https://motdang.net/cr/p/3053187154407107121977.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "B-Loft",
+"want": [
+"https://motdang.net/cm/p/b-loft-9886299144795257022380.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Doi Kiew Hung Viewpoint",
+"want": [
+"https://motdang.net/cm/p/doi-kiew-hung-viewpoint-11212240040.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Doi Nang",
+"want": [
+"https://motdang.net/cm/p/doi-nang-7829089579.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ดอยนาง",
+"want": [
+"https://motdang.net/cm/p/doi-nang-7829089579.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "หอพักหญิง นันทกา",
+"want": [
+"https://motdang.net/cm/p/80299642429114004761464.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "สะพานแม่น้ำปิง Ping River Bridge",
+"want": [
+"https://motdang.net/cm/p/ping-river-bridge-660361966481973509634337.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "หอพัก บ้านขนุน",
+"want": [
+"https://motdang.net/cm/p/582744108304272275.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "บ้านหัวเวียง",
+"want": [
+"https://motdang.net/cr/p/07724458296755452.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ฟฟ รีสร์อท",
+"want": [
+"https://motdang.net/cr/p/7841929164988618678.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Doi Pha Tang",
+"want": [
+"https://motdang.net/cr/p/doi-pha-tang-3201494143.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ดอยผาตั้ง",
+"want": [
+"https://motdang.net/cr/p/doi-pha-tang-3201494143.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "พระสยามเทวาธิราช",
+"want": [
+"https://motdang.net/cr/p/0428836149819557681768987.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ม่อนแก้วแมนชั่น",
+"want": [
+"https://motdang.net/cr/p/50479880543929642997135721.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ท่าเรือ ซี อาร์ เชียงราย",
+"want": [
+"https://motdang.net/cr/p/1951230495012609068.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "คณะสงฆ์อำเภอสารภี จังหวัดเชียงใหม่",
+"want": [
+"https://motdang.net/cm/p/37384964696458560380.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "CEF Chiang Mai",
+"want": [
+"https://motdang.net/cm/p/cef-chiang-mai-781382904710047953933627.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "สำนักพยัคฆราชล้านนา",
+"want": [
+"https://motdang.net/cm/p/673697610403884721955871.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Space Land Maejo",
+"want": [
+"https://motdang.net/cm/p/space-land-maejo-91387338546365114798667.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ECON Library, CMU",
+"want": [
+"https://motdang.net/cm/p/econ-library-cmu-72496264798840440653.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "บ้านโขงขาว บ้านแหวน",
+"want": [
+"https://motdang.net/cm/p/6207134469003946666954.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Thung See Kerd cemetry",
+"want": [
+"https://motdang.net/cr/p/thung-see-kerd-cemetry-6951292885.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Mae Tum Tai cemetery",
+"want": [
+"https://motdang.net/cr/p/mae-tum-tai-cemetery-13607524001.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Sansai Luang cemetery",
+"want": [
+"https://motdang.net/cr/p/sansai-luang-cemetery-7504984985.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "คริสตจักรของพระเจ้าในเชียงราย Church of God in Chiang Rai",
+"want": [
+"https://motdang.net/cr/p/church-of-god-in-chiang-rai-095834945545884137395.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ไร่ตองจันทร์",
+"want": [
+"https://motdang.net/cr/p/67289810439166565770.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "วิสาหกิจชุมชน ปาล์มน้ำมันอำเภอพาน",
+"want": [
+"https://motdang.net/cr/p/0652814760214368.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ทรัมส์ 2 สแควร์ อาคารซี",
+"want": [
+"https://motdang.net/cm/p/2-2-092804c.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "อิ่มสุวรรณแมนชั่น",
+"want": [
+"https://motdang.net/cm/p/50565014031914359441.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Kw ค้าเหล็ก",
+"want": [
+"https://motdang.net/cm/p/kw-350444209472024667.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "โครงการหมู่บ้านลดามณี - สารภี",
+"want": [
+"https://motdang.net/cm/p/89830024469778804117867.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Porn Pen Place",
+"want": [
+"https://motdang.net/cm/p/porn-pen-place-199921038.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "พรเพ็ญเพลส",
+"want": [
+"https://motdang.net/cm/p/porn-pen-place-199921038.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ร้านดอกไม้ ณัฐฌา - Natcha Flower",
+"want": [
+"https://motdang.net/cm/p/natcha-flower-01699545684198577410206.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "CR Miracle Land",
+"want": [
+"https://motdang.net/cr/p/cr-miracle-land-4765988463482099312.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ดีคอนโด ฮาย",
+"want": [
+"https://motdang.net/cr/p/crcondoreg-f2a8017.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "บ้านพีเอสโฮมเชียงรายโทร.0914800634",
+"want": [
+"https://motdang.net/cr/p/0914800634-0513536546830236714.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Skyville Airport",
+"want": [
+"https://motdang.net/cr/p/skyville-airport-73802804288556755577.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Amanta Village 2",
+"want": [
+"https://motdang.net/cr/p/amanta-village-2-9387361140683947294312811.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "แม่ฟ้าหลวงวิวรีสอร์ท",
+"want": [
+"https://motdang.net/cr/p/611177664152267412021599.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "บ้านสวนชาลี",
+"want": [
+"https://motdang.net/cm/p/72728406699993344.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "โรงฆ่าสัตว์เทศบาลนครเชียงใหม่",
+"want": [
+"https://motdang.net/cm/p/89261041352604.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ร้านส้มตำพี่เขียวหน้าม.พายัพเชียงใหม่",
+"want": [
+"https://motdang.net/cm/p/586474530466471071.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Sahrey Chanta",
+"want": [
+"https://motdang.net/cm/p/sahrey-chanta-1343589734784902115120136.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ตูบหัวดง",
+"want": [
+"https://motdang.net/cm/p/59463599444149922138882.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "สวนเมืองเหนือเชียงใหม่",
+"want": [
+"https://motdang.net/cm/p/924869524105372352246.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "จันทร์สวย พาณิชย์",
+"want": [
+"https://motdang.net/cr/p/24443244536170385445.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "โรงสีข้าวเพ็ชรสุวรรณ อ.แม่สรวย จ.เชียงราย",
+"want": [
+"https://motdang.net/cr/p/23178422783051012263.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "หจก เกษตรแม่วัง รุ่งเรืองพานิชย์",
+"want": [
+"https://motdang.net/cr/p/281290314184382825.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ร้านดวงจันทร์",
+"want": [
+"https://motdang.net/cr/p/743537444280009054900.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Ban Dai Marketplace",
+"want": [
+"https://motdang.net/cr/p/ban-dai-marketplace-501190066.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ตลาดสดบ้านด้าย",
+"want": [
+"https://motdang.net/cr/p/ban-dai-marketplace-501190066.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ศูนย์จำหน่ายน้ำดื่มสกายเคลียร์ เชียงราย โกดัง สาขา อ.พาน",
+"want": [
+"https://motdang.net/cr/p/9257686984937405303855.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "เปี่ยมรัก นวดแผนไทย",
+"want": [
+"https://motdang.net/cm/p/2045104984700097821.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "The Cara Clinic - คลินิกเวชกรรมเชียงใหม่",
+"want": [
+"https://motdang.net/cm/p/the-cara-clinic-9072573400851408.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Long Massage - หลง มาสสาจ",
+"want": [
+"https://motdang.net/cm/p/long-massage-713501524048804026.html"
+],
+"top": 1,
+"note": "synonym expansion/AND dilution (quoted phrase fixes it)"
+},
+{
+"set": "name",
+"q": "May I Health U Pilates Studio",
+"want": [
+"https://motdang.net/cm/p/may-i-health-u-pilates-studio-80311214214778411569840.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Massage Palace",
+"want": [
+"https://motdang.net/cm/p/massage-palace-812846186423887662.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "สถานประกอบการนวดแผนไทยเพื่อสุขภาพโดยคนตาบอดเชียงใหม่",
+"want": [
+"https://motdang.net/cm/p/71129943868650376.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Cho Kaew Thai Massage 2",
+"want": [
+"https://motdang.net/cr/p/cho-kaew-thai-massage-2-19511738484861861401140.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "โรงเรียน นพดนย์ แพทย์แผนไทย",
+"want": [
+"https://motdang.net/cr/p/81839294394918638840.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ร้านเสริมสวยสุกัญญา (Sukanya Beauty Salon)",
+"want": [
+"https://motdang.net/cr/p/sukanya-beauty-salon-969229984291575882710174.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "เรือนแก้ว นวดเพื่อสุขภาพ",
+"want": [
+"https://motdang.net/cr/p/85570585654849047112515331972.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "RADA Clinic สาขาเชียงราย โบทอก ร้อยไหม ฟิวเลอร์ ปรับรูปหน้า by Dr.Aut",
+"want": [
+"https://motdang.net/cr/p/rada-clinic-by-dr-aut-1364853764251433928.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "A-K Barber & Beauty",
+"want": [
+"https://motdang.net/cr/p/a-k-barber-beauty-34953284058727394087.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Chiang Mai Municipality Stadium",
+"want": [
+"https://motdang.net/cm/p/chiang-mai-municipality-stadium-665826715.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "สนามกีฬาเทศบาลนครเชียงใหม่",
+"want": [
+"https://motdang.net/cm/p/chiang-mai-municipality-stadium-665826715.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "Flying Wings Zip Line Chiang Mai",
+"want": [
+"https://motdang.net/cm/p/flying-wings-zip-line-chiang-mai-38265869944181485565.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Gato Studio BJJ",
+"want": [
+"https://motdang.net/cm/p/gato-studio-bjj-9569174497347710.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Maerim Shooting Range",
+"want": [
+"https://motdang.net/cm/p/maerim-shooting-range-29388807348784822592348.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "YOGA Thailand  Taladya",
+"want": [
+"https://motdang.net/cm/p/yoga-thailand-taladya-0014864693139537091.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Yoga Pretzel Chiang Mai",
+"want": [
+"https://motdang.net/cm/p/yoga-pretzel-chiang-mai-711765114448090015892.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ซาวน่าแอนด์ฟิตเนสเฟิร์ส",
+"want": [
+"https://motdang.net/cr/p/00298900642422891432007.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "สนามเทนนิส มหาวิทยาลัยราชภัฏเชียงราย",
+"want": [
+"https://motdang.net/cr/p/170072111.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "ร้านศรีเวียงฟิชชิ่ง จำหน่ายอุปรณ์ตกปลา",
+"want": [
+"https://motdang.net/cr/p/0352788834449905285.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "SUPERSPORTS",
+"want": [
+"https://motdang.net/cr/p/supersports-crcuratedsupersportscentralchiangrai.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ปรัชญาโยคะ Prajñā Yoga Shala",
+"want": [
+"https://motdang.net/cr/p/praj-yoga-shala-30971389409952297430916.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Minimal Badminton Chiang rai",
+"want": [
+"https://motdang.net/cr/p/minimal-badminton-chiang-rai-1527992742738315843.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "Spacetime.cnx Dispensary Floor 3",
+"want": [
+"https://motdang.net/cm/p/spacetime-cnx-dispensary-floor-3-41992841721152761050.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "The home",
+"want": [
+"https://motdang.net/cm/p/the-home-6611326687.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Green Wave - Organic Cannabis Farm",
+"want": [
+"https://motdang.net/cm/p/green-wave-organic-cannabis-farm-658507702243972390891.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Green Dog",
+"want": [
+"https://motdang.net/cm/p/green-dog-00597712441422382724.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Weed Area 420 nimman",
+"want": [
+"https://motdang.net/cm/p/weed-area-420-nimman-12588829769.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ร้านกัญชา วี๊ด.วิ้ว รวมโชค",
+"want": [
+"https://motdang.net/cm/p/weed-wiw-13303153000.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "UGE Store",
+"want": [
+"https://motdang.net/cr/p/uge-store-022819114275233776613.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "Rangoon Cannabiz",
+"want": [
+"https://motdang.net/cr/p/rangoon-cannabiz-348708464963351039.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Reggae Home & Bar",
+"want": [
+"https://motdang.net/cr/p/reggae-home-bar-4559979989.html"
+],
+"top": 1,
+"note": "flaky across passes"
+},
+{
+"set": "name",
+"q": "Area42 Cafe",
+"want": [
+"https://motdang.net/cr/p/area42-cafe-294474914902935705121.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "JDG Cafe Bar",
+"want": [
+"https://motdang.net/cr/p/jdg-cafe-bar-5172613394014332058096.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ร้านขายกัญชา Nure niyom เหนือนิยม og",
+"want": [
+"https://motdang.net/cr/p/nure-niyom-og-8691057849523422351.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ฝางฟาร์มปูนา",
+"want": [
+"https://motdang.net/cm/p/1466140028178406484.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ร้านเจนี่อาหารสัตว์",
+"want": [
+"https://motdang.net/cm/p/8247036072744189129984544.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Footprints Animal Clinic",
+"want": [
+"https://motdang.net/cm/p/footprints-animal-clinic-43377547773541725.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Mali Cat Cafe & Bar",
+"want": [
+"https://motdang.net/cm/p/mali-cat-cafe-bar-11084338234459162403.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "กระสอบทอง อาหารสัตว์",
+"want": [
+"https://motdang.net/cm/p/0261843838097526429.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "หางดงสัตวแพทย์ คลินิก",
+"want": [
+"https://motdang.net/cm/p/0944295042361878897.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "รอบเวียงรักษาสัตว์",
+"want": [
+"https://motdang.net/cr/p/8118666115847927909843974.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "โฮมตูบและเหมียวสัตวแพทย์",
+"want": [
+"https://motdang.net/cr/p/8469915468673241.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ร้านปลาสวยงาม แอนด์ เพ็ทช็อป",
+"want": [
+"https://motdang.net/cr/p/56451944921066720.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "J3n พันธุ์ไก่ และอุปกรณ์",
+"want": [
+"https://motdang.net/cr/p/j3n-08484895829466042046323.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "เฮือนฮักษาสัตว์",
+"want": [
+"https://motdang.net/cr/p/123254843887302600340535.html"
+],
+"top": 1,
+"note": "same title on different places (name collision)"
+},
+{
+"set": "name",
+"q": "ไก่สวย ณ เชียงราย",
+"want": [
+"https://motdang.net/cr/p/13060532342931422626.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "M DRIFT ZONE Chiangmai",
+"want": [
+"https://motdang.net/cm/p/m-drift-zone-chiangmai-5419225446256856379.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Jungle Adventure Park",
+"want": [
+"https://motdang.net/cm/p/jungle-adventure-park-374146424386347089776.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "บ้านต้นผึ้ง",
+"want": [
+"https://motdang.net/cm/p/9715184425897287492.html"
+],
+"top": 1,
+"note": "same title on different places (name collision)"
+},
+{
+"set": "name",
+"q": "ร้านชนากานต์พันธุ์ไม้",
+"want": [
+"https://motdang.net/cm/p/83850424952909018299.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "วีทกาญจน์ ร้านต้นไม้",
+"want": [
+"https://motdang.net/cm/p/09815817542540774726.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "G’s Park",
+"want": [
+"https://motdang.net/cm/p/g-s-park-645305191440555946180896957.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Kok River",
+"want": [
+"https://motdang.net/cr/p/kok-river-1871135.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "น้ำแม่กก",
+"want": [
+"https://motdang.net/cr/p/kok-river-1871135.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Nong Bueng",
+"want": [
+"https://motdang.net/cr/p/nong-bueng-407667389.html"
+],
+"top": 1,
+"note": "duplicate record of the same place (own 2-3 pages <600 m apart)"
+},
+{
+"set": "name",
+"q": "หนองปึ๋ง",
+"want": [
+"https://motdang.net/cr/p/nong-bueng-407667389.html"
+],
+"top": 1,
+"note": "duplicate record of the same place (own 2-3 pages <600 m apart)"
+},
+{
+"set": "name",
+"q": "เชียงของพันธุ์ไม้ Chiang Khong Seedling",
+"want": [
+"https://motdang.net/cr/p/chiang-khong-seedling-8253711214910871197283526.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Change Rai Moat",
+"want": [
+"https://motdang.net/cr/p/change-rai-moat-991206435.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "คูเมืองเชียงราย",
+"want": [
+"https://motdang.net/cr/p/change-rai-moat-991206435.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "Reservoir 15",
+"want": [
+"https://motdang.net/cr/p/reservoir-15-28446399.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "name",
+"q": "ร้านนุ๊กไม้งาม",
+"want": [
+"https://motdang.net/cr/p/792578734058522075941.html"
+],
+"top": 1,
+"note": ""
+},
+{
+"set": "audit",
+"q": "Nakhon Ping Floating Market",
+"want": [
+"https://motdang.net/cm/p/nakhon-ping-floating-market-389174447.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ตลาดน้ำนครพิงค์",
+"want": [
+"https://motdang.net/cm/p/nakhon-ping-floating-market-389174447.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "Home Mart",
+"want": [
+"https://motdang.net/cm/p/home-mart-380990719.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Jacky Bike",
+"want": [
+"https://motdang.net/cm/p/jacky-bike-1930113685.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "jack ybike",
+"want": [
+"https://motdang.net/cm/p/jacky-bike-1930113685.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Baanchang Elephant Park",
+"want": [
+"https://motdang.net/cm/p/baanchang-elephant-park-cmcuratedbaanchangelephantpark.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "baanchang elephnt park",
+"want": [
+"https://motdang.net/cm/p/baanchang-elephant-park-cmcuratedbaanchangelephantpark.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "InterContinental Mae Ping",
+"want": [
+"https://motdang.net/cm/p/intercontinental-mae-ping-494956255.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "24AB Garage",
+"want": [
+"https://motdang.net/cr/p/24ab-garage-91598719430098130016.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "บ้านกลางสวน นวดเพื่อสุขภาพ Baanklangsuan massage & nail",
+"want": [
+"https://motdang.net/cm/p/baanklangsuan-massage-nail-8073220225.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "บ้านกลางสวน นวดเพื่อสุขภาพ baanklangsuan massage & anil",
+"want": [
+"https://motdang.net/cm/p/baanklangsuan-massage-nail-8073220225.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "เพื่อนสี่ขาสัตวแพทย์",
+"want": [
+"https://motdang.net/cm/p/3341023584.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "โรงเรียนบ้านทับกุมารทอง",
+"want": [
+"https://motdang.net/cr/p/1057120373.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "โรงเรยีนบ้านทับกุมารทอง",
+"want": [
+"https://motdang.net/cr/p/1057120373.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Boreboom Market",
+"want": [
+"https://motdang.net/cm/p/boreboom-market-421103334.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "boeboom market",
+"want": [
+"https://motdang.net/cm/p/boreboom-market-421103334.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "โรงพยาบาลส่งเสริมสุขภาพตำบลตับเต่า",
+"want": [
+"https://motdang.net/cr/p/8899210207725.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "โรงพยาบาลส่งเสริมสุขภาพตำบลตับเตา",
+"want": [
+"https://motdang.net/cr/p/8899210207725.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "vintage clothes",
+"want": [
+"https://motdang.net/cm/p/vintage-clothes-4423151297.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "vitage clothes",
+"want": [
+"https://motdang.net/cm/p/vintage-clothes-4423151297.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "For U Boutique Hotel",
+"want": [
+"https://motdang.net/cm/p/for-u-boutique-hotel-445252913.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "for u boutique hhotel",
+"want": [
+"https://motdang.net/cm/p/for-u-boutique-hotel-445252913.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "บ้านสวน สุดสยาม",
+"want": [
+"https://motdang.net/cr/p/607984372406544621839005.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "คิน ออโต้ไทร์",
+"want": [
+"https://motdang.net/cr/p/586042498680485.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Jasmine nails & spa",
+"want": [
+"https://motdang.net/cr/p/jasmine-nails-spa-2431694433869898158762.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "B-begin salon",
+"want": [
+"https://motdang.net/cm/p/b-begin-salon-6915364985.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "b-begi nsalon",
+"want": [
+"https://motdang.net/cm/p/b-begin-salon-6915364985.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "โรงเรียนวัดบ้านท่า",
+"want": [
+"https://motdang.net/cm/p/1050130893.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "โรงเรียนวัดดบ้านท่า",
+"want": [
+"https://motdang.net/cm/p/1050130893.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "สำนักงานวงดนตรีป่าสักน้อยมิวสิค",
+"want": [
+"https://motdang.net/cr/p/95095728945966522730199.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "สำนักงานวงดนตรีป่าสักน้อยมิวิสค",
+"want": [
+"https://motdang.net/cr/p/95095728945966522730199.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Petmart Chiangmai",
+"want": [
+"https://motdang.net/cm/p/petmart-chiangmai-5424303264.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "533 Tattoo",
+"want": [
+"https://motdang.net/cr/p/533-tattoo-6290647049997957529.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "533 tttoo",
+"want": [
+"https://motdang.net/cr/p/533-tattoo-6290647049997957529.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "บ้านสวนเพาะรัก",
+"want": [
+"https://motdang.net/cr/p/312699378487527166805.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "วิสาหกิจชุมชนทิพย์ไทยผลิตภัณฑ์สมุนไพรเพื่อสุขภาพ",
+"want": [
+"https://motdang.net/cr/p/48212724419072858885.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "วิสาหกิจชุมชนทิพย์ไทยผลตภัณฑ์สมุนไพรเพื่อสุขภาพ",
+"want": [
+"https://motdang.net/cr/p/48212724419072858885.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "BeALLA Craft Skincare",
+"want": [
+"https://motdang.net/cm/p/bealla-craft-skincare-11806619444.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "มีอัลล่า คราฟท์ สกินแคร์",
+"want": [
+"https://motdang.net/cm/p/bealla-craft-skincare-11806619444.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "สกายอาร์ต  ผลิตป้ายโฆษณา",
+"want": [
+"https://motdang.net/cm/p/31476.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "สกายอาร์ต  ผลิตป้ายโโฆษณา",
+"want": [
+"https://motdang.net/cm/p/31476.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Buzzy Bee Bike",
+"want": [
+"https://motdang.net/cm/p/buzzy-bee-bike-6206831787.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "The Master Tattoo",
+"want": [
+"https://motdang.net/cm/p/the-master-tattoo-5175695423.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "the msater tattoo",
+"want": [
+"https://motdang.net/cm/p/the-master-tattoo-5175695423.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Mae Kachan Market",
+"want": [
+"https://motdang.net/cr/p/mae-kachan-market-1459699557.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ตลาดสดแม่ขะจาน",
+"want": [
+"https://motdang.net/cr/p/mae-kachan-market-1459699557.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "Dogs siam",
+"want": [
+"https://motdang.net/cm/p/dogs-siam-5021459323.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ห้องพักนักศึกษา",
+"want": [
+"https://motdang.net/cm/p/1130917249.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "V-Fix ซ่อมมือถือด่วน เปลี่ยนจอ เปลี่ยนแบต สาขาสันติธรรม",
+"want": [
+"https://motdang.net/cm/p/v-fix-13707208409.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "สวนหย่อมป้ายวัด",
+"want": [
+"https://motdang.net/cr/p/1102521904.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Hold Weed CNX",
+"want": [
+"https://motdang.net/cm/p/hold-weed-cnx-906166.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "คลินิกเด็ก หมอกรรณิการ์",
+"want": [
+"https://motdang.net/cr/p/13009664343486454318320375.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Viewpoint and Shelter",
+"want": [
+"https://motdang.net/cm/p/viewpoint-and-shelter-2774523763.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "จุดชมวิวลานต้นสน",
+"want": [
+"https://motdang.net/cm/p/viewpoint-and-shelter-2774523763.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ตลาดชายแดนไทย-ลาว บ้านฮวก",
+"want": [
+"https://motdang.net/cr/p/3728024580509685.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ตลาชายแดนไทย-ลาว บ้านฮวก",
+"want": [
+"https://motdang.net/cr/p/3728024580509685.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "ตลาดสดชุมชน บ้านศาลา",
+"want": [
+"https://motdang.net/cr/p/2148548998.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ตลลาดสดชุมชน บ้านศาลา",
+"want": [
+"https://motdang.net/cr/p/2148548998.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "นวดช้างเอกแผนไทย",
+"want": [
+"https://motdang.net/cr/p/618991594402783197.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "นวดช้างเเอกแผนไทย",
+"want": [
+"https://motdang.net/cr/p/618991594402783197.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Faculty of Fine Arts Gallery, Chiang Mai University",
+"want": [
+"https://motdang.net/cm/p/faculty-of-fine-arts-gallery-chiang-mai-university-cmnewsletterfacultyfineartscmu.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "หอศิลป์ คณะวิจิตรศิลป์ มหาวิทยาลัยเชียงใหม่",
+"want": [
+"https://motdang.net/cm/p/faculty-of-fine-arts-gallery-chiang-mai-university-cmnewsletterfacultyfineartscmu.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "วัดร้องขี้เหล็ก",
+"want": [
+"https://motdang.net/cm/p/03500501006.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "วัดรร้องขี้เหล็ก",
+"want": [
+"https://motdang.net/cm/p/03500501006.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Ban Chunsongsang Home Stay",
+"want": [
+"https://motdang.net/cm/p/ban-chunsongsang-home-stay-6212854285.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "บ้านจันทร์ส่องแสง โฮมสเตย์",
+"want": [
+"https://motdang.net/cm/p/ban-chunsongsang-home-stay-6212854285.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "bann chunsongsang home stay",
+"want": [
+"https://motdang.net/cm/p/ban-chunsongsang-home-stay-6212854285.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "ยาสี่พี่น้อง (สันผักหวาน)",
+"want": [
+"https://motdang.net/cm/p/1626631523.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Wat San Na Meng",
+"want": [
+"https://motdang.net/cm/p/wat-san-na-meng-3955781349.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "วัดสันนาเม็ง",
+"want": [
+"https://motdang.net/cm/p/wat-san-na-meng-3955781349.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "wat sa nna meng",
+"want": [
+"https://motdang.net/cm/p/wat-san-na-meng-3955781349.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "เครือข่ายแผนชุมชนพึ่งตนเองจังหวัดเชียงราย Cbo2540",
+"want": [
+"https://motdang.net/cr/p/cbo2540-216613471919986380904.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "เครือข่ายแผนชุมชนพึ่งนเองจังหวัดเชียงราย cbo2540",
+"want": [
+"https://motdang.net/cr/p/cbo2540-216613471919986380904.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "สวนฅนยองเกษตรธรรมชาติ",
+"want": [
+"https://motdang.net/cr/p/670006594781917297579.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "5th Male Dormitory",
+"want": [
+"https://motdang.net/cm/p/5th-male-dormitory-182651831.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "หอพักนักศึกษาชาย อาคาร 5",
+"want": [
+"https://motdang.net/cm/p/5th-male-dormitory-182651831.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "5th malle dormitory",
+"want": [
+"https://motdang.net/cm/p/5th-male-dormitory-182651831.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Velocity",
+"want": [
+"https://motdang.net/cm/p/velocity-2771778241.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Center Fishing Park",
+"want": [
+"https://motdang.net/cm/p/center-fishing-park-140011217.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "center fising park",
+"want": [
+"https://motdang.net/cm/p/center-fishing-park-140011217.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "HighFactory. cannabis / weed / dispensary",
+"want": [
+"https://motdang.net/cm/p/highfactory-cannabis-weed-dispensary-196508.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "highfactory. canabis / weed / dispensary",
+"want": [
+"https://motdang.net/cm/p/highfactory-cannabis-weed-dispensary-196508.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "วัดร่องคต",
+"want": [
+"https://motdang.net/cr/p/03570514004.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "วััดร่องคต",
+"want": [
+"https://motdang.net/cr/p/03570514004.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Kan Siri Place",
+"want": [
+"https://motdang.net/cm/p/kan-siri-place-464520138.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "กาญจน์ศิริเพลส",
+"want": [
+"https://motdang.net/cm/p/kan-siri-place-464520138.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "kan siriplace",
+"want": [
+"https://motdang.net/cm/p/kan-siri-place-464520138.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Ratchapreuk Pet Clinic",
+"want": [
+"https://motdang.net/cm/p/ratchapreuk-pet-clinic-2094920947.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ก๋วยเต๋ียวไก่ตุ๋นนัองนิสา",
+"want": [
+"https://motdang.net/cm/p/1299300409.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ก๋วยเต๋ียวไก่ตุ๋นนนัองนิสา",
+"want": [
+"https://motdang.net/cm/p/1299300409.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "โรงเรียนดนตรีหนึ่งมิวสิค",
+"want": [
+"https://motdang.net/cr/p/5847282244139676523.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "โรงเเรียนดนตรีหนึ่งมิวสิค",
+"want": [
+"https://motdang.net/cr/p/5847282244139676523.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Dương Ngọc Hà",
+"want": [
+"https://motdang.net/cr/p/d-ng-ng-c-h-16762745308797.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "dưương ngọc hà",
+"want": [
+"https://motdang.net/cr/p/d-ng-ng-c-h-16762745308797.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "เกื้อกูล เฟอร์นิเจอร์",
+"want": [
+"https://motdang.net/cr/p/571037614391429533205.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "บ้านขันหอม",
+"want": [
+"https://motdang.net/cr/p/083703594189098321634.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "บ้านขันหมอ",
+"want": [
+"https://motdang.net/cr/p/083703594189098321634.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "O.P Pizza",
+"want": [
+"https://motdang.net/cr/p/o-p-pizza-7150915604294936474702.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "o.p piza",
+"want": [
+"https://motdang.net/cr/p/o-p-pizza-7150915604294936474702.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Tiwlipz Hair Salon",
+"want": [
+"https://motdang.net/cr/p/tiwlipz-hair-salon-3637744426187639526320.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "twlipz hair salon",
+"want": [
+"https://motdang.net/cr/p/tiwlipz-hair-salon-3637744426187639526320.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Prim Pharmacy",
+"want": [
+"https://motdang.net/cm/p/prim-pharmacy-11607143391.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "prim phaarmacy",
+"want": [
+"https://motdang.net/cm/p/prim-pharmacy-11607143391.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Tyre repair",
+"want": [
+"https://motdang.net/cm/p/tyre-repair-6124476077.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "tyre  repair",
+"want": [
+"https://motdang.net/cm/p/tyre-repair-6124476077.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Ran Lap Ton Maphrao",
+"want": [
+"https://motdang.net/cm/p/ran-lap-ton-maphrao-2098121992.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ร้านลาบต้นมะพร้าว",
+"want": [
+"https://motdang.net/cm/p/ran-lap-ton-maphrao-2098121992.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ran lap ton mpahrao",
+"want": [
+"https://motdang.net/cm/p/ran-lap-ton-maphrao-2098121992.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "White Chedi",
+"want": [
+"https://motdang.net/cm/p/white-chedi-672589291.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "เจดีย์ขาว",
+"want": [
+"https://motdang.net/cm/p/white-chedi-672589291.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "white cheddi",
+"want": [
+"https://motdang.net/cm/p/white-chedi-672589291.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Roastwood",
+"want": [
+"https://motdang.net/cm/p/roastwood-5956250105.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "roastood",
+"want": [
+"https://motdang.net/cm/p/roastwood-5956250105.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Ruammit Elephant Camp",
+"want": [
+"https://motdang.net/cr/p/ruammit-elephant-camp-1445529061.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ทัวร์ช้างกระเหรี่ยงรวมมิตร",
+"want": [
+"https://motdang.net/cr/p/ruammit-elephant-camp-1445529061.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "116 Art Gallery",
+"want": [
+"https://motdang.net/cm/p/116-art-gallery-4584155913.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ปรัชญาโยคะ Prajñā Yoga Shala",
+"want": [
+"https://motdang.net/cr/p/praj-yoga-shala-30971389409952297430916.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Padel Club Chiang Mai",
+"want": [
+"https://motdang.net/cm/p/padel-club-chiang-mai-cmnewsletterpadelclubcm.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "pdel club chiang mai",
+"want": [
+"https://motdang.net/cm/p/padel-club-chiang-mai-cmnewsletterpadelclubcm.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "ถ้ำพระ",
+"want": [
+"https://motdang.net/cr/p/15325912454768850565.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ถำ้พระ",
+"want": [
+"https://motdang.net/cr/p/15325912454768850565.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Maesa Elephant Camp",
+"want": [
+"https://motdang.net/cm/p/maesa-elephant-camp-cmcuratedmaesaelephantcamp.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ปางช้างแม่สา",
+"want": [
+"https://motdang.net/cm/p/maesa-elephant-camp-cmcuratedmaesaelephantcamp.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "maeesa elephant camp",
+"want": [
+"https://motdang.net/cm/p/maesa-elephant-camp-cmcuratedmaesaelephantcamp.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Donut Canyon",
+"want": [
+"https://motdang.net/cm/p/donut-canyon-11050519609.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "สระอโนดาต",
+"want": [
+"https://motdang.net/cm/p/329069427.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "สระอโนาต",
+"want": [
+"https://motdang.net/cm/p/329069427.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "คลังกัญ สาขาเชียงราย",
+"want": [
+"https://motdang.net/cr/p/103.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "คลังกัญ สาขาเชีงราย",
+"want": [
+"https://motdang.net/cr/p/103.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "ซุ้มไก่ โชคมังกร แม่จัน",
+"want": [
+"https://motdang.net/cr/p/916028537470951926794.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ซุ้มไกก่ โชคมังกร แม่จัน",
+"want": [
+"https://motdang.net/cr/p/916028537470951926794.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "หจก. เชียงใหม่วีระกิจ",
+"want": [
+"https://motdang.net/cm/p/11231325285.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "หจก. เชียงใใหม่วีระกิจ",
+"want": [
+"https://motdang.net/cm/p/11231325285.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Chiang Mai Cabaret Theatre",
+"want": [
+"https://motdang.net/cm/p/chiang-mai-cabaret-theatre-762611799.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Parking · 41 km south-west of Chiang Rai Clock Tower",
+"want": [
+"https://motdang.net/cr/p/parking-41-km-south-west-of-chiang-rai-clock-tower-319728887.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ที่จอดรถ · ห่างหอนาฬิกาเชียงราย 41 กม. ทางตะวันตกเฉียงใต้",
+"want": [
+"https://motdang.net/cr/p/parking-41-km-south-west-of-chiang-rai-clock-tower-319728887.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "parkin · 41 km south-west of chiang rai clock tower",
+"want": [
+"https://motdang.net/cr/p/parking-41-km-south-west-of-chiang-rai-clock-tower-319728887.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Tattoo",
+"want": [
+"https://motdang.net/cm/p/tattoo-6579572171.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Amen House",
+"want": [
+"https://motdang.net/cr/p/amen-house-1019881352.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "เอเมน เฮาส์",
+"want": [
+"https://motdang.net/cr/p/amen-house-1019881352.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "โรงปั้นพระใหญ่ อภิชาติ แสงคำ เชียงราย",
+"want": [
+"https://motdang.net/cr/p/79925154932824359.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "โรงปั้นพระใหญ่ อภภิชาติ แสงคำ เชียงราย",
+"want": [
+"https://motdang.net/cr/p/79925154932824359.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "ดิ ไอเดีย พาร์ค วิลล์ คอนโดมิเนียม",
+"want": [
+"https://motdang.net/cr/p/812135144014605680.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Tuesday, Thursday Market",
+"want": [
+"https://motdang.net/cm/p/tuesday-thursday-market-1236837315.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ตลาดนัด วันอังคาร , วันพฤหัส",
+"want": [
+"https://motdang.net/cm/p/tuesday-thursday-market-1236837315.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "tueday, thursday market",
+"want": [
+"https://motdang.net/cm/p/tuesday-thursday-market-1236837315.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "San Thon Pao cemetery",
+"want": [
+"https://motdang.net/cr/p/san-thon-pao-cemetery-14023509501.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Asis Telecom Shop",
+"want": [
+"https://motdang.net/cm/p/asis-telecom-shop-5377269363.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "asis teelecom shop",
+"want": [
+"https://motdang.net/cm/p/asis-telecom-shop-5377269363.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Giant Hostel 2",
+"want": [
+"https://motdang.net/cm/p/giant-hostel-2-1618868157.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "giat hostel 2",
+"want": [
+"https://motdang.net/cm/p/giant-hostel-2-1618868157.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "VP Dental Clinic",
+"want": [
+"https://motdang.net/cm/p/vp-dental-clinic-11936097570.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "vp denntal clinic",
+"want": [
+"https://motdang.net/cm/p/vp-dental-clinic-11936097570.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "The Nail & Massage",
+"want": [
+"https://motdang.net/cm/p/the-nail-massage-7416638349.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "the nail & masssage",
+"want": [
+"https://motdang.net/cm/p/the-nail-massage-7416638349.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Payap University Lifelong Learning Center",
+"want": [
+"https://motdang.net/cm/p/payap-university-lifelong-learning-center-10219440217.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "เมืองเทิงอาหารสัตว์",
+"want": [
+"https://motdang.net/cr/p/770287441894045.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "เมืองเททิงอาหารสัตว์",
+"want": [
+"https://motdang.net/cr/p/770287441894045.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "New Moda Custom Tailors",
+"want": [
+"https://motdang.net/cm/p/new-moda-custom-tailors-4165828491.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "new moda custom taiors",
+"want": [
+"https://motdang.net/cm/p/new-moda-custom-tailors-4165828491.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Huai Kaeo Fitness Park",
+"want": [
+"https://motdang.net/cm/p/huai-kaeo-fitness-park-82765661.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "สวนสุขภาพ ห้วยแก้ว",
+"want": [
+"https://motdang.net/cm/p/huai-kaeo-fitness-park-82765661.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "huai kaeo iftness park",
+"want": [
+"https://motdang.net/cm/p/huai-kaeo-fitness-park-82765661.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Wiangkumkam",
+"want": [
+"https://motdang.net/cm/p/wiangkumkam-7062211258.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "wiiangkumkam",
+"want": [
+"https://motdang.net/cm/p/wiangkumkam-7062211258.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Thaphae Boxing Stadium",
+"want": [
+"https://motdang.net/cm/p/thaphae-boxing-stadium-cmcuratedthaphaeboxingstadium.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "สนามมวยท่าแพ",
+"want": [
+"https://motdang.net/cm/p/thaphae-boxing-stadium-cmcuratedthaphaeboxingstadium.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "Crown Carrent",
+"want": [
+"https://motdang.net/cm/p/crown-carrent-4064638190.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "crown carernt",
+"want": [
+"https://motdang.net/cm/p/crown-carrent-4064638190.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "1710",
+"want": [
+"https://motdang.net/cm/p/1710-8448965697.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Mae Faek Mai",
+"want": [
+"https://motdang.net/cm/p/mae-faek-mai-4438398996.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "แม่แฝกใหม่สัตวแพทย์",
+"want": [
+"https://motdang.net/cm/p/mae-faek-mai-4438398996.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "วัดศาลสะอาด",
+"want": [
+"https://motdang.net/cr/p/87751926427703883431.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Cannabis Shop (Green Elephant 420)",
+"want": [
+"https://motdang.net/cm/p/cannabis-shop-green-elephant-420-034264.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "cannabis shoop (green elephant 420)",
+"want": [
+"https://motdang.net/cm/p/cannabis-shop-green-elephant-420-034264.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Fertiliser shop",
+"want": [
+"https://motdang.net/cm/p/fertiliser-shop-13600539514.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "fertilisser shop",
+"want": [
+"https://motdang.net/cm/p/fertiliser-shop-13600539514.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Lanna Traditional House Museum CMU.",
+"want": [
+"https://motdang.net/cm/p/lanna-traditional-house-museum-cmu-734843630.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "พิพิธภัณฑ์เรือนโบราณล้านนา มช.",
+"want": [
+"https://motdang.net/cm/p/lanna-traditional-house-museum-cmu-734843630.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "lanna traditinal house museum cmu.",
+"want": [
+"https://motdang.net/cm/p/lanna-traditional-house-museum-cmu-734843630.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "เพชรพรมชัยฟาร์ม - Ppf จำหน่ายไก่พื้นเมือง",
+"want": [
+"https://motdang.net/cr/p/ppf-796541424136775948994.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "เพชรพรมชัยาร์ม - ppf จำหน่ายไก่พื้นเมือง",
+"want": [
+"https://motdang.net/cr/p/ppf-796541424136775948994.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "DOK Chiang Rai",
+"want": [
+"https://motdang.net/cr/p/dok-chiang-rai-4742973336443495983.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "dok ciang rai",
+"want": [
+"https://motdang.net/cr/p/dok-chiang-rai-4742973336443495983.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Monsanto ChiangRai",
+"want": [
+"https://motdang.net/cr/p/monsanto-chiangrai-3119343449134897371.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "monsanto changrai",
+"want": [
+"https://motdang.net/cr/p/monsanto-chiangrai-3119343449134897371.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Supthongkhum Sr Stidio 3",
+"want": [
+"https://motdang.net/cm/p/supthongkhum-sr-stidio-3-12658279552.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "supthongkhum sr stdiio 3",
+"want": [
+"https://motdang.net/cm/p/supthongkhum-sr-stidio-3-12658279552.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Thapae Gate",
+"want": [
+"https://motdang.net/cm/p/thapae-gate-1017379824.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ประตูท่าแพ",
+"want": [
+"https://motdang.net/cm/p/thapae-gate-1017379824.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "thappae gate",
+"want": [
+"https://motdang.net/cm/p/thapae-gate-1017379824.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Magic Land",
+"want": [
+"https://motdang.net/cm/p/magic-land-390546828.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Ing Place",
+"want": [
+"https://motdang.net/cm/p/ing-place-757295245.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ing pplace",
+"want": [
+"https://motdang.net/cm/p/ing-place-757295245.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "อู่ ช่างเอ็ม ทุ่งทราย ซอย2",
+"want": [
+"https://motdang.net/cr/p/2-146275148087716699605.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "RIS barber ช่างลิด",
+"want": [
+"https://motdang.net/cr/p/ris-barber-462699547814448785007914.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ris barber ชช่างลิด",
+"want": [
+"https://motdang.net/cr/p/ris-barber-462699547814448785007914.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "ตึกเหลือง",
+"want": [
+"https://motdang.net/cr/p/32957440346024726.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Main Sanctuary Hall",
+"want": [
+"https://motdang.net/cr/p/main-sanctuary-hall-269747639.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "มหาวิหาร",
+"want": [
+"https://motdang.net/cr/p/main-sanctuary-hall-269747639.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "main anctuary hall",
+"want": [
+"https://motdang.net/cr/p/main-sanctuary-hall-269747639.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Wangsing Duck Noodle",
+"want": [
+"https://motdang.net/cm/p/wangsing-duck-noodle-2468510968.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "wangsing duck noodle",
+"want": [
+"https://motdang.net/cm/p/wangsing-duck-noodle-2468510968.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Elephant Nature Park",
+"want": [
+"https://motdang.net/cm/p/elephant-nature-park-cmcuratedelephantnaturepark.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "elephant natuure park",
+"want": [
+"https://motdang.net/cm/p/elephant-nature-park-cmcuratedelephantnaturepark.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Hatthasinvech He",
+"want": [
+"https://motdang.net/cm/p/hatthasinvech-he-13274885089.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "hatthasinech he",
+"want": [
+"https://motdang.net/cm/p/hatthasinvech-he-13274885089.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "JS Tattoo",
+"want": [
+"https://motdang.net/cm/p/js-tattoo-9788234773.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "j stattoo",
+"want": [
+"https://motdang.net/cm/p/js-tattoo-9788234773.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "อุ๊ยหม่อนฟาร์ม",
+"want": [
+"https://motdang.net/cr/p/0398109724863380169968.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "อุ๊ยหม่อนฟรา์ม",
+"want": [
+"https://motdang.net/cr/p/0398109724863380169968.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Khamtiang Flower Market",
+"want": [
+"https://motdang.net/cm/p/khamtiang-flower-market-423030639.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "khamitang flower market",
+"want": [
+"https://motdang.net/cm/p/khamtiang-flower-market-423030639.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Chiang Mai University Auditorium",
+"want": [
+"https://motdang.net/cm/p/chiang-mai-university-auditorium-cmnewslettercmuauditorium.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "หอประชุมมหาวิทยาลัยเชียงใหม่",
+"want": [
+"https://motdang.net/cm/p/chiang-mai-university-auditorium-cmnewslettercmuauditorium.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "chiang mai university audtiorium",
+"want": [
+"https://motdang.net/cm/p/chiang-mai-university-auditorium-cmnewslettercmuauditorium.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Loi Kroh Boxing Stadium",
+"want": [
+"https://motdang.net/cm/p/loi-kroh-boxing-stadium-cmcuratedloikrohboxingstadium.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "สนามมวยลอยเคราะห์",
+"want": [
+"https://motdang.net/cm/p/loi-kroh-boxing-stadium-cmcuratedloikrohboxingstadium.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "li kroh boxing stadium",
+"want": [
+"https://motdang.net/cm/p/loi-kroh-boxing-stadium-cmcuratedloikrohboxingstadium.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Charin Resort",
+"want": [
+"https://motdang.net/cr/p/charin-resort-278457786.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "สวนจริญ",
+"want": [
+"https://motdang.net/cr/p/charin-resort-278457786.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "น้ำเต้าหู้ญี่ปุ่น โทนิว เชียงราย",
+"want": [
+"https://motdang.net/cr/p/249570456956180290.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Siam Event & Exhibition",
+"want": [
+"https://motdang.net/cm/p/siam-event-exhibition-2655211643.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ดาราวรรณ การพิมพ์ (สาขาใหญ่)",
+"want": [
+"https://motdang.net/cm/p/12433.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ดาราวรรณ กาพริมพ์ (สาขาใหญ่)",
+"want": [
+"https://motdang.net/cm/p/12433.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "ฝ้ายทองซักแห้ง เชียงราย",
+"want": [
+"https://motdang.net/cr/p/22266271252437970079324038.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ฝ้ายองซักแห้ง เชียงราย",
+"want": [
+"https://motdang.net/cr/p/22266271252437970079324038.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Maetaeng Elephant Park & Clinic",
+"want": [
+"https://motdang.net/cm/p/maetaeng-elephant-park-clinic-cmcuratedmaetaengelephantpark.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Kids Yoga Garden",
+"want": [
+"https://motdang.net/cm/p/kids-yoga-garden-6142715340.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "kid syoga garden",
+"want": [
+"https://motdang.net/cm/p/kids-yoga-garden-6142715340.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Big Size Chic Chic — repairs",
+"want": [
+"https://motdang.net/cm/p/big-size-chic-chic-repairs-cmcuratedbigsizechicchic.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "บื๊กไซส์ชิกชิก รับซ่อมผ้า",
+"want": [
+"https://motdang.net/cm/p/big-size-chic-chic-repairs-cmcuratedbigsizechicchic.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "big size chic chic — rrepairs",
+"want": [
+"https://motdang.net/cm/p/big-size-chic-chic-repairs-cmcuratedbigsizechicchic.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Kradangnga",
+"want": [
+"https://motdang.net/cm/p/kradangnga-1491320711.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "พระธาตุบุญทัศนีย์ศรีสองเมือง วัดบ้านห้วยลึก",
+"want": [
+"https://motdang.net/cr/p/2412914288547230.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "พระธาตุบุญทัศนีย์ศรีสอองเมือง วัดบ้านห้วยลึก",
+"want": [
+"https://motdang.net/cr/p/2412914288547230.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Jakawan",
+"want": [
+"https://motdang.net/cm/p/jakawan-4225751216.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "จักรวาล",
+"want": [
+"https://motdang.net/cm/p/jakawan-4225751216.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "jkawan",
+"want": [
+"https://motdang.net/cm/p/jakawan-4225751216.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Airada Apartment",
+"want": [
+"https://motdang.net/cm/p/airada-apartment-690023272.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "airada aparrtment",
+"want": [
+"https://motdang.net/cm/p/airada-apartment-690023272.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "บ้านพักวิทยาลัยอาชีวศึกษา",
+"want": [
+"https://motdang.net/cr/p/971901772.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "โรงเรียนบ้านศรีดอนชัย",
+"want": [
+"https://motdang.net/cm/p/1050130232.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "โรงเรียนบ้านศรีดอนชยั",
+"want": [
+"https://motdang.net/cm/p/1050130232.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "บ้านสักยันต์ไทยครูใหญ่  ศิษย์ครูใน",
+"want": [
+"https://motdang.net/cr/p/89009914195967467.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "บ้านสักยันต์ไทยครูใหญ่  ิศษย์ครูใน",
+"want": [
+"https://motdang.net/cr/p/89009914195967467.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "dispensary1 weed&wellness",
+"want": [
+"https://motdang.net/cr/p/dispensary1-weed-wellness-432.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "dispensary weed&wellness",
+"want": [
+"https://motdang.net/cr/p/dispensary1-weed-wellness-432.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "โรงเรียนอนุบาลประจำเขตพื้นที่การศึกษาประถมศึกษาเชียงราย เขต 1",
+"want": [
+"https://motdang.net/cr/p/1-23690814461381076092.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "CNX INK",
+"want": [
+"https://motdang.net/cm/p/cnx-ink-13333145066.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Parking · 1.4 km south-east of Chiang Rai Clock Tower",
+"want": [
+"https://motdang.net/cr/p/parking-1-4-km-south-east-of-chiang-rai-clock-tower-959789653.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ที่จอดรถ · ห่างหอนาฬิกาเชียงราย 1.4 กม. ทางตะวันออกเฉียงใต้",
+"want": [
+"https://motdang.net/cr/p/parking-1-4-km-south-east-of-chiang-rai-clock-tower-959789653.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "Blue Garden Yoga",
+"want": [
+"https://motdang.net/cm/p/blue-garden-yoga-6349335085.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "bluee garden yoga",
+"want": [
+"https://motdang.net/cm/p/blue-garden-yoga-6349335085.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Nakorn Chiangrai Shooting Range",
+"want": [
+"https://motdang.net/cr/p/nakorn-chiangrai-shooting-range-187422448857700259.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Bless cannabis cafe(เบลส์ กัญชา กาแฟ)",
+"want": [
+"https://motdang.net/cm/p/bless-cannabis-cafe-49371.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "โรงเรียนบ้านน้ำตกแม่กลาง",
+"want": [
+"https://motdang.net/cm/p/1050130038.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Welcome Mart",
+"want": [
+"https://motdang.net/cm/p/welcome-mart-2609583870.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Si Nuan Market",
+"want": [
+"https://motdang.net/cm/p/si-nuan-market-2611016355.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ตลาดศรีนวล",
+"want": [
+"https://motdang.net/cm/p/si-nuan-market-2611016355.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "บ้านร้องซิตี้ จ.เชียงราย",
+"want": [
+"https://motdang.net/cr/p/4503074463107766.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "บ้านร้องซิตี้ จ.เเชียงราย",
+"want": [
+"https://motdang.net/cr/p/4503074463107766.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "CM. Go Club",
+"want": [
+"https://motdang.net/cm/p/cm-go-club-11282092025.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "อู่ประยูร",
+"want": [
+"https://motdang.net/cm/p/4358578277.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "อู่ปะรยูร",
+"want": [
+"https://motdang.net/cm/p/4358578277.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Teen tattoo",
+"want": [
+"https://motdang.net/cr/p/teen-tattoo-10140247029918455762.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "GNP Design",
+"want": [
+"https://motdang.net/cr/p/gnp-design-2484864489317129.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "วรพงษ์ กราฟิก",
+"want": [
+"https://motdang.net/cm/p/22797.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Chiang Rai Culture Exhibition Center",
+"want": [
+"https://motdang.net/cr/p/chiang-rai-culture-exhibition-center-959789780.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ศูนย์วัฒนธรรมนิทัศน์และพิพิธภัณฑ์เมืองเชียงราย",
+"want": [
+"https://motdang.net/cr/p/chiang-rai-culture-exhibition-center-959789780.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "chiang rai culture exhibitin center",
+"want": [
+"https://motdang.net/cr/p/chiang-rai-culture-exhibition-center-959789780.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "St. Andrew's Community Learning Centre",
+"want": [
+"https://motdang.net/cm/p/st-andrew-s-community-learning-centre-756152050.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "st. andrew's comunity learning centre",
+"want": [
+"https://motdang.net/cm/p/st-andrew-s-community-learning-centre-756152050.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "วัดเภรีพิชัย",
+"want": [
+"https://motdang.net/cm/p/03500708005.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "วัดดเภรีพิชัย",
+"want": [
+"https://motdang.net/cm/p/03500708005.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "สาริศานวดเพื่อสุขภาพ",
+"want": [
+"https://motdang.net/cr/p/150673248992476879086.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "สาริศานวดเพื่อุสขภาพ",
+"want": [
+"https://motdang.net/cr/p/150673248992476879086.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "ช่างเบิร์ด กระจกอลูมิเนียม",
+"want": [
+"https://motdang.net/cr/p/6665204240369363492.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Valley Viewpoint & Akha Village",
+"want": [
+"https://motdang.net/cr/p/valley-viewpoint-akha-village-6150676193.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "valely viewpoint & akha village",
+"want": [
+"https://motdang.net/cr/p/valley-viewpoint-akha-village-6150676193.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Huai Lang Soi Reservoir",
+"want": [
+"https://motdang.net/cr/p/huai-lang-soi-reservoir-210757742.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "อ่างเก็บน้ำห้วยล่างสร้อย",
+"want": [
+"https://motdang.net/cr/p/huai-lang-soi-reservoir-210757742.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "วัดพระเจ้าสององค์",
+"want": [
+"https://motdang.net/cm/p/03501215005.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "บริษัท เอ็ม เอ็นเคมีคอล999 จำกัด",
+"want": [
+"https://motdang.net/cr/p/999-019646096483900937388524.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "บริษัท เอ็ม เอ็นเมคีคอล999 จำกัด",
+"want": [
+"https://motdang.net/cr/p/999-019646096483900937388524.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "ชลวีร์เภสัช",
+"want": [
+"https://motdang.net/cr/p/2964911296.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ชลีร์เภสัช",
+"want": [
+"https://motdang.net/cr/p/2964911296.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Piman Clinic (RIHES CMU)",
+"want": [
+"https://motdang.net/cm/p/piman-clinic-rihes-cmu-cmcuratedpimanclinic.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "พิมาน คลินิก",
+"want": [
+"https://motdang.net/cm/p/piman-clinic-rihes-cmu-cmcuratedpimanclinic.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "piman clini (rihes cmu)",
+"want": [
+"https://motdang.net/cm/p/piman-clinic-rihes-cmu-cmcuratedpimanclinic.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Be 1st Salon",
+"want": [
+"https://motdang.net/cm/p/be-1st-salon-820812644.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "be 1st salno",
+"want": [
+"https://motdang.net/cm/p/be-1st-salon-820812644.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "หม่าหล่า เฮาส์",
+"want": [
+"https://motdang.net/cr/p/903387446788036162143340.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "บริษัท ซินหยวน เทรดดิ้ง",
+"want": [
+"https://motdang.net/cr/p/82119705048829174793.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ลาบไก่ พันแหวน",
+"want": [
+"https://motdang.net/cm/p/334116651.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ลาบไก่ พัแนหวน",
+"want": [
+"https://motdang.net/cm/p/334116651.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Thai Visa Services",
+"want": [
+"https://motdang.net/cm/p/thai-visa-services-13437706095.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "thai ivsa services",
+"want": [
+"https://motdang.net/cm/p/thai-visa-services-13437706095.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "วัดผาลาด",
+"want": [
+"https://motdang.net/cr/p/329610710420730730.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "วัดผาลลาด",
+"want": [
+"https://motdang.net/cr/p/329610710420730730.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Unipest",
+"want": [
+"https://motdang.net/cm/p/unipest-cmcuratedunipest.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "บริษัท ยูนิเพสท์ จำกัด",
+"want": [
+"https://motdang.net/cm/p/unipest-cmcuratedunipest.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "Ruamchok Fitness",
+"want": [
+"https://motdang.net/cm/p/ruamchok-fitness-10067776661.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "ruamcohk fitness",
+"want": [
+"https://motdang.net/cm/p/ruamchok-fitness-10067776661.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Story Wheel Bicycle Service",
+"want": [
+"https://motdang.net/cr/p/story-wheel-bicycle-service-8413090064100322205.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "story wheeel bicycle service",
+"want": [
+"https://motdang.net/cr/p/story-wheel-bicycle-service-8413090064100322205.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "บ้านครูศิลป์",
+"want": [
+"https://motdang.net/cr/p/82283825243190486439884.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "บานครูศิลป์",
+"want": [
+"https://motdang.net/cr/p/82283825243190486439884.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Amnesia (Weed Shop)",
+"want": [
+"https://motdang.net/cr/p/amnesia-weed-shop-279552.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "amnessia (weed shop)",
+"want": [
+"https://motdang.net/cr/p/amnesia-weed-shop-279552.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "โรงพยาบาลส่งเสริมสุขภาพตำบลเมืองพาน",
+"want": [
+"https://motdang.net/cr/p/8899210210171.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "Oriental Massage",
+"want": [
+"https://motdang.net/cm/p/oriental-massage-2414314280.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "oriental assage",
+"want": [
+"https://motdang.net/cm/p/oriental-massage-2414314280.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "Halem 333 Sport Club",
+"want": [
+"https://motdang.net/cr/p/halem-333-sport-club-011366640828671606369.html"
+],
+"top": 1,
+"note": "known-en"
+},
+{
+"set": "audit",
+"q": "halem 333 sport lcub",
+"want": [
+"https://motdang.net/cr/p/halem-333-sport-club-011366640828671606369.html"
+],
+"top": 1,
+"note": "known-typo"
+},
+{
+"set": "audit",
+"q": "ก๋วยเตี๋ยวปากหม้อโอมากาเสะ เชียงราย",
+"want": [
+"https://motdang.net/cr/p/9322184224415810631753860.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "MotoPlus",
+"want": [
+"https://motdang.net/cm/p/motoplus-bike-repair-4998853821.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "โอสถชกร สาขาสันติธรรม",
+"want": [
+"https://motdang.net/cm/p/0948806854.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "วัดจอมคีรี บ.กลางทุ่ง",
+"want": [
+"https://motdang.net/cr/p/83524625394219328558808.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "โรงเรียนบ้านสันติคีรี",
+"want": [
+"https://motdang.net/cr/p/1057120612.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "เพลินนะ - เพลินนา",
+"want": [
+"https://motdang.net/cr/p/ploen-na-ploen-na-776879402.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "Wawee Tea ชาวาวี",
+"want": [
+"https://motdang.net/cr/p/wawee-tea-8308338440784886984.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "วัดชัยชนาราม",
+"want": [
+"https://motdang.net/cm/p/03501003002.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ห้างหุ้นส่วนจำกัด ไอ.เอช.เค เทรดดิ้ง",
+"want": [
+"https://motdang.net/cr/p/0683945626.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ม่อนอิงดาวคาเฟ่",
+"want": [
+"https://motdang.net/cm/p/mon-ing-dao-cafe-9314302717.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "มุมยาเภสัช2",
+"want": [
+"https://motdang.net/cm/p/2-1287594014.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ฝ่ายศาสนกิจ โรงพยาบาลโอเวอร์บรุ๊ค - Chaplaincy of Overbrook Hospital",
+"want": [
+"https://motdang.net/cr/p/chaplaincy-of-overbrook-hospital-76460534088149309.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "โรงเรียนบ้านใหม่แม่ยางมิ้น",
+"want": [
+"https://motdang.net/cr/p/1057120403.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ร้านสิริลักษณ์โภชนา",
+"want": [
+"https://motdang.net/cr/p/9842674654972510388.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ร้านอาหารภูภิรมย์",
+"want": [
+"https://motdang.net/cr/p/23062727459426491.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "นันทชาติ พรีสคูล",
+"want": [
+"https://motdang.net/cm/p/315412230.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ร้านขายยาฟาร์ม่าช้อยซ์ สาขาสันกำแพง",
+"want": [
+"https://motdang.net/cm/p/3492111800.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "เจริญปันยา",
+"want": [
+"https://motdang.net/cr/p/3047728815.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ก๋วยเตี๋ยวติดปาก",
+"want": [
+"https://motdang.net/cr/p/334324479384480323162.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "บ่อตกกุ้ง ต้นเรซซิ่ง",
+"want": [
+"https://motdang.net/cr/p/1309570446287912060599.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "หยกฟ้าโภชนา",
+"want": [
+"https://motdang.net/cm/p/yok-fa-4132763689.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "วิทยาลัยศิลปะ สื่อ และเทคโนโลยี",
+"want": [
+"https://motdang.net/cm/p/college-of-arts-media-and-technology-7116881509.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ไปรษณีย์เด่นห้า Denha Post",
+"want": [
+"https://motdang.net/cr/p/denha-post-068718444408622552.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "โรงเรียนบ้านใหม่  สพป.เชียงราย เขต 4",
+"want": [
+"https://motdang.net/cr/p/4-544115947078660501163.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "เทศบาลตำบลท่าข้าม",
+"want": [
+"https://motdang.net/cm/p/tha-kham-municipality-3178383461.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ล้านกาแฟต้นบะขาม",
+"want": [
+"https://motdang.net/cm/p/million-coffee-7103895585.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "บัวคลี่ จำบอน",
+"want": [
+"https://motdang.net/cr/p/3887346856142927.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "วัดดับภัย",
+"want": [
+"https://motdang.net/cm/p/wat-dubphai-406992974.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "สถานีอนามัยตำบลป่าซาง",
+"want": [
+"https://motdang.net/cr/p/082987148684790930423.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "วัดจันทราราม",
+"want": [
+"https://motdang.net/cr/p/03570708009.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ร้านราดหน้าเส้นกรอบ",
+"want": [
+"https://motdang.net/cr/p/3353650924626276819677.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "คริสตจักรลุ่มน้ำโขงเชียงแสน",
+"want": [
+"https://motdang.net/cr/p/39246473408810241280260.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ชุมชนบ้านขุนลาว",
+"want": [
+"https://motdang.net/cr/p/1193663048.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ขนมปังปอนด์รีวิว",
+"want": [
+"https://motdang.net/cr/p/21753498340925410.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ลดาปลาร้าหอม",
+"want": [
+"https://motdang.net/cr/p/21733224099372026962.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "องค์การบริหารส่วนตำบลศรีดอนมูล",
+"want": [
+"https://motdang.net/cr/p/4993704927115623.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "โรงพยาบาลส่งเสริมสุขภาพตำบลห้วยสัก",
+"want": [
+"https://motdang.net/cr/p/8899210210221.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "อู่ไชยเจริญเซอร์วิส",
+"want": [
+"https://motdang.net/cr/p/730322449812606956861.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ปลาทองบ้านแฟ้มฟาร์ม",
+"want": [
+"https://motdang.net/cr/p/09958276748982803255.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "คณะการสื่อสารมวลชน",
+"want": [
+"https://motdang.net/cm/p/6014826895.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ก๋วยเตี๋ยวเรือพระนคร",
+"want": [
+"https://motdang.net/cr/p/49401835457221712406.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "วัดหลวงราษฎร์เจริญธรรม",
+"want": [
+"https://motdang.net/cr/p/2669354449909382311970.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "เฮง ลิสซิ่ง",
+"want": [
+"https://motdang.net/cr/p/469451613489662884043.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "บ้านหนองแรด",
+"want": [
+"https://motdang.net/cr/p/08960750254221521045.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ชีวารักษ์คลินิกการแพทย์แผนไทย",
+"want": [
+"https://motdang.net/cr/p/0414317994181701518177.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ร้านปลาเผาเจริญเมือง",
+"want": [
+"https://motdang.net/cr/p/7446470429350549778.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "โรงพยาบาลส่งเสริมสุขภาพตำบลบ้านแกน้อย",
+"want": [
+"https://motdang.net/cm/p/8899210206325.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "เมืองวัฒนธรรมเวียงกาหลง",
+"want": [
+"https://motdang.net/cr/p/199903541009983557.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "วัดศรีวารีสถาน",
+"want": [
+"https://motdang.net/cm/p/wat-si-wari-sathan-1257138548.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ร้านมงคลโคมลอย",
+"want": [
+"https://motdang.net/cr/p/683361440780796994.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ร้านลาบไก่ยามแลง",
+"want": [
+"https://motdang.net/cr/p/879006954848232289347.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "สวนชุมชน",
+"want": [
+"https://motdang.net/cr/p/1085548309.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "คลินิกรักษาสัตว์หมอต้อม",
+"want": [
+"https://motdang.net/cr/p/2584226454633833959193523.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "Cha-Rin ร้านชาริน ของฝากเชียงราย",
+"want": [
+"https://motdang.net/cr/p/cha-rin-6230820774438374914147.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ศาลเจ้าพ่อเสือ",
+"want": [
+"https://motdang.net/cr/p/380172345157899394.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "บริษัท ชีวิตใหม่เชียงราย",
+"want": [
+"https://motdang.net/cr/p/83528924048954369902333.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "น้ำตกไทรย้อย",
+"want": [
+"https://motdang.net/cm/p/sai-yoi-waterfall-2609444756.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ตรอ.นพดลยานยนต์ผางาม",
+"want": [
+"https://motdang.net/cr/p/7178237247393178.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "วัดสันธาตุ",
+"want": [
+"https://motdang.net/cr/p/03570505008.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "เนี่ยก่ะ",
+"want": [
+"https://motdang.net/cr/p/1146493649091781460866.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "สักคิ้ว สักปาก ต่อขนตา ทาสีเล็บเจล ต่อเล็บpvc สระไดร์ By ช่าง BB",
+"want": [
+"https://motdang.net/cr/p/pvc-by-bb-00464483143963061.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "พีเอ็น pn ออโต้ซาวด์",
+"want": [
+"https://motdang.net/cr/p/pn-55984246490571372.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "โรงแรม วิลล่า ลานธารา เชียงใหม่",
+"want": [
+"https://motdang.net/cm/p/villa-lantara-787400101.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "วัดบ้านเปียง",
+"want": [
+"https://motdang.net/cm/p/03501206006.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ลานนาไทย รีสอร์ท",
+"want": [
+"https://motdang.net/cr/p/646357963483090283497.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ร้านอาหารศรีตรัง",
+"want": [
+"https://motdang.net/cr/p/6465914366274063408.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ร้านก๋วยจั๊บน้ำข้น",
+"want": [
+"https://motdang.net/cm/p/2655274721.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "บีดี ดีไซน์ (แม็คโครเชียงใหม่)",
+"want": [
+"https://motdang.net/cm/p/17844.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ไก่ย่าง โคราช",
+"want": [
+"https://motdang.net/cm/p/gai-yaang-korat-4679742900.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "กาแล คาราโอเกะ",
+"want": [
+"https://motdang.net/cr/p/313283154049925883735.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "วัดถ้ำจตุมหาพรหมมงคลเทพมุนี",
+"want": [
+"https://motdang.net/cr/p/03570704010.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "โรงเรียนบ้านห้วยเป้า",
+"want": [
+"https://motdang.net/cm/p/ban-huai-pao-school-844774159.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "พระวิษณุกรรม",
+"want": [
+"https://motdang.net/cm/p/3736824585.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "วัดห้วยก้าง",
+"want": [
+"https://motdang.net/cr/p/03571203002.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "น้ำตกตาดหมอก",
+"want": [
+"https://motdang.net/cm/p/tard-mork-waterfall-2560801452.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "อู่ ช.นุ้ยเซอร์วิส",
+"want": [
+"https://motdang.net/cr/p/866904574048572497871.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "บ้านสวนยายแดง",
+"want": [
+"https://motdang.net/cr/p/9762454971354871.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "วัดแม่สลองใน",
+"want": [
+"https://motdang.net/cr/p/wat-maesalongnai-temple-7179402934.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "มูเซอดอยปูไข่",
+"want": [
+"https://motdang.net/cr/p/2029030613.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ร้านเจิญมาจิม",
+"want": [
+"https://motdang.net/cr/p/850909546992631615.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "เฟรชวัน ฟู้ดมาร์ท เชียงราย 080-085-1641",
+"want": [
+"https://motdang.net/cr/p/080-085-1641-31370911384408501792689969.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "SinghaKlai Café - สิงหไคล คาเฟ่",
+"want": [
+"https://motdang.net/cr/p/singhaklai-caf-90480384469923452631755246.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "ร้านกัญชาใกล้ฉันเชียงใหม่พร้อมส่ง",
+"want": [
+"https://motdang.net/cm/p/018481.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "โรงสีสาคร",
+"want": [
+"https://motdang.net/cr/p/98831854930828231845141.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "วันทูวัน",
+"want": [
+"https://motdang.net/cr/p/one2one-math-tutoring-960771509.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "วัดกิ่วแลน้อย",
+"want": [
+"https://motdang.net/cm/p/03501206001.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "โรงเรียนบ้านปางป๋อ",
+"want": [
+"https://motdang.net/cm/p/1050130878.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "โรงแรมสุมิตต์",
+"want": [
+"https://motdang.net/cm/p/sumit-361102351.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "บ้านสวนรีสอร์ท",
+"want": [
+"https://motdang.net/cr/p/706054339456188094522.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "audit",
+"q": "โรงเรียนกวงฟูวิทยาคม",
+"want": [
+"https://motdang.net/cr/p/97713344826085123.html"
+],
+"top": 1,
+"note": "known-th"
+},
+{
+"set": "kind",
+"q": "coffee",
+"accept": {
+"sub": [
+"food/cafe"
+]
+}
+},
+{
+"set": "kind",
+"q": "กาแฟ",
+"accept": {
+"sub": [
+"food/cafe"
+]
+}
+},
+{
+"set": "kind",
+"q": "hospital",
+"accept": {
+"sub": [
+"medical/hospital"
+],
+"name": "hospital|โรงพยาบาล|รพ\\."
+}
+},
+{
+"set": "kind",
+"q": "โรงพยาบาล",
+"accept": {
+"sub": [
+"medical/hospital"
+],
+"name": "hospital|โรงพยาบาล|รพ\\."
+}
+},
+{
+"set": "kind",
+"q": "pharmacy",
+"accept": {
+"sub": [
+"essentials/pharmacy",
+"medical/pharmacy"
+],
+"name": "pharma|drug|ร้านยา|ขายยา|เภสัช"
+}
+},
+{
+"set": "kind",
+"q": "ร้านขายยา",
+"accept": {
+"sub": [
+"essentials/pharmacy",
+"medical/pharmacy"
+],
+"name": "pharma|drug|ร้านยา|ขายยา|เภสัช"
+}
+},
+{
+"set": "kind",
+"q": "temple",
+"accept": {
+"cat": [
+"wat"
+],
+"name": "^(wat|วัด)|temple"
+}
+},
+{
+"set": "kind",
+"q": "วัด",
+"accept": {
+"cat": [
+"wat"
+],
+"name": "^(wat|วัด)|temple"
+}
+},
+{
+"set": "kind",
+"q": "dentist",
+"accept": {
+"sub": [
+"medical/dentist"
+]
+}
+},
+{
+"set": "kind",
+"q": "ทันตแพทย์",
+"accept": {
+"sub": [
+"medical/dentist"
+]
+}
+},
+{
+"set": "kind",
+"q": "school",
+"accept": {
+"cat": [
+"school"
+],
+"name": "school|โรงเรียน"
+}
+},
+{
+"set": "kind",
+"q": "โรงเรียน",
+"accept": {
+"cat": [
+"school"
+],
+"name": "school|โรงเรียน"
+}
+},
+{
+"set": "kind",
+"q": "gym",
+"accept": {
+"sub": [
+"sport/gym"
+]
+}
+},
+{
+"set": "kind",
+"q": "ฟิตเนส",
+"accept": {
+"sub": [
+"sport/gym"
+]
+}
+},
+{
+"set": "kind",
+"q": "market",
+"accept": {
+"cat": [
+"market"
+],
+"name": "market|ตลาด|กาด"
+}
+},
+{
+"set": "kind",
+"q": "ตลาด",
+"accept": {
+"cat": [
+"market"
+],
+"name": "market|ตลาด|กาด"
+}
+},
+{
+"set": "kind",
+"q": "hotel",
+"accept": {
+"cat": [
+"hotel"
+]
+}
+},
+{
+"set": "kind",
+"q": "โรงแรม",
+"accept": {
+"cat": [
+"hotel"
+]
+}
+},
+{
+"set": "kind",
+"q": "park",
+"accept": {
+"sub": [
+"parks/park"
+]
+}
+},
+{
+"set": "kind",
+"q": "สวนสาธารณะ",
+"accept": {
+"sub": [
+"parks/park"
+]
+}
+},
+{
+"set": "kind",
+"q": "bank",
+"accept": {
+"sub": [
+"essentials/bank"
+]
+}
+},
+{
+"set": "kind",
+"q": "ธนาคาร",
+"accept": {
+"sub": [
+"essentials/bank"
+]
+}
+},
+{
+"set": "kind",
+"q": "post office",
+"accept": {
+"sub": [
+"essentials/post"
+]
+}
+},
+{
+"set": "kind",
+"q": "ไปรษณีย์",
+"accept": {
+"sub": [
+"essentials/post"
+]
+}
+},
+{
+"set": "kind",
+"q": "laundry",
+"accept": {
+"sub": [
+"essentials/laundry"
+]
+}
+},
+{
+"set": "kind",
+"q": "ร้านซักรีด",
+"accept": {
+"sub": [
+"essentials/laundry"
+]
+}
+},
+{
+"set": "kind",
+"q": "car repair",
+"accept": {
+"sub": [
+"repair/auto"
+]
+}
+},
+{
+"set": "kind",
+"q": "อู่ซ่อมรถ",
+"accept": {
+"sub": [
+"repair/auto"
+]
+}
+},
+{
+"set": "kind",
+"q": "vet",
+"accept": {
+"sub": [
+"pets/vet"
+]
+}
+},
+{
+"set": "kind",
+"q": "สัตวแพทย์",
+"accept": {
+"sub": [
+"pets/vet"
+]
+}
+},
+{
+"set": "kind",
+"q": "massage",
+"accept": {
+"cat": [
+"massage"
+],
+"sub": [
+"beauty/beauty-spa"
+]
+}
+},
+{
+"set": "kind",
+"q": "นวด",
+"accept": {
+"cat": [
+"massage"
+],
+"sub": [
+"beauty/beauty-spa"
+]
+}
+},
+{
+"set": "kind",
+"q": "police station",
+"accept": {
+"name": "police|ตำรวจ"
+}
+},
+{
+"set": "kind",
+"q": "สถานีตำรวจ",
+"accept": {
+"name": "police|ตำรวจ"
+}
+},
+{
+"set": "kind",
+"q": "bookshop",
+"accept": {
+"name": "book|หนังสือ"
+}
+},
+{
+"set": "kind",
+"q": "ร้านหนังสือ",
+"accept": {
+"name": "book|หนังสือ"
+}
+},
+{
+"set": "kind",
+"q": "museum",
+"accept": {
+"cat": [
+"museums-galleries"
+],
+"name": "museum|พิพิธภัณฑ|gallery|หอศิลป"
+}
+},
+{
+"set": "kind",
+"q": "museums",
+"accept": {
+"cat": [
+"museums-galleries"
+],
+"name": "museum|พิพิธภัณฑ|gallery|หอศิลป"
+}
+},
+{
+"set": "kind",
+"q": "พิพิธภัณฑ์",
+"accept": {
+"cat": [
+"museums-galleries"
+],
+"name": "museum|พิพิธภัณฑ|gallery|หอศิลป"
+}
+},
+{
+"set": "kind",
+"q": "art museum",
+"accept": {
+"cat": [
+"museums-galleries"
+],
+"name": "museum|พิพิธภัณฑ|gallery|หอศิลป"
+}
+},
+{
+"set": "kind",
+"q": "art gallery",
+"accept": {
+"cat": [
+"museums-galleries"
+],
+"name": "museum|พิพิธภัณฑ|gallery|หอศิลป"
+}
+},
+{
+"set": "kind",
+"q": "หอศิลป์",
+"accept": {
+"cat": [
+"museums-galleries"
+],
+"name": "museum|พิพิธภัณฑ|gallery|หอศิลป"
+}
+},
+{
+"set": "kind",
+"q": "museum open monday",
+"accept": {
+"cat": [
+"museums-galleries"
+],
+"name": "museum|พิพิธภัณฑ|gallery|หอศิลป"
+}
+},
+{
+"set": "kind",
+"q": "museum chiang rai",
+"accept": {
+"cat": [
+"museums-galleries"
+],
+"name": "museum|พิพิธภัณฑ|gallery|หอศิลป"
+},
+"prov": "cr"
+},
+{
+"set": "kind",
+"q": "พิพิธภัณฑ์ เชียงราย",
+"accept": {
+"cat": [
+"museums-galleries"
+],
+"name": "museum|พิพิธภัณฑ|gallery|หอศิลป"
+},
+"prov": "cr"
+},
+{
+"set": "kind",
+"q": "museums near me",
+"accept": {
+"cat": [
+"museums-galleries"
+],
+"name": "museum|พิพิธภัณฑ|gallery|หอศิลป"
+},
+"params": {
+"near": "18.7883,98.9853"
+}
+},
+{
+"set": "kind",
+"q": "library",
+"accept": {
+"name": "ห้องสมุด|หอสมุด|librar"
+}
+},
+{
+"set": "kind",
+"q": "libraries",
+"accept": {
+"name": "ห้องสมุด|หอสมุด|librar"
+}
+},
+{
+"set": "kind",
+"q": "ห้องสมุด",
+"accept": {
+"name": "ห้องสมุด|หอสมุด|librar"
+}
+},
+{
+"set": "kind",
+"q": "public library",
+"accept": {
+"name": "ห้องสมุด|หอสมุด|librar"
+}
+},
+{
+"set": "kind",
+"q": "library chiang rai",
+"accept": {
+"name": "ห้องสมุด|หอสมุด|librar"
+},
+"prov": "cr"
+},
+{
+"set": "kind",
+"q": "library open sunday",
+"accept": {
+"name": "ห้องสมุด|หอสมุด|librar"
+}
+},
+{
+"set": "kind",
+"q": "coffee near me",
+"accept": {
+"sub": [
+"food/cafe"
+]
+},
+"params": {
+"near": "18.7883,98.9853"
+}
+},
+{
+"set": "kind",
+"q": "hospital near me",
+"accept": {
+"sub": [
+"medical/hospital"
+],
+"name": "hospital|โรงพยาบาล|รพ\\."
+},
+"params": {
+"near": "18.7883,98.9853"
+}
+},
+{
+"set": "kind",
+"q": "pharmacy open sunday",
+"accept": {
+"sub": [
+"essentials/pharmacy",
+"medical/pharmacy"
+],
+"name": "pharma|drug|ร้านยา|ขายยา|เภสัช"
+}
+},
+{
+"set": "kind",
+"q": "temple chiang rai",
+"accept": {
+"cat": [
+"wat"
+],
+"name": "^(wat|วัด)|temple"
+},
+"prov": "cr"
+},
+{
+"set": "kind",
+"q": "วัด เชียงราย",
+"accept": {
+"cat": [
+"wat"
+],
+"name": "^(wat|วัด)|temple"
+},
+"prov": "cr"
+},
+{
+"set": "kind",
+"q": "hotel chiang rai",
+"accept": {
+"cat": [
+"hotel"
+]
+},
+"prov": "cr"
+},
+{
+"set": "kind",
+"q": "market chiang rai",
+"accept": {
+"cat": [
+"market"
+],
+"name": "market|ตลาด|กาด"
+},
+"prov": "cr"
+},
+{
+"set": "spec",
+"q": "Chiang Mai City Arts and Cultural Centre",
+"want": [
+"https://motdang.net/cm/p/chiang-mai-city-art-cultural-center-17998804.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "Chiang Mai City Art and Culture Center",
+"want": [
+"https://motdang.net/cm/p/chiang-mai-city-art-cultural-center-17998804.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "หอศิลปวัฒนธรรมเมืองเชียงใหม่",
+"want": [
+"https://motdang.net/cm/p/chiang-mai-city-art-cultural-center-17998804.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "Baan Dam",
+"want": [
+"https://motdang.net/cr/p/0118768692.html",
+"https://motdang.net/cr/p/baan-dam-museum-393447653.html",
+"https://motdang.net/cr/p/baandum-museum-the-black-temple-454146487841723905232.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "Black House Chiang Rai",
+"want": [
+"https://motdang.net/cr/p/0118768692.html",
+"https://motdang.net/cr/p/baan-dam-museum-393447653.html",
+"https://motdang.net/cr/p/baandum-museum-the-black-temple-454146487841723905232.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "Black House museum",
+"want": [
+"https://motdang.net/cr/p/0118768692.html",
+"https://motdang.net/cr/p/baan-dam-museum-393447653.html",
+"https://motdang.net/cr/p/baandum-museum-the-black-temple-454146487841723905232.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "บ้านดำ",
+"want": [
+"https://motdang.net/cr/p/0118768692.html",
+"https://motdang.net/cr/p/baan-dam-museum-393447653.html",
+"https://motdang.net/cr/p/baandum-museum-the-black-temple-454146487841723905232.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "national museum",
+"want": [
+"https://motdang.net/cm/p/chiang-mai-national-museum-200414775.html",
+"https://motdang.net/cr/p/chiang-saen-national-museum-2313723117.html"
+],
+"top": 3,
+"all": true
+},
+{
+"set": "spec",
+"q": "พิพิธภัณฑสถานแห่งชาติ",
+"want": [
+"https://motdang.net/cm/p/chiang-mai-national-museum-200414775.html",
+"https://motdang.net/cr/p/chiang-saen-national-museum-2313723117.html"
+],
+"top": 3,
+"all": true
+},
+{
+"set": "spec",
+"q": "Chiang Mai national museum",
+"want": [
+"https://motdang.net/cm/p/chiang-mai-national-museum-200414775.html"
+],
+"top": 1
+},
+{
+"set": "spec",
+"q": "Chiang Saen National Museum",
+"want": [
+"https://motdang.net/cr/p/chiang-saen-national-museum-2313723117.html"
+],
+"top": 1
+},
+{
+"set": "spec",
+"q": "Highland People Discovery Museum",
+"want": [
+"https://motdang.net/cm/p/highland-people-discovery-museum-243766515.html"
+],
+"top": 1
+},
+{
+"set": "spec",
+"q": "Hall of Opium",
+"want": [
+"https://motdang.net/cr/p/1365411436.html",
+"https://motdang.net/cr/p/the-hall-of-opium-137648101.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "หอฝิ่น",
+"want": [
+"https://motdang.net/cr/p/1365411436.html",
+"https://motdang.net/cr/p/the-hall-of-opium-137648101.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "Oub Kham Museum",
+"want": [
+"https://motdang.net/cr/p/oub-kham-museum-992101976.html"
+],
+"top": 1
+},
+{
+"set": "spec",
+"q": "Lanna Folklife Museum",
+"want": [
+"https://motdang.net/cm/p/lanna-folklife-museum-261338789.html"
+],
+"top": 1
+},
+{
+"set": "spec",
+"q": "Chiang Mai Historical Centre",
+"want": [
+"https://motdang.net/cm/p/chiang-mai-historical-centre-4501920590.html",
+"https://motdang.net/cm/p/chiang-mai-historical-centre-4750233535.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "Chiang Mai Historical Center",
+"want": [
+"https://motdang.net/cm/p/chiang-mai-historical-centre-4501920590.html",
+"https://motdang.net/cm/p/chiang-mai-historical-centre-4750233535.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "Bank of Thailand Museum",
+"want": [
+"https://motdang.net/cm/p/bank-of-thailand-museum-103286175.html"
+],
+"top": 1
+},
+{
+"set": "spec",
+"q": "insect museum",
+"want": [
+"https://motdang.net/cm/p/museum-of-world-insects-and-natural-wonders-481787812.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "Dara Pirom Palace",
+"want": [
+"https://motdang.net/cm/p/dara-phirom-palace-museum-251722572.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "Mae Fah Luang Art and Culture Park",
+"want": [
+"https://motdang.net/cr/p/4206198319.html",
+"https://motdang.net/cr/p/mae-fah-luang-art-and-culture-park-384155064.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "Chiang Mai University library",
+"want": [
+"https://motdang.net/cm/p/10593235393.html",
+"https://motdang.net/cm/p/chiang-mai-university-main-library-6012305497.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "CMU library",
+"want": [
+"https://motdang.net/cm/p/10593235393.html",
+"https://motdang.net/cm/p/chiang-mai-university-main-library-6012305497.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "TCDC Chiang Mai",
+"want": [
+"https://motdang.net/cm/p/tcdc-chiang-mai-672587607.html"
+],
+"top": 1
+},
+{
+"set": "spec",
+"q": "TCDC library",
+"want": [
+"https://motdang.net/cm/p/tcdc-chiang-mai-672587607.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "Hang Dong public library",
+"want": [
+"https://motdang.net/cm/p/1064323064999156190838.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "ห้องสมุดประชาชนอำเภอหางดง",
+"want": [
+"https://motdang.net/cm/p/1064323064999156190838.html"
+],
+"top": 1
+},
+{
+"set": "spec",
+"q": "national library chiang mai",
+"want": [
+"https://motdang.net/cm/p/ratchamangkhalaphisek-national-library-chiang-mai-301655695.html",
+"https://motdang.net/cm/p/nl-cnx-82467908409490585029.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "Mae Fah Luang University library",
+"want": [
+"https://motdang.net/cr/p/6295384389596245673.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "White Temple",
+"want": [
+"https://motdang.net/cr/p/wat-rong-khun-white-temple-chiang-rai-thailand-1464964486495396688040.html",
+"https://motdang.net/cr/p/533081121884509825552809981.html",
+"https://motdang.net/cr/p/51714568845586583513182.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "Wat Rong Khun",
+"want": [
+"https://motdang.net/cr/p/wat-rong-khun-white-temple-chiang-rai-thailand-1464964486495396688040.html",
+"https://motdang.net/cr/p/533081121884509825552809981.html",
+"https://motdang.net/cr/p/51714568845586583513182.html"
+],
+"top": 3
+},
+{
+"set": "spec",
+"q": "CMU art museum",
+"want": [
+"https://motdang.net/cm/p/chiang-mai-university-art-museum-21007946027679352367.html"
+],
+"top": 3
+}
+]

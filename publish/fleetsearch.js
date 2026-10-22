@@ -310,20 +310,67 @@ function joinedIndex(thes) {
   return ix;
 }
 
+/* Other forms of one English word: singular and plural, British and American
+ * spelling, -ural/-ure. "Arts and Cultural Centre" has to find "Art & Cultural
+ * Center" (2026-10-22); FTS5 here has no stemmer. */
+const SPELL_PAIRS = [["centre", "center"], ["theatre", "theater"], ["metre", "meter"], ["litre", "liter"],
+                     ["colour", "color"], ["jewellery", "jewelry"], ["grey", "gray"], ["programme", "program"],
+                     ["travelling", "traveling"], ["organisation", "organization"]];
+export function englishForms(w) {
+  const n = String(w || "").toLowerCase();
+  if (!/^[a-z]{3,}$/.test(n)) return [];
+  const out = new Set();
+  for (const [a, b] of SPELL_PAIRS) {
+    if (n.startsWith(a)) out.add(b + n.slice(a.length));
+    if (n.startsWith(b)) out.add(a + n.slice(b.length));
+  }
+  if (/ise[sd]?$/.test(n)) out.add(n.replace(/ise([sd]?)$/, "ize$1"));
+  if (/ize[sd]?$/.test(n)) out.add(n.replace(/ize([sd]?)$/, "ise$1"));
+  /* plural to singular only: "museums" wants the places titled Museum, while
+   * "temple" widened to "temples" pulled in every page that mentions temples */
+  if (n.length > 4 && n.endsWith("ies")) out.add(n.slice(0, -3) + "y");
+  else if (n.length > 4 && /(ch|sh|x|ss)es$/.test(n)) out.add(n.slice(0, -2));
+  else if (n.length > 3 && n.endsWith("s") && !/(ss|us|is)$/.test(n)) out.add(n.slice(0, -1));
+  if (n.endsWith("ural")) out.add(n.slice(0, -2) + "e");
+  if (n.endsWith("ture")) out.add(n.slice(0, -1) + "al");
+  /* "centres" → centre and centers, and so center */
+  for (const v of Array.from(out)) {
+    if (v.length > 3 && v.endsWith("s") && !/(ss|us|is)$/.test(v) && !n.endsWith("ies")) out.add(v.slice(0, -1));
+  }
+  out.delete(n);
+  return Array.from(out).slice(0, 6);
+}
+/* A small group from the mined dictionary (dam, dike, เขื่อน) is a gloss: its
+ * other-language word is a translation, its same-language words are other
+ * senses ("Baan Dam" → dike; "Black House" → domestic; วัด → abbey). A group
+ * that names a shelf ("coffee & cafés", วัด-สิ่งศักดิ์สิทธิ์) or holds five or
+ * more was put together on purpose and keeps every member. */
+const isThai = (x) => /[฀-๿]/.test(x);
+function glossOnly(mem) {
+  return mem.length <= 4 && !mem.some((m) => /&| - |^[฀-๿]+-[฀-๿]/.test(m));
+}
+
 export function variantsOf(text, thes) {
   if (!thes) return [];
   const n = norm(text);
   if (!n) return [];
-  let out = [];
+  const forms = englishForms(n);
+  let out = forms.slice();
   if (thes.groups && thes.index) {
     let gids = thes.index.get(n);
+    /* "museums" sits only in a mined blob too big to use; "museum" has a group */
+    const usable = (gs) => gs && Array.from(gs).some((g) => thes.groups[g].length <= GROUP_MAX);
+    if (!usable(gids)) {
+      for (const f of forms) { const fg = thes.index.get(f); if (usable(fg)) { gids = fg; break; } }
+    }
     /* A word whose groups share nothing but the word itself has more than one
      * sense (grab: to arrest, to catch), and widening with every sense floods
      * the answer with the wrong ones; it is searched as typed. Groups that
      * overlap (hospital: โรงพยาบาล in both) are one sense and widen. */
     if (gids && gids.size > 1) {
+      const same = new Set([n].concat(forms));
       const sets = Array.from(gids).filter((g) => thes.groups[g].length <= GROUP_MAX)
-                        .map((g) => new Set(thes.groups[g].filter((m) => m !== n)));
+                        .map((g) => new Set(thes.groups[g].filter((m) => !same.has(m))));
       /* a group of one or two (coffee, เมล็ดกาแฟ; นวด: knead, rub) is a gloss,
        * not a second sense: it takes two groups of three or more that share
        * nothing to make a word ambiguous */
@@ -337,7 +384,23 @@ export function variantsOf(text, thes) {
       if (lk.length >= 4 && li) gids = li.get(lk);
     }
     if ((!gids || !gids.size) && /^[a-z][a-z ]*$/.test(n)) gids = joinedIndex(thes).get(loose(n.replace(/ /g, "")));
-    for (const g of gids || []) if (thes.groups[g].length <= GROUP_MAX) out.push(...thes.groups[g]);
+    for (const g of gids || []) {
+      const mem = thes.groups[g];
+      if (mem.length > GROUP_MAX) continue;
+      if (!glossOnly(mem)) { out.push(...mem); continue; }
+      /* a gloss: its one word in the other language, a translation (dam →
+       * เขื่อน, ร้านหนังสือ → bookstore); two or more there are other senses
+       * (วัด → abbey, wat; นวด → knead, rub) and add nothing */
+      const other = mem.filter((m) => isThai(m) !== isThai(n));
+      if (other.length === 1) out.push(other[0]);
+      /* and every member that sounds like the word: a group of spellings of
+       * one name (nakorn, nakhon, นคร; payap, พายัพ) is not a gloss */
+      const key = loose(n.replace(/ /g, ""));
+      for (const m of mem) {
+        const mk = loose(m.replace(/ /g, ""));
+        if (key && mk && (mk === key || (key.length >= 4 && edits(mk, key, 1) <= 1))) out.push(m);
+      }
+    }
   } else {
     out = thes.expand(text) || [];
   }
@@ -365,6 +428,7 @@ function keepWhole(text, seg, keep) {
   return parts.length > 1 ? `("${n}" OR title_s : "${parts.join(" ")}")` : "";
 }
 
+const STOP_EN = new Set(["and", "&", "of", "the"]);
 export function planSimple(q, seg, thes, extra) {
   const ex = extra || {};
   const toks = tokenise(q, false);
@@ -382,6 +446,13 @@ export function planSimple(q, seg, thes, extra) {
     const words = t.quoted || t.prefix || kept ? [] : spaceThai(t.text, seg).split(" ").filter((w) => RE_TOKCHAR.test(w));
     const item = { p, col: t.field, text: t.text, prefix: t.prefix, quoted: t.quoted, words, sign: t.sign, kept: !!kept };
     (t.sign === "-" ? never : order).push(item);
+  }
+  /* "and", "of", "the" in a name of three words or more are not asked for:
+   * "City Art and Culture Center" is titled "City Art & Cultural Center". */
+  const said = order.slice();
+  if (order.length >= 3) {
+    const kept = order.filter((it) => !(STOP_EN.has(String(it.text).toLowerCase()) && !it.col && !it.quoted && it.sign !== "+"));
+    if (kept.length >= 2) order.splice(0, order.length, ...kept);
   }
   const col = (it) => (it.col ? `${it.col} : ${it.p}` : it.p);
   const not = (expr) => never.length ? `(${expr})` + never.map((it) => ` NOT ${col(it)}`).join("") : expr;
@@ -450,7 +521,7 @@ export function planSimple(q, seg, thes, extra) {
    * no −never, no column, no prefix — reads as the name of something. Matched
    * against the title as written (keys.title), so a Thai name stays unspaced. */
   const nameOk = !never.length && !fields && !order.some((it) => it.prefix);
-  const name = nameOk ? clean(order.map((it) => it.text).join(" ")).toLowerCase() : "";
+  const name = nameOk ? clean(said.map((it) => it.text).join(" ")).toLowerCase() : "";
   const names = name ? [name].concat(units.length === 1 ? units[0].vars.map((v) => v.toLowerCase()) : [])
     .filter((v, k, a) => v && a.indexOf(v) === k).slice(0, 5) : [];
   const items = order.map((it) => ({ text: it.text, plain: plain(it) }));
@@ -762,6 +833,13 @@ const GUESS_FLOOR = 0.5;      // under a network guess, the least a pinned row k
 const COLS = "p.id, k.site, k.host, p.url, p.title, p.abstract, k.lastmod, p.kb, k.lat, k.lon," +
              " k.kind, k.has, k.sk, k.evn, k.evu, p.crumbs, p.thumb, p.rich";
 
+/* A Mot Dang list page by its address: a shelf, a tag page, a district page —
+ * anything under /cm/ or /cr/ that is not a place (/p/). keys.kind cannot say:
+ * crawl.py reads it from an ItemList the paged and district lists lack (8,002
+ * of 8,877 paged lists were "page" in the 2026-10-07 index). lp is pages. */
+const DIR_SQL = "(lp.url GLOB 'https://motdang.net/c[mr]/*' AND lp.url NOT GLOB 'https://motdang.net/c[mr]/p/*')";
+const PAGED_SQL = "(lp.url GLOB '*-p[0-9]*.html' OR lp.url GLOB '*/page-[0-9]*.html')";
+
 function rankScore(o, names, tb) {
   let sc = "w.rank * (1.0 + 0.05 * min(k.evc, 10))";
   /* compared against lower(k.title), so folded the same way */
@@ -773,11 +851,29 @@ function rankScore(o, names, tb) {
      * tree in the EFEO garden" over "EFEO Chiang Mai Centre"). */
     const starts = names.map(() => "instr(' · ' || replace(lower(k.title), ' — ', ' · '), ?) > 0").join(" OR ");
     const has = names.map(() => "instr(lower(k.title), ?) > 0").join(" OR ");
-    sc += ` * (CASE WHEN ${piece} THEN 3.0 WHEN ${starts} THEN 2.5 WHEN ${has} THEN 2.0 ELSE 1.0 END)`;
+    /* A Mot Dang list named after the words ("พิพิธภัณฑ์ · Museums · …") is not
+     * the thing itself; it counts as a page that carries them, like each place
+     * of that kind, so the places are not buried under their own lists
+     * (2026-10-22: "museum" put seven lists over the National Museum). The
+     * shelf a query names still goes first (doorPick). */
+    sc += ` * (CASE WHEN (${piece}) AND NOT ${DIR_SQL} THEN 3.0 WHEN (${starts}) AND NOT ${DIR_SQL} THEN 2.5` +
+          ` WHEN ${has} THEN 2.0 ELSE 1.0 END)`;
     for (const nm of names) tb.push(` · ${nm} · `);
     for (const nm of names) tb.push(` · ${nm}`);
     for (const nm of names) tb.push(nm);
   }
+  /* Every word of a longer search in a place's title: "Chiang Mai University
+   * library" is the Chiang Mai University Main Library, not the Libraries
+   * list (2026-10-22). Each word found counts; lists take no part. */
+  const cover = (o.cover || []).slice(0, 6);
+  if (cover.length >= 2) {
+    const sum = cover.map(() => "(instr(lower(k.title), ?) > 0)").join(" + ");
+    sc += ` * (CASE WHEN ${DIR_SQL} THEN 1.0 ELSE 1.0 + 0.8 * ((${sum}) = ${cover.length}) END)`;
+    for (const w of cover) tb.push(w);
+  }
+  /* Page 2 onward of a list repeats page 1's heading: 95 of 400 top-ten
+   * slots across 40 kind searches on 2026-10-22, nine of ten for วัด. */
+  sc += ` * (CASE WHEN ${DIR_SQL} AND ${PAGED_SQL} THEN 0.25 ELSE 1.0 END)`;
   if (o.pin) {
     /* Distance never sinks a page whose title carries the words: a place
      * asked for by name is the answer wherever the reader stands. And a
@@ -848,7 +944,7 @@ export function sql(match, opts) {
     /* What people tapped for these words (findlearn.js): a bounded multiplier
      * on the page's own score, read by address because ids are renumbered by
      * every reload. 1.25 at most, so it never lifts a page past a title tier. */
-    let lj = "";
+    let lj = " JOIN pages lp ON lp.id = w.id";
     if (learned.length) {
       sc += ` * (CASE lp.url ${learned.map(() => "WHEN ? THEN ?").join(" ")} ELSE 1.0 END)`;
       for (const [u, m] of learned) tb.push(u, m);
@@ -933,7 +1029,8 @@ export function doorSql(forms, said) {
     ` WHERE fts MATCH ? AND q.site = 'motdang' AND ${where} ORDER BY rank LIMIT ${lim}) f` +
     ` JOIN pages p ON p.id = f.id JOIN keys k ON k.id = f.id ORDER BY f.rank`;
   if (slugs.length) {
-    const ph = slugs.map((sl) => sl.replace(/-/g, " ")).flatMap((sl) => [`"${sl} index html"`, `"net ${sl} html"`, `"net sites ${sl}"`]);
+    const ph = slugs.map((sl) => sl.replace(/-/g, " ")).flatMap((sl) => [`"${sl} index html"`, `"net ${sl} html"`, `"net sites ${sl}"`,
+                                                                         `"tag ${sl} html"`]);
     out.push({ text: pick("q.kind IN ('list', 'page')", 40), binds: [`url_s : (${ph.join(" OR ")})`] });
   }
   if (words.length) {
@@ -943,11 +1040,28 @@ export function doorSql(forms, said) {
 }
 
 const CITY = { cm: { lat: 18.7883, lon: 98.9853 }, cr: { lat: 19.9105, lon: 99.8406 } };
+/* A city said last ("museum chiang rai", "วัดเชียงราย"). Said first it is
+ * usually part of a name: Chiang Mai University, Chiang Mai National Museum. */
+const CITY_WORDS = [["cm", /(^|\s|(?<=[\u0e00-\u0e7f]))(chiang\s?mai|cnx|เชียงใหม่)$/i],
+                    ["cr", /(^|\s|(?<=[\u0e00-\u0e7f]))(chiang\s?rai|cei|เชียงราย)$/i]];
+/* The city a query names besides the thing, and the thing without it. */
+export function cityOf(q) {
+  const t = String(q || "").trim();
+  for (const [city, re] of CITY_WORDS) {
+    if (!re.test(t)) continue;
+    const rest = t.replace(re, "").replace(/\s+/g, " ").trim();
+    return rest && !CITY_WORDS.some(([, r]) => r.test(rest)) ? { city, rest } : null;
+  }
+  return null;
+}
 const DOOR_PATH = [
   [/^\/(cm|cr)\/([a-z0-9-]+)\/(?:index\.html)?$/, 100],               // a shelf
   [/^\/(cm|cr)\/[a-z0-9-]+\/([a-z0-9-]+)\/(?:index\.html)?$/, 96],     // a shelf inside one
   [/^\/()([a-z0-9-]+)\.html$/, 100],                                  // a page of the site: /map.html
   [/^\/()sites\/([a-z0-9-]+)\/(?:index\.html)?$/, 94],                 // a minisite
+  /* a kind with no shelf of its own (karaoke, locksmith, mosque) has a tag
+   * page; its plain one, not a tag crossed with a shelf or a district */
+  [/^\/(cm|cr)\/tag\/((?!.*--)(?!.*-p\d+$)[a-z0-9-]+)\.html$/, 92],
 ];
 const sing = (w) => (w.length > 4 && w.endsWith("s") ? w.slice(0, -1) : w);
 
@@ -959,7 +1073,7 @@ export function doorPick(rows, forms, pin) {
   for (const r of rows) {
     let path;
     try { path = new URL(r.url).pathname; } catch { continue; }
-    if (/\/tag\//.test(path)) continue;
+    if (/\/tag\//.test(path) && !/^\/(cm|cr)\/tag\/[a-z0-9-]+\.html$/.test(path)) continue;
     let s = 0, city = "";
     for (const [re, w] of DOOR_PATH) {
       const m = re.exec(path);
@@ -981,6 +1095,8 @@ export function doorPick(rows, forms, pin) {
       break;
     }
     if (!s) continue;
+    /* A city the reader named: only that city's shelves. */
+    if (pin && pin.stated && city !== pin.city) continue;
     /* Two cities carry the same shelf: the reader's nearer one, else Chiang Mai. */
     if (city) {
       const near = pin ? (metres(pin, CITY.cr) < metres(pin, CITY.cm) ? "cr" : "cm") : "cm";
@@ -2314,8 +2430,24 @@ async function answer(request, env, url, ctx, coreP, now) {
   const pl = boolQ ? planBoolean(qm, seg) : planSimple(qm, seg, thes, { keep, common });
   st.fields = !!pl.fields;
   const sites = Array.from(new Set(pl.sites.concat(st.site ? [st.site] : []))).slice(0, 8);
-  const opts = { sites, qsites: pl.sites, name: pl.name || "", names: pl.names || [], in: st.in, fields: pl.fields,
-                 sort: st.sort, pin: st.pin, drop: true,
+  /* "museum chiang rai": the city stays in the match, but the thing is the
+   * name ("museum"), and the city's centre stands in for the reader when the
+   * reader is not already there. Distances on the page stay the reader's. */
+  const cq = boolQ ? null : cityOf(qm);
+  /* the words a shelf is looked up by: "motorbike rental", not "… chiang rai" */
+  const doorWords = cq ? cq.rest : qm;
+  let rankPin = st.pin;
+  if (cq) {
+    const pc = planSimple(cq.rest, seg, thes, { keep, common });
+    /* the words as said stay a name too: คูเมืองเชียงราย is the moat itself */
+    pl.names = Array.from(new Set((pl.names || []).concat(pc.names || []))).slice(0, 6);
+    if (st.pin && metres(st.pin, CITY[cq.city]) < 30000) rankPin = { ...st.pin, city: cq.city, stated: true };
+    else rankPin = { lat: CITY[cq.city].lat, lon: CITY[cq.city].lon, exact: false, city: cq.city, stated: true };
+  }
+  const cover = boolQ || pl.fields ? [] : Array.from(new Set((pl.items || []).map((it) => String(it.text).toLowerCase())
+    .filter((w) => w.length >= 2 && !STOP_EN.has(w))));
+  const opts = { sites, qsites: pl.sites, name: pl.name || "", names: pl.names || [], cover, in: st.in, fields: pl.fields,
+                 sort: st.sort, pin: rankPin, drop: true,
                  from: st.from, to: st.to, n: st.n, offset: (page - 1) * st.n,
                  kind: st.kind, sec: st.sec, has: st.has, bbox: st.bbox, today: when.today,
                  open: openIds(ax.scheds, when.minute), learn, pins: adv ? new Map() : pinsFor(q),
@@ -2384,10 +2516,11 @@ async function answer(request, env, url, ctx, coreP, now) {
   /* The shelf the words name is looked up beside the first query, not after
    * it: it depends on the words, not on the answer (one round trip saved). */
   const doorOk = pl.mode === "simple" && (page === 1 || lucky) && !st.site && !st.kind && !st.sec &&
-                 !st.has.length && qm.split(" ").length <= 3;
+                 !st.has.length && doorWords.split(" ").length <= 3;
   const doorQuery = (fx) => {
-    const forms = [qm].concat(pl.names || [], Object.values(fx).flat()).slice(0, 8);
-    const ds = doorSql(forms, [qm].concat(Object.values(fx).flat()));
+    const forms = [doorWords, qm].concat(pl.names || [], Object.values(fx).flat())
+      .filter((v, k, a) => a.indexOf(v) === k).slice(0, 8);
+    const ds = doorSql(forms, [doorWords].concat(Object.values(fx).flat()));
     return ds.length
       ? lap("shelf", db.batch(ds.map((d) => db.prepare(d.text).bind(...d.binds)))).then((res) => ({ res, forms }))
       : Promise.resolve({ res: [], forms });
@@ -2427,8 +2560,16 @@ async function answer(request, env, url, ctx, coreP, now) {
   if (!fault && answered && doorOk) {
     try {
       const got = Object.keys(fixUsed).length ? await doorQuery(fixUsed) : await doorP;
-      door = got ? doorPick(got.res.flatMap((r) => r.results || []), got.forms, st.pin) : null;
+      door = got ? doorPick(got.res.flatMap((r) => r.results || []), got.forms, rankPin) : null;
     } catch { door = null; }
+    /* A tag page goes first for a kind ("karaoke"), never over a place named
+     * by the words: "ประตูท่าแพ" is the gate, not the Tha Phae Gate tag. */
+    if (door && /\/tag\//.test(door.url)) {
+      const said = norm(doorWords);
+      const named = rows.some((r) => r.kind === "place" &&
+        String(r.title || "").split(/ · | — /).some((piece) => norm(piece) === said));
+      if (named) door = null;
+    }
     if (door && st.sort === "rank" && !lucky) {
       rows = [door].concat(rows.filter((r) => r.id !== door.id)).slice(0, st.n);
     }
