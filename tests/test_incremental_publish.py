@@ -177,6 +177,30 @@ def main():
         check("a publish with nothing new writes nothing",
               rc == 0 and mtimes(b.bucket) == before, str(rc))
 
+        print("the packed search rows (api/v1/rows, written by every build)")
+        write(b.docs, "api/v1/rows/cols.bin", "cols v1")
+        write(b.docs, "api/v1/rows/text.json", '{"n": 1, "bv": "aaa"}')
+        b.publish("--incremental")
+        before = mtimes(b.bucket)
+        time.sleep(0.05)
+        b.publish("--incremental")
+        check("rows that did not change are not sent again", mtimes(b.bucket) == before)
+        write(b.docs, "api/v1/rows/cols.bin", "cols v2")
+        write(b.docs, "api/v1/rows/text.json", '{"n": 1, "bv": "bbb"}')
+        b.publish("--incremental")
+        live = b.live()
+        check("cols.bin and text.json go up when they change",
+              live["api/v1/rows/cols.bin"] == "cols v2" and "bbb" in live["api/v1/rows/text.json"])
+        check("and nothing else is written", "sending 2 changed file(s)" in b.log(), b.log()[-400:])
+        (b.docs / "api/v1/rows/cols.bin").unlink()
+        (b.docs / "api/v1/rows/text.json").unlink()
+        rc = b.publish("--incremental", "--defer-deletions")
+        check("rows that fail to emit are not deleted from the site (api/ is never pruned)",
+              "api/v1/rows/cols.bin" in b.live() and "api/v1/rows/text.json" in b.live(), "rc=%r" % (rc,))
+        write(b.docs, "api/v1/rows/cols.bin", "cols v2")
+        write(b.docs, "api/v1/rows/text.json", '{"n": 1, "bv": "bbb"}')
+        b.publish("--incremental")
+
         print("a place is removed")
         (b.docs / "cm/p/9.html").unlink()
         (b.docs / "cm/p/9.json").unlink()
