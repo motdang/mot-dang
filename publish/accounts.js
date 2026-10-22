@@ -107,7 +107,7 @@ async function teamNote(secret, body) {
 
 async function team(request, env, url, on) {
   const to = url.searchParams.get("to");
-  if (!TEAM[to]) return page("ไม่รู้จักหน้านี้", "Unknown team page", "/", 400);
+  if (to !== "wheel" && to !== "mail") return page("ไม่รู้จักหน้านี้", "Unknown team page", "/", 400);
   if (!on || !env.TEAM_SIGNIN) return page("การเข้าสู่ระบบด้วย LINE ยังไม่เปิด", "Sign in with LINE is not switched on yet", "/", 503);
   const u = await whoIs(request, env);
   const here = `/auth/team?to=${to}`;

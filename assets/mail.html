@@ -244,7 +244,7 @@
   function identify(pass, typed){
     return post("/who", pass ? { pass: pass } : cred()).then(function(r){
       if (!r.ok) {
-        store.del("pass"); store.del("sess");
+        if (r.status === 401) { store.del("pass"); store.del("sess"); }
         lockSays(r.status === 401 ? "Wrong password." : "Something is wrong. Try again in a minute.");
         return false;
       }

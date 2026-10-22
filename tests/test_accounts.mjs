@@ -151,6 +151,7 @@ test("team pages: LINE first, then a signed note for the Wheel or mail", async (
   const db = d1(), env = { ...ENV(db), TEAM_SIGNIN: "team-secret" };
   const bad = await call(env, "/auth/team?to=evil");
   assert.equal(bad.status, 400);
+  assert.equal((await call(env, "/auth/team?to=constructor")).status, 400);
   const off = await call(ENV(db), "/auth/team?to=wheel");
   assert.equal(off.status, 503, "no TEAM_SIGNIN, not switched on");
 
