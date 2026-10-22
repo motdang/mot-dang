@@ -419,18 +419,26 @@ class Round:
         id tables that hold still across it, take the stamp and decide."""
         B = self.B
         ids = set(B.all_ids()) if hasattr(B, "all_ids") else {r["id"] for r in records}
-        found = find_tables(B.namespaces(), ids, B.skip)
-        sample = sample_of([r["id"] for r in records], WARM, "warm" + B.date)
         by = {r["id"]: r for r in records}
-        before = {i: table_values(found, i) for i in sample}
-        sizes = {lab: len(t) for lab, t in found}
-        for i in sample:
+        # A first batch wakes what loads on first use (pics_layer reads its sightings
+        # then); the tables are looked for after it. A second batch, other pages, shows
+        # which tables fill as pages are drawn (net_layer._SHOWN lists the pages it has
+        # shown): those are results, not inputs, and are left out.
+        first = sample_of(list(by), WARM, "warm-a" + B.date)
+        for i in first:
             draw(by[i], photos.get(i))
-        after = {i: table_values(found, i) for i in sample}
+        found = find_tables(B.namespaces(), ids, B.skip)
+        taken = set(first)
+        second = sample_of([i for i in by if i not in taken], 2 * WARM, "warm-b" + B.date)
+        before = {i: table_values(found, i) for i in second}
+        sizes = {lab: len(t) for lab, t in found}
+        for i in second:
+            draw(by[i], photos.get(i))
+        after = {i: table_values(found, i) for i in second}
         moved = {lab for lab, t in found if len(t) != sizes[lab]}
         moved |= {lab for lab, _ in found
                   if any([x for x in before[i] if x[0] == lab] != [x for x in after[i] if x[0] == lab]
-                         for i in sample)}
+                         for i in second)}
         self.tables = [(lab, t) for lab, t in found if lab not in moved]
         self.sizes = {lab: len(t) for lab, t in self.tables}
         self.unstable = sorted(moved)
