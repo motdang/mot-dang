@@ -1504,7 +1504,10 @@ export default {
   async fetch(request, env, ctx) {
     const started = Date.now();
 
-    try { await assetVersions(env); } catch { /* pages go out unversioned */ }
+    /* An API answer carries no script tags, so it does not wait on the list:
+     * on a fresh isolate that read cost a search 1–2 s (2026-10-22). */
+    if (new URL(request.url).pathname.startsWith("/api/")) ctx.waitUntil(assetVersions(env).catch(() => {}));
+    else try { await assetVersions(env); } catch { /* pages go out unversioned */ }
     /* The one thing that matters. Nothing below this line can fail it. */
     const response = finish(toHttps(request) || sendToRules(request) || askCrawler(request, env) || await serve(request, env, ctx), request.url);
     /* A script or stylesheet asked for by its content hash is kept for good —
