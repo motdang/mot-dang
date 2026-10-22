@@ -333,8 +333,12 @@ export function englishForms(w) {
   else if (n.length > 3 && n.endsWith("s") && !/(ss|us|is)$/.test(n)) out.add(n.slice(0, -1));
   if (n.endsWith("ural")) out.add(n.slice(0, -2) + "e");
   if (n.endsWith("ture")) out.add(n.slice(0, -1) + "al");
+  /* "centres" → centre and centers, and so center */
+  for (const v of Array.from(out)) {
+    if (v.length > 3 && v.endsWith("s") && !/(ss|us|is)$/.test(v) && !n.endsWith("ies")) out.add(v.slice(0, -1));
+  }
   out.delete(n);
-  return Array.from(out);
+  return Array.from(out).slice(0, 6);
 }
 /* A small group from the mined dictionary (dam, dike, เขื่อน) is a gloss: its
  * other-language word is a translation, its same-language words are other

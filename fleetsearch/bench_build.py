@@ -118,6 +118,7 @@ SPEC = [
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--recall", required=True, help="name_recall.tsv from the 2026-10-22 live run")
+    ap.add_argument("--no-audit", action="store_true", help="write the set without the audit's 405 places")
     a = ap.parse_args()
     paths = json.loads((ROOT / "cache" / "place_paths.json").read_text())
     cases: list[dict] = []
@@ -125,7 +126,9 @@ def main() -> None:
         if r["expected_url"]:
             cases.append({"set": "name", "q": r["q"], "want": [r["expected_url"]], "top": 1,
                           "note": r.get("settled_miss_cause") or ""})
-    if AUDIT.exists():
+    if not AUDIT.exists() and not a.no_audit:
+        raise SystemExit(f"no {AUDIT}: a set without it scores on fewer searches; pass --no-audit to write it anyway")
+    if AUDIT.exists() and not a.no_audit:
         for k in json.loads(AUDIT.read_text()):
             t = k["truth"]
             path = paths.get(t["id"]) or f"{t['prov']}/p/{t['slug']}.html"

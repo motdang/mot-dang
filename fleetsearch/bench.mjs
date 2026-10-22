@@ -112,11 +112,16 @@ if (has("--engine")) {
   const qs = JSON.parse(readFileSync(arg("--engine"), "utf8"));
   const r = has("--local") ? await localRunner() : liveRunner(arg("--base", "https://motdang.net"));
   const lines = [];
+  let failed = 0;
   for (const b of qs) {
     const d = await r(new URLSearchParams({ q: b.q, fmt: "json", n: "10" }).toString());
-    lines.push(JSON.stringify({ qid: b.qid, urls: (d.results || []).map((x) => x.url) }));
+    /* a refused search is not an empty one: marked, and the run exits 1 */
+    if (d.error) failed++;
+    lines.push(JSON.stringify({ qid: b.qid, urls: (d.results || []).map((x) => x.url), ...(d.error ? { error: true } : {}) }));
+    if (!has("--local") && has("--slow")) await new Promise((ok) => setTimeout(ok, 3500));
   }
   writeFileSync(arg("--out"), lines.join("\n") + "\n");
+  if (failed) { console.error(`${failed} searches failed to answer; their lines carry "error": true`); process.exit(1); }
   process.exit(0);
 }
 const places = placeMap();
@@ -165,6 +170,11 @@ function summary(rows, name) {
 function diff(a, b) {
   const read = (n) => new Map(readFileSync(join(OUTD, n + ".jsonl"), "utf8").trim().split("\n").map((l) => JSON.parse(l)).map((r) => [r.set + "\t" + r.q, r]));
   const A = read(a), B = read(b);
+  const onlyA = [...A.keys()].filter((k) => !B.has(k)), onlyB = [...B.keys()].filter((k) => !A.has(k));
+  if (onlyA.length || onlyB.length) {
+    console.error(`the runs hold different searches (${onlyA.length} only in ${a}, ${onlyB.length} only in ${b}); run both on the same --set`);
+    process.exit(1);
+  }
   const fixed = [], broke = [];
   for (const [k, rb] of B) { const ra = A.get(k); if (!ra) continue;
     if (!ra.j.pass && rb.j.pass) fixed.push(k); if (ra.j.pass && !rb.j.pass) broke.push(k); }
