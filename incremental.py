@@ -11,7 +11,10 @@ A page is carried when four things match what the last build saw:
            records) and LIVE (files no place page reads). Found by watching
            what the build opens, so a file the build starts to read joins the
            stamp without a list to edit.
-  record   the page's own record and its photo.
+  record   the page's own record and its photo, and what the host computes
+           from the record and the clock (own_view: the ant rank counts a
+           date as fresh for 180 days from today, so it flips on a day no
+           record changed).
   tables   what each id-keyed table in the build holds for it: claims, streets,
            events, tags, inside-members, ... Found by looking for dicts and
            sets keyed by place ids, not from a list.
@@ -24,9 +27,9 @@ model: a page whose four things matched but whose bytes moved is a miss, counted
 and named in cache/incremental-last.json.
 
 Not seen: a layer that reads other places' records through a call rather than a
-table, and anything that reads BUILD_DATE. (3,000 pages drawn on two dates three
-days apart were byte for byte the same, 2026-10-22; the events a page lists reach
-it through PLACE_EVENTS, a table.) So a sample of the pages about to be carried
+table, and anything else that counts from the clock. (Drawn on two dates three
+days apart, 3,000 pages were byte for byte the same on 2026-10-22; the events a
+page lists reach it through PLACE_EVENTS, a table.) So a sample of the pages about to be carried
 is drawn anyway (CANARY, four times that on the first build of a new day) and
 compared with the last build's bytes, and once AUDIT_DAYS have passed since every
 page was last drawn, all of them are: the weekly full draw, inside an incremental
@@ -460,7 +463,8 @@ class Round:
         return digest(got)
 
     def base(self, r, rec_dg):
-        return digest([rec_dg, table_values(self.tables, r["id"])])
+        own = self.B.own_view(r) if hasattr(self.B, "own_view") else ""
+        return digest([rec_dg, own, table_values(self.tables, r["id"])])
 
     def province(self, key, records, photos):
         """Plan the pages of one province: {page key: Page}."""

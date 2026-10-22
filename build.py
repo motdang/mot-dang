@@ -19162,6 +19162,12 @@ class _IncrHost:
                 r.get("lat"), r.get("lng")]
 
     @staticmethod
+    def own_view(r):
+        """What a page takes from its own record through a clock: the ant rank
+        (_is_fresh counts 180 days back from today)."""
+        return [ant_rank(r)]
+
+    @staticmethod
     def all_ids():
         return PLACE_BY_ID.keys()
 

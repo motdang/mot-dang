@@ -53,6 +53,12 @@ class Town:
     def all_ids(self):
         return self.recs.keys()
 
+    clock = 0
+
+    def own_view(self, r):
+        """Something the record and the clock make between them."""
+        return [self.clock if r["id"] == "b" else 0]
+
     def namespaces(self):
         return {"town": {"CLAIMS": self.claims, "WORDS": {"x": 1}, "NAMES": {"a": 1, "zz": 2}}}
 
@@ -180,6 +186,13 @@ def main():
     check("a changed name draws that page and the pages that name it, nothing more",
           drawn3b == sorted(["cm/p/c"] + named_c), "drew %s, wanted c + %s" % (drawn3b, named_c))
     state3 = rnd3b.state_out()
+
+    # a page whose record holds a date and whose rank flips with the clock: that page only
+    town.clock = 1
+    rnd3c, plan3c, drawn3c = run_round(town, state3, f1)
+    check("something computed from the clock draws that page and no other", drawn3c == ["cm/p/b"], str(drawn3c))
+    state3 = rnd3c.state_out()
+    town.clock = 1
 
     # an id table entry (a claim) changes: that page only
     town.claims["a"] = {"confirmedAt": "2026-10-22"}
