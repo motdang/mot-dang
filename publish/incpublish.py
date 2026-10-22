@@ -242,6 +242,7 @@ def next_manifest(prev, cur, kept=(), deferred=()):
             continue
         out[k] = v
     for k in deferred:
-        if k in prev:
-            out[k] = prev[k]
+        # still live: its old entry, or a placeholder (an md5 no file has) so the next
+        # publish finds it among the keys that left docs/ and asks again
+        out[k] = prev.get(k) or [0, 0, ""]
     return out

@@ -354,6 +354,25 @@ def main():
         check("a publish that went by the manifest keeps its date",
               b.listed == 0 and json.loads(incpublish.MANIFEST.read_text())["full_at"] == before)
 
+        print("deletions a full publish defers")
+        incpublish.MANIFEST.unlink()
+        safety.DELETE_CEILING = 2
+        for n in range(4):
+            write(b.bucket, "old/%d.html" % n, "left over")
+            os.utime(b.bucket / ("old/%d.html" % n), (time.time() - 72000, time.time() - 72000))
+        rc = b.publish("--incremental", "--defer-deletions")
+        man = incpublish.load()
+        check("the full publish left them live and wrote a manifest", rc == 0 and "old/0.html" in b.live() and man is not None)
+        check("the manifest remembers them", all("old/%d.html" % n in man for n in range(4)), str(sorted(k for k in man if k.startswith("old"))))
+        rc = b.publish("--incremental", "--defer-deletions")
+        check("so the next incremental publish asks about them again (and defers again)",
+              "old/0.html" in deploy.DEFERRED.read_text() and "old/0.html" in b.live(), "rc=%r" % (rc,))
+        rc = b.publish("--incremental", "--prune")
+        check("until a publish is allowed to delete them", "old/0.html" not in b.live() and "old/0.html" not in incpublish.load())
+        safety.DELETE_CEILING = 2000
+        check("next_manifest keeps a deferred key it never had, with an md5 no file has",
+              incpublish.next_manifest({}, {}, deferred=["x"])["x"][2] == "")
+
         print("a manifest that does not parse")
         incpublish.MANIFEST.write_text("{not json")
         write(b.docs, "index.html", "<html>front, new</html>")
