@@ -837,7 +837,9 @@ const COLS = "p.id, k.site, k.host, p.url, p.title, p.abstract, k.lastmod, p.kb,
  * anything under /cm/ or /cr/ that is not a place (/p/). keys.kind cannot say:
  * crawl.py reads it from an ItemList the paged and district lists lack (8,002
  * of 8,877 paged lists were "page" in the 2026-10-07 index). lp is pages. */
-const DIR_SQL = "(lp.url GLOB 'https://motdang.net/c[mr]/*' AND lp.url NOT GLOB 'https://motdang.net/c[mr]/p/*')";
+const DIR_SQL = "((lp.url GLOB 'https://motdang.net/c[mr]/*' AND lp.url NOT GLOB 'https://motdang.net/c[mr]/p/*')" +
+  /* a doodle titled ไปรษณีย์ or ตลาด is a drawing of one, not the place (2026-10-22) */
+  " OR lp.url GLOB 'https://motdang.net/doodles/*')";
 const PAGED_SQL = "(lp.url GLOB '*-p[0-9]*.html' OR lp.url GLOB '*/page-[0-9]*.html')";
 
 function rankScore(o, names, tb) {

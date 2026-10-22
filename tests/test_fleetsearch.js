@@ -366,7 +366,8 @@ t("distance never sinks a named page, and a network guess keeps a floor (Tulou, 
 });
 t("a Mot Dang list takes no title tier, and page 2 of a list sinks (museums, 2026-10-22)", () => {
   const s = fs.sql('"museum"', { names: ["museum"], n: 10, offset: 0 });
-  eq(/AND NOT \(lp\.url GLOB 'https:\/\/motdang\.net\/c\[mr\]\/\*'/.test(s.text), true, "the 3.0 and 2.5 tiers skip lists");
+  eq(/AND NOT \(\(lp\.url GLOB 'https:\/\/motdang\.net\/c\[mr\]\/\*'/.test(s.text), true, "the 3.0 and 2.5 tiers skip lists");
+  eq(/lp\.url GLOB 'https:\/\/motdang\.net\/doodles\/\*'/.test(s.text), true, "and doodles");
   eq(/THEN 0\.25 ELSE 1\.0 END/.test(s.text), true, "a paged list counts a quarter");
   eq(JSON.stringify(s.binds.slice(0, 3)), JSON.stringify([" · museum · ", " · museum", "museum"]), "binds in tier order");
 });
