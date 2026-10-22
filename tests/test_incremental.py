@@ -309,6 +309,24 @@ def main():
     rnd7, _, _ = run_round(Town(), None, f1)
     check("a full round that carried nothing is recorded as one, with no redo", rnd7.drew_all() and not rnd7.state_out()["redo"])
 
+    # files first opened after the stamp (another province's layers, a worker) join the state
+    tmp2 = Path(tempfile.mkdtemp())
+    try:
+        (tmp2 / "data").mkdir()
+        (tmp2 / "data" / "late.json").write_text('{"a": 1}')
+        (tmp2 / "data" / "early.json").write_text('{"b": 1}')
+        inc.STAMPS = tmp2 / "stamps.json"
+        rnd8, _, _ = run_round(Town(), None, {"data/early.json": "digest-at-the-stamp"})
+        rnd8.root = tmp2
+        rnd8.note_reads([str(tmp2 / "data" / "late.json"), str(tmp2 / "data" / "early.json")])
+        out8 = rnd8.state_out()
+        check("a file opened after the stamp is named in the state", "data/late.json" in out8["files"], str(out8["files"]))
+        check("a file the stamp already named keeps its digest from the stamp", out8["files"]["data/early.json"] == "digest-at-the-stamp")
+        d = inc.decide(out8, dict(out8["files"], **{"data/late.json": "changed"}), "2026-10-22", NOW, off=False, full_now=False)
+        check("so a change to it forces a full draw", d.full and "data/late.json" in d.reason, repr(d))
+    finally:
+        shutil.rmtree(tmp2, ignore_errors=True)
+
     # the tally
     t = rnd3.tally
     t.carried, t.drawn, t.own = 3, 2, 1
@@ -424,7 +442,7 @@ def build_checks():
             build._PP.update(records=recs, pdir=new / "cm", key="cm", p={}, photos={}, parent=os.getpid(),
                              plan=plan, round=StubRound)
             out = build._place_chunk(list(range(3)))
-            images, unknown, written, moved, inputs, fresh, misses, carried, own = out
+            images, unknown, written, moved, inputs, fresh, misses, carried, own, reads = out
             check("two pages are carried, one drawn", carried == 2 and drawn == ["b"], "carried %d drawn %s" % (carried, drawn))
             check("a carried page is moved, not copied",
                   (new / "cm" / "p" / "a.html").exists() and not (final / "cm" / "p" / "a.html").exists()

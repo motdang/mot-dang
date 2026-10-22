@@ -19282,7 +19282,10 @@ def _place_chunk(idx):
             # (Nan, 2026-10-13): a page whose record is unchanged waits for the full round.
             h = incremental.record_digest(r, photo_file)
             inputs[f"{key}/p/{slug}.html"] = inputs[f"{key}/p/{slug}.json"] = h
-    return images, dict(_UNKNOWN_CATS), written, moved, inputs, fresh, misses, carried, own
+    # a worker's own list of files read is lost with it: send what it opened beyond the parent's
+    reads = (sorted(set(incremental.reads()) - _PP.get("reads0", set()))
+             if os.getpid() != _PP.get("parent") else [])
+    return images, dict(_UNKNOWN_CATS), written, moved, inputs, fresh, misses, carried, own, reads
 
 
 PLACE_INPUTS = {}                                   # "<prov>/p/<slug>.html|json" -> record hash
@@ -19302,13 +19305,13 @@ def write_place_pages(records, pdir, key, p, photos, sitemap_images):
     if rnd:
         plan = _incr_plan(rnd, records, pdir, key, p, photos)
     _PP.update(records=records, pdir=pdir, key=key, p=p, photos=photos,
-               parent=os.getpid(), plan=plan, round=rnd)
+               parent=os.getpid(), plan=plan, round=rnd, reads0=set(incremental.reads()))
     chunks = [list(range(i, min(i + 200, len(records))))
               for i in range(0, len(records), 200)]
     jobs = _jobs()
 
     def take(result):
-        images, unknown, written, moved, inputs, fresh, misses, carried, own = result
+        images, unknown, written, moved, inputs, fresh, misses, carried, own, reads = result
         PLACE_INPUTS.update(inputs)
         sitemap_images.update(images)
         _KEPT_NOW.update(written)
@@ -19322,6 +19325,7 @@ def write_place_pages(records, pdir, key, p, photos, sitemap_images):
             rnd.tally.own += len(own)
             rnd.tally.misses += misses
             rnd.own_keys += own
+            rnd.note_reads(reads)
         for k, ids in unknown.items():
             prior.setdefault(k, []).extend(ids)
 

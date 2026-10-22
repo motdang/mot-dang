@@ -411,6 +411,8 @@ class Round:
         self.pages = {}             # key -> [base, nearby, rec, trace] for the next state
         self.own_keys = []          # pages drawn this build for a changed (or new) record
         self.audited = False        # every carried page was drawn and matched
+        self.root = ROOT
+        self.late_reads = set()     # files opened after the stamp was taken, by the parent or a worker
         self.plan = {}
         self.t0 = time.time()
         self._nb = {}
@@ -556,6 +558,11 @@ class Round:
     def note_drawn(self, pk, base, nearby, rec_dg, trace):
         self.pages[pk] = [base, nearby, rec_dg, trace]
 
+    def note_reads(self, more=()):
+        """After a province's pages: the files opened so far here, and `more`
+        (what workers opened; their own copy of the list is lost with them)."""
+        self.late_reads |= set(_READ) | set(more)
+
     def drew_all(self):
         """True when every page of the round was drawn: a full decision with
         nothing carried. A round that turns full after an earlier province
@@ -574,7 +581,12 @@ class Round:
         full = self.drew_all()
         old = self.state or {}
         stamp = self.now.isoformat(timespec="seconds")
-        return {"v": VERSION, "date": self.B.date, "files": self.files,
+        # Files first opened after the stamp (another province's layers, a worker) join it
+        # now; the digests taken at the stamp stay for the files it already names, so the
+        # point they are compared from does not move.
+        files = dict(input_files(root=self.root, read=self.late_reads, modules=[]))
+        files.update(self.files or {})
+        return {"v": VERSION, "date": self.B.date, "files": files,
                 "full_at": stamp if full else old.get("full_at", stamp),
                 "audited_at": stamp if (full or self.audited) else old.get("audited_at", old.get("full_at", stamp)),
                 "redo": bool(self.decision.full and self.tally.carried > 0),
