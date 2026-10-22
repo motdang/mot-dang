@@ -37,6 +37,7 @@ import safety  # noqa: E402
 ROOT = HERE.parent
 MANIFEST = Path(os.environ.get("MD_PUBLISHED_MANIFEST") or (ROOT / "cache" / "published-manifest.json"))
 VERSION = 1
+MAX_AGE_DAYS = 7
 LOOKUP_MAX = 2000      # keys looked up one by one; more than this, one listing of what is recent
 
 
@@ -52,22 +53,47 @@ def _md5(path, chunk=1 << 20):
     return h.hexdigest()
 
 
-def load(path=None):
-    """{key: [size, mtime_ns, md5]} of what the last publish left live, or None."""
+def _doc(path=None):
     try:
         doc = json.loads(Path(path or MANIFEST).read_text())
     except (OSError, ValueError):
         return None
-    if not isinstance(doc, dict) or doc.get("v") != VERSION:
+    return doc if isinstance(doc, dict) and doc.get("v") == VERSION else None
+
+
+def load(path=None, now=None):
+    """{key: [size, mtime_ns, md5]} of what the last publish left live, or None:
+    none written, one that does not parse, or one MAX_AGE_DAYS old. The manifest
+    says what this publisher did, so anything that reached or left the bucket
+    another way is only set right by a publish that lists it (deploy.py without
+    a manifest); that one runs about weekly."""
+    import datetime
+    doc = _doc(path)
+    if not doc or not isinstance(doc.get("files"), dict):
         return None
-    return doc.get("files")
+    try:
+        t = datetime.datetime.fromisoformat(doc.get("full_at") or "")
+    except ValueError:
+        return None
+    if t.tzinfo is None:
+        t = t.replace(tzinfo=datetime.timezone.utc)
+    now = now or datetime.datetime.now(datetime.timezone.utc)
+    if (now - t).total_seconds() > MAX_AGE_DAYS * 86400:
+        return None
+    return doc["files"]
 
 
-def save(files, path=None):
+def save(files, path=None, full=False, now=None):
+    """Write the manifest. `full` is a publish that listed the bucket: it dates
+    the manifest anew; any other keeps the date the last full one had."""
+    import datetime
     path = Path(path or MANIFEST)
+    now = now or datetime.datetime.now(datetime.timezone.utc)
+    old = _doc(path) or {}
+    full_at = now.isoformat(timespec="seconds") if (full or not old.get("full_at")) else old["full_at"]
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(".tmp")
-    tmp.write_text(json.dumps({"v": VERSION, "files": files}, separators=(",", ":")))
+    tmp.write_text(json.dumps({"v": VERSION, "full_at": full_at, "files": files}, separators=(",", ":")))
     tmp.replace(path)
 
 

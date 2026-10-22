@@ -314,6 +314,22 @@ def main():
         for k in list(many) + ["cm/p/3.html", "cm/p/3.json", "cm/p/5.html", "cm/p/5.json"]:
             (b.docs / k).unlink(missing_ok=True)
 
+        print("a manifest a week old")
+        doc = json.loads(incpublish.MANIFEST.read_text())
+        doc["full_at"] = (datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=8)).isoformat()
+        incpublish.MANIFEST.write_text(json.dumps(doc))
+        check("is not used", incpublish.load() is None)
+        write(b.docs, "index.html", "<html>front, again</html>")
+        rc = b.publish("--incremental")
+        check("the publish lists the bucket, sends the change and dates the manifest anew",
+              rc == 0 and b.listed == 1 and "front, again" in b.live()["index.html"]
+              and incpublish.load() is not None, "listed %d" % b.listed)
+        before = json.loads(incpublish.MANIFEST.read_text())["full_at"]
+        write(b.docs, "index.html", "<html>front, third</html>")
+        rc = b.publish("--incremental")
+        check("a publish that went by the manifest keeps its date",
+              b.listed == 0 and json.loads(incpublish.MANIFEST.read_text())["full_at"] == before)
+
         print("a manifest that does not parse")
         incpublish.MANIFEST.write_text("{not json")
         write(b.docs, "index.html", "<html>front, new</html>")

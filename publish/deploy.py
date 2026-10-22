@@ -836,7 +836,8 @@ def main():
     prev = incpublish.load() if inc else None
     cur = None
     if inc and prev is None:
-        note("  --incremental: no manifest of the last publish; publishing in full and writing one")
+        note("  --incremental: no manifest of the last publish, or one over %d days old; "
+             "publishing in full and writing one" % incpublish.MAX_AGE_DAYS)
     if prev is not None:
         print("\n  comparing docs/ with the manifest of the last publish…")
         cur = incpublish.scan(DOCS, prev, skip=safety.preview_excludes())
@@ -848,7 +849,8 @@ def main():
         print("\n  listing the bucket to see what this would delete…")
         gone, added = safety.diff_preview(dest, env, run)
         if inc or os.path.exists(incpublish.MANIFEST):
-            cur = incpublish.scan(DOCS, incpublish.load(), skip=safety.preview_excludes())
+            # the old entries only spare reading a file whose size and mtime are as they were
+            cur = incpublish.scan(DOCS, (incpublish._doc() or {}).get("files"), skip=safety.preview_excludes())
     # What the change said would come and go (publish/expected.json).
     announced, said = safety.load_expected()
     for line in said + safety.additions_lines(added, announced):
@@ -994,7 +996,8 @@ def main():
         deleted = set() if defer else set(gone)
         incpublish.save(incpublish.next_manifest(
             prev or {}, cur, kept=set(young) | waiting,
-            deferred=[k for k in (gone_all if prev is not None else gone) if k not in deleted]))
+            deferred=[k for k in (gone_all if prev is not None else gone) if k not in deleted]),
+            full=prev is None)
         note("  manifest of this publish: %s file(s)" % f"{len(cur):,}")
 
     if with_tiles:
