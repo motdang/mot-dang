@@ -560,6 +560,20 @@
    "h": 630,
    "title": "Every stop — Ghost Chiang Mai"
   },
+  "/ghost/stops/doi-kham.html": {
+   "img": "ghost-stop-doi-kham.jpg",
+   "alt": "Card: Ghost Chiang Mai · Wat Phra That Doi Kham, over a photograph of a gold chedi at the top of a stair guarded by gold nagas",
+   "w": 1200,
+   "h": 630,
+   "title": "Wat Phra That Doi Kham — Ghost Chiang Mai"
+  },
+  "/ghost/stops/ho-phaya-mangrai.html": {
+   "img": "ghost-stop-ho-phaya-mangrai.jpg",
+   "alt": "Card: Ghost Chiang Mai · Ho Phaya Mangrai, over a photograph of the gilded King Mangrai shrine beside a tree",
+   "w": 1200,
+   "h": 630,
+   "title": "Ho Phaya Mangrai — Ghost Chiang Mai"
+  },
   "/ghost/walk/": {
    "img": "ghost-walk.jpg",
    "alt": "Card: Ghost Chiang Mai · On foot",
