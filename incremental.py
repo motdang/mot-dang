@@ -5,7 +5,7 @@ build.py drew all ~92,000 place pages (html and json) on every hand-off: about
 byte for byte the last build's. A round changes a few records. This module
 says which pages a round has to draw and which it carries over.
 
-A page is carried when five things match what the last build saw:
+A page is carried when four things match what the last build saw:
 
   inputs   the code and data files the build read, less FEEDS (files that hold
            records) and LIVE (files no place page reads). Found by watching
@@ -19,17 +19,20 @@ A page is carried when five things match what the last build saw:
   nearby   the places the page named last time, by record and page address.
            The queries are recorded while a page is drawn and asked again.
 
-When the code or an input changed, there is no state, the state is older than
-FULL_DAYS, or cache/full-now exists, every page is drawn. A forced or weekly
-full build also checks the model: a page whose four things matched but whose
-bytes moved is a miss, counted and named in cache/incremental-last.json.
+When the code or an input changed, there is no state, or cache/full-now exists,
+every page is drawn. A forced full build with the same code also checks the
+model: a page whose four things matched but whose bytes moved is a miss, counted
+and named in cache/incremental-last.json.
 
 Not seen: a layer that reads other places' records through a call rather than a
-table, and a page that counts from the date without a date in its record. A
-sample of carried pages is drawn anyway (CANARY) and compared with the last
-build's bytes; one that moved turns the round into a full one. The first build
-of a new day draws the pages whose records hold a date and carries the rest, and
-its sample is the test of that. The weekly full build is the rest of the check.
+table, and a page that counts from the date without a date in its record. So a
+sample of the pages about to be carried is drawn anyway (CANARY) and compared
+with the last build's bytes, and once AUDIT_DAYS have passed since every page
+was last drawn, all of them are: the weekly full draw, inside an incremental
+round, as the check. A page that moved turns that round into a full one and is
+named in cache/incremental-last.json. The first build of a new day draws the
+pages whose records hold a date and carries the rest, and its sample is the
+test of that.
 
     python3 incremental.py            # what cache/incremental-state.json holds
 """
@@ -49,7 +52,7 @@ STATE = Path(os.environ.get("MD_INCR_STATE") or (ROOT / "cache" / "incremental-s
 LAST = Path(os.environ.get("MD_INCR_LAST") or (ROOT / "cache" / "incremental-last.json"))
 STAMPS = Path(os.environ.get("MD_INCR_STAMPS") or (ROOT / "cache" / "incremental-stamps.json"))
 FULL_NOW = Path(os.environ.get("MD_INCR_FULL_NOW") or (ROOT / "cache" / "full-now"))
-FULL_DAYS = 7
+AUDIT_DAYS = 7
 CANARY = int(os.environ.get("MD_INCR_CANARY", "600"))
 WARM = 300
 
@@ -87,9 +90,21 @@ def _h(data, n=12):
     return hashlib.blake2b(data, digest_size=n).hexdigest()
 
 
+def _plain(o):
+    """A value json cannot write: its repr, unless the repr carries a memory
+    address, which differs in every process."""
+    if isinstance(o, (set, frozenset)):
+        return sorted(map(repr, o))
+    r = repr(o)
+    return type(o).__name__ if " at 0x" in r else r
+
+
 def stable(obj):
-    return json.dumps(obj, sort_keys=True, ensure_ascii=False, default=repr,
-                      separators=(",", ":"))
+    try:
+        return json.dumps(obj, sort_keys=True, ensure_ascii=False, default=_plain,
+                          separators=(",", ":"))
+    except (TypeError, ValueError):     # keys of mixed kinds, a cycle
+        return re.sub(r" at 0x[0-9a-f]+", "", repr(obj))
 
 
 def digest(obj):
@@ -348,10 +363,7 @@ def decide(state, files, date, now, off=None, full_now=None):
         return Decision(True, "inputs changed: %s%s" % (
             ", ".join(changed[:4]), " (+%d)" % (len(changed) - 4) if len(changed) > 4 else ""),
             changed=changed)
-    age = _age_days(state.get("full_at"), now)
-    if age >= FULL_DAYS:
-        return Decision(True, "last full build %d days ago" % age, check=True)
-    return Decision(False, "inputs and age as the last build")
+    return Decision(False, "same code and inputs as the last build")
 
 
 def date_forms(iso):
@@ -403,6 +415,7 @@ class Round:
         self.tally = Tally(self)
         self.pages = {}             # key -> [base, nearby, rec, trace] for the next state
         self.own_keys = []          # pages drawn this build for a changed (or new) record
+        self.audited = False        # every carried page was drawn and matched
         self.plan = {}
         self.t0 = time.time()
         self._nb = {}
@@ -448,9 +461,12 @@ class Round:
         return d
 
     def nearby(self, r, trace):
-        got = []
+        got, asked = [], {}
         for args in trace:
-            got.append([self._near(n) + (n["id"],) for n in self.B.replay(args, r["id"])])
+            k = tuple(args)
+            if k not in asked:      # the map asks the same question twice
+                asked[k] = [self._near(n) + (n["id"],) for n in self.B.replay(args, r["id"])]
+            got.append(asked[k])
         return digest(got)
 
     def base(self, r, rec_dg, dated=False):
@@ -488,15 +504,24 @@ class Round:
         return sorted(k for k in was if k.startswith(key + "/p/") and k not in plan)
 
     # ---- the canary
+    def audit_due(self):
+        """True once AUDIT_DAYS have passed since every page was last drawn."""
+        st = self.state or {}
+        last = max(str(st.get("full_at") or ""), str(st.get("audited_at") or ""))
+        return bool(last) and _age_days(last, self.now) >= AUDIT_DAYS
+
     def canary(self, plan, records, photos, draw, seed):
-        """Draw a sample of the pages about to be carried and compare them with
-        the last build's bytes. True when every one matched."""
+        """Draw a sample of the pages about to be carried (all of them when an
+        audit is due) and compare them with the last build's bytes. True when
+        every one matched."""
         if self.decision.full or CANARY <= 0:
             return True
         by = {self.B.slug(r): r for r in records}
         cand = [k for k, pg in plan.items() if pg.carry]
+        audit = self.audit_due()
+        n = len(cand) if audit else CANARY
         bad = []
-        for pk in sample_of(cand, CANARY, seed):
+        for pk in sample_of(cand, n, seed):
             r = by[pk.rsplit("/", 1)[1]]
             html, js = draw(r, photos.get(r["id"]))
             for ext, text in (("html", html), ("json", js)):
@@ -504,13 +529,18 @@ class Round:
                 if want and bytes_digest(text.encode("utf-8")) != want:
                     bad.append("%s.%s" % (pk, ext))
         self.tally.canary_bad += bad
+        self.tally.sampled += min(n, len(cand))
+        if audit and not bad:
+            self.audited = True
+            self.tally.audit = True
         if not self.tables_held():
             moved = [lab for lab, t in self.tables if len(t) != self.sizes.get(lab, len(t))]
             bad.append("id table %s changed while pages were drawn" % moved[0])
             self.tally.canary_bad += bad[-1:]
         if bad:
-            self.decision = Decision(True, "canary: %d of %d sampled pages moved, e.g. %s"
-                                     % (len(bad), min(CANARY, len(cand)), bad[0]), check=True)
+            self.audited = False
+            self.decision = Decision(True, "%s: %d of %d drawn pages moved, e.g. %s"
+                                     % ("audit" if audit else "canary", len(bad), min(n, len(cand)), bad[0]), check=True)
             self.tally.decision = self.decision
             for pg in plan.values():
                 pg.carry = False
@@ -532,10 +562,11 @@ class Round:
                 pages[pk] = was[pk]
         full = self.decision.full
         old = self.state or {}
+        stamp = self.now.isoformat(timespec="seconds")
         return {"v": VERSION, "date": self.B.date, "files": self.files,
-                "full_at": (self.now.isoformat(timespec="seconds") if full
-                            else old.get("full_at", self.now.isoformat(timespec="seconds"))),
-                "built_at": self.now.isoformat(timespec="seconds"), "pages": pages}
+                "full_at": stamp if full else old.get("full_at", stamp),
+                "audited_at": stamp if (full or self.audited) else old.get("audited_at", old.get("full_at", stamp)),
+                "built_at": stamp, "pages": pages}
 
 
 def sample_of(keys, n, seed):
@@ -555,6 +586,8 @@ class Tally:
         self.removed = []
         self.misses = []
         self.canary_bad = []
+        self.sampled = 0
+        self.audit = False
         self.plan_s = 0.0
         self.t0 = time.time()
 
@@ -565,15 +598,18 @@ class Tally:
              % (mode, f"{self.carried:,}", f"{self.drawn:,}", f"{self.own:,}"))
         if self.removed:
             s += ", %s gone" % f"{len(self.removed):,}"
-        if d.check:
+        if d.check and d.full:
             s += ", model check: %d miss%s" % (len(self.misses), "" if len(self.misses) == 1 else "es")
+        if not d.full and self.sampled:
+            s += ", %s: %s drawn again, %d moved" % ("audit" if self.audit else "canary",
+                                                   f"{self.sampled:,}", len(self.canary_bad))
         s += ", planned in %.0f s" % self.plan_s
         return s
 
     def write(self, path=None):
         d = self.decision
         doc = {"at": time.strftime("%Y-%m-%dT%H:%M:%S"), "full": d.full, "reason": d.reason,
-               "check": d.check, "carried": self.carried, "drawn": self.drawn,
+               "check": d.check, "audit": self.audit, "sampled": self.sampled, "carried": self.carried, "drawn": self.drawn,
                "own_record": self.own, "removed": self.removed[:200],
                "removed_n": len(self.removed), "misses": self.misses[:200],
                "misses_n": len(self.misses), "canary_bad": self.canary_bad[:50],

@@ -14,6 +14,7 @@ import os
 import shutil
 import sys
 import tempfile
+import types
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -133,7 +134,7 @@ def main():
     check("a new day alone is not a reason (pages with a date in their record are drawn)", not d.full, repr(d))
     old = dict(st, full_at="2026-10-10T00:00:00+00:00")
     d = inc.decide(old, f1, "2026-10-22", NOW, off=False, full_now=False)
-    check("a state 12 days old: full, with the model check", d.full and d.check, repr(d))
+    check("a state 12 days old is still incremental (the audit draws every page instead)", not d.full, repr(d))
 
     print("id tables")
     ids = {"a", "b", "c", "d", "e"}
@@ -245,6 +246,28 @@ def main():
           rnd.decision.full and any("changed while pages were drawn" in x for x in rnd.tally.canary_bad),
           "%r %s" % (rnd.decision, rnd.tally.canary_bad))
 
+    # the audit: once a week every page about to be carried is drawn and compared
+    town4 = Town()
+    r1, _, _ = run_round(town4, None, f1)
+    s1 = r1.state_out()
+    check("a full build counts as the last audit", s1["audited_at"] == s1["full_at"])
+    r2, plan, drawn = run_round(town4, s1, f1, canary=1)
+    check("inside the week, the sample is the canary's", r2.tally.sampled == 1 and not r2.audit_due(), str(r2.tally.sampled))
+    old_state = dict(s1, full_at="2026-10-10T00:00:00+00:00", audited_at="2026-10-10T00:00:00+00:00")
+    town4.written["cm/p/d.html"] = b"drifted since it was written"
+    r3, plan, drawn = run_round(town4, old_state, f1, canary=1)
+    check("a week on, the page that drifted is found by drawing every one, and named",
+          r3.decision.full and "audit" in r3.decision.reason and any("cm/p/d" in x for x in r3.tally.canary_bad),
+          "%r %s" % (r3.decision, r3.tally.canary_bad))
+    town5 = Town()
+    r1, _, _ = run_round(town5, None, f1)
+    old_state = dict(r1.state_out(), full_at="2026-10-10T00:00:00+00:00", audited_at="2026-10-10T00:00:00+00:00")
+    r4, plan, drawn = run_round(town5, old_state, f1, canary=1)
+    s4 = r4.state_out()
+    check("an audit that finds nothing moves audited_at on, and the round stays incremental",
+          not r4.decision.full and r4.tally.sampled == 5 and r4.tally.audit and s4["audited_at"] > old_state["audited_at"]
+          and s4["full_at"] == old_state["full_at"], "%r %s %s" % (r4.decision, r4.tally.sampled, s4["audited_at"]))
+
     # the tally
     t = rnd3.tally
     t.carried, t.drawn, t.own = 3, 2, 1
@@ -293,6 +316,11 @@ def main():
               "data/tags.json" in files4)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
+
+    print("stable digests")
+    check("a set is written in order", inc.stable({"a": {3, 1, 2}}) == '{"a":["1","2","3"]}', inc.stable({"a": {3, 1, 2}}))
+    check("an object's address is not in the digest", inc.digest({"o": object()}) == inc.digest({"o": object()}))
+    check("keys of mixed kinds do not raise", isinstance(inc.stable({("a", 1): 1, "b": 2}), str))
 
     print("date forms")
     check("ISO and Buddhist-era", inc.date_forms("2026-10-22") == ["2026-10-22", "2569-10-22"])
@@ -386,6 +414,28 @@ def build_checks():
               calls and calls <= viewed, "also call %s" % sorted(calls - viewed))
         check("and read only fields near_view reads", keys <= viewed | {"lat", "lng"},
               "also read %s" % sorted(keys - viewed - {"lat", "lng"}))
+        # the sitemap does not read a page it already knows
+        page = tmp / "p.html"
+        page.write_text('<html><link rel="canonical" href="https://motdang.net/cm/p/x.html">hello</html>')
+        st = page.stat()
+        fingerprint = lambda text: "fp-" + str(len(text))
+        got = build.sitemap_page(page, "cm/p/x.html", st, None, "v1", fingerprint)
+        check("a page not seen before is read: its fingerprint and its canonical address",
+              got == ("fp-" + str(len(page.read_text())), "https://motdang.net/cm/p/x.html"), str(got))
+        page.write_text("changed behind the cache's back, same size and mtime claimed")
+        entry = [got[0], "2026-10-01", st.st_size, st.st_mtime_ns, got[1], "v1"]
+        check("a page with the size and mtime it had is not read",
+              build.sitemap_page(page, "cm/p/x.html", st, entry, "v1", fingerprint) == got)
+        check("a different method hash reads it again",
+              build.sitemap_page(page, "cm/p/x.html", st, entry, "v2", fingerprint)[0] == "fp-" + str(len(page.read_text())))
+        page.write_text('<html><meta name="robots" content="noindex">x</html>')
+        check("a noindex page has no address",
+              build.sitemap_page(page, "cm/p/x.html", page.stat(), None, "v1", fingerprint) == (None, None))
+        noindex = [None, "", page.stat().st_size, page.stat().st_mtime_ns, None, "v1"]
+        page.write_text("<html>indexable now, but the entry is trusted</html>")
+        check("and a cached noindex stays one while the file is as it was",
+              build.sitemap_page(page, "cm/p/x.html", types.SimpleNamespace(st_size=noindex[2], st_mtime_ns=noindex[3]),
+                                 noindex, "v1", fingerprint) == (None, None))
         check("the traced query list is off outside a draw", build._NB_TRACE is None)
         build._NB_TRACE = []
         build.neighbours_in(18.0, 99.0, 0.001, 0.001, "zz", limit=5)

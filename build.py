@@ -19397,6 +19397,24 @@ def home_next_page():
                               built="Rebuilt %s · พ.ศ. %d" % (home_next.TODAY.isoformat(), home_next.TODAY.year + 543))
 
 
+def sitemap_page(f, rel, st, seen, fpv, fingerprint):
+    """(fingerprint, address) of one page for the sitemap; address None for a
+    page that is noindex. The last build's entry stands when the file has the
+    size and mtime it had then and `fpv` (the method's own hash) is the same,
+    so a carried place page is not read again."""
+    if (seen and len(seen) >= 6 and seen[5] == fpv
+            and seen[2] == st.st_size and seen[3] == st.st_mtime_ns):
+        return seen[0], seen[4]
+    text = f.read_text(encoding="utf-8")
+    if 'content="noindex' in text:
+        return None, None
+    # The sitemap names the address the page itself calls canonical: the
+    # front page is /, not /index.html, and a page that points elsewhere
+    # is that other page's copy, not an entry of its own.
+    _cm = SITEMAP_CANON.search(text[:20000])
+    return fingerprint(text), (_cm.group(1).replace("&amp;", "&") if _cm else BASE + rel)
+
+
 def build():
     global DOCS, _FINAL_DOCS
     if DOCS == ROOT / "docs":
@@ -23858,23 +23876,10 @@ def build():
             continue
         st = f.stat()
         seen = _lm_was.get(rel)
-        if (seen and len(seen) >= 6 and seen[5] == _fpv
-                and seen[2] == st.st_size and seen[3] == st.st_mtime_ns):
-            fp, loc = seen[0], seen[4]
-            if loc is None:
-                _lm_now[rel] = seen
-                continue
-        else:
-            text = f.read_text(encoding="utf-8")
-            if 'content="noindex' in text:
-                _lm_now[rel] = [None, "", st.st_size, st.st_mtime_ns, None, _fpv]
-                continue
-            # The sitemap names the address the page itself calls canonical: the
-            # front page is /, not /index.html, and a page that points elsewhere
-            # is that other page's copy, not an entry of its own.
-            _cm = SITEMAP_CANON.search(text[:20000])
-            loc = _cm.group(1).replace("&amp;", "&") if _cm else BASE + rel
-            fp = _fingerprint(text)
+        fp, loc = sitemap_page(f, rel, st, seen, _fpv, _fingerprint)
+        if loc is None:
+            _lm_now[rel] = [None, "", st.st_size, st.st_mtime_ns, None, _fpv]
+            continue
         if not loc.startswith(BASE) or loc in sitemap_seen:
             continue
         sitemap_seen.add(loc)
