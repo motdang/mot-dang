@@ -280,6 +280,35 @@ def main():
           not r4.decision.full and r4.tally.sampled == 5 and r4.tally.audit and s4["audited_at"] > old_state["audited_at"]
           and s4["full_at"] == old_state["full_at"], "%r %s %s" % (r4.decision, r4.tally.sampled, s4["audited_at"]))
 
+    # a later province's canary fails after an earlier one carried pages (CodeRabbit, PR 43)
+    town6 = Town()
+    r1, _, _ = run_round(town6, None, f1)
+    s1 = r1.state_out()
+    for k, v in list(town6.written.items()):
+        town6.written[k.replace("cm/p/", "cr/p/")] = v
+    inc.CANARY = 100
+    rnd = inc.Round(town6, now=NOW, state=dict(s1, pages={**s1["pages"], **{k.replace("cm/p/", "cr/p/"): v for k, v in s1["pages"].items()}}))
+    recs6 = list(town6.recs.values())
+    rnd.tables = inc.find_tables(town6.namespaces(), set(town6.recs), ())
+    rnd.sizes = {lab: len(t) for lab, t in rnd.tables}
+    rnd.files = f1
+    rnd.decision = inc.decide(rnd.state, f1, town6.date, NOW, off=False, full_now=False)
+    rnd.tally.decision = rnd.decision
+    plan_cm = rnd.province("cm", recs6, {})
+    rnd.canary(plan_cm, recs6, {}, town6.draw, "seed")
+    rnd.tally.carried += sum(1 for pg in plan_cm.values() if pg.carry)
+    town6.written["cr/p/b.html"] = b"drifted"
+    plan_cr = rnd.province("cr", recs6, {})
+    rnd.canary(plan_cr, recs6, {}, town6.draw, "seed")
+    out6 = rnd.state_out()
+    check("a canary that fails in a later province turns the round full", rnd.decision.full and rnd.tally.carried == 5, "%r carried %d" % (rnd.decision, rnd.tally.carried))
+    check("but the round is not recorded as a full draw: full_at and audited_at stay",
+          not rnd.drew_all() and out6["full_at"] == s1["full_at"] and out6["audited_at"] == s1["audited_at"])
+    check("and the next round is full", out6["redo"] and inc.decide(out6, f1, town6.date, NOW, off=False, full_now=False).full
+          and "carried pages" in inc.decide(out6, f1, town6.date, NOW, off=False, full_now=False).reason)
+    rnd7, _, _ = run_round(Town(), None, f1)
+    check("a full round that carried nothing is recorded as one, with no redo", rnd7.drew_all() and not rnd7.state_out()["redo"])
+
     # the tally
     t = rnd3.tally
     t.carried, t.drawn, t.own = 3, 2, 1

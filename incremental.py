@@ -347,6 +347,8 @@ def decide(state, files, date, now, off=None, full_now=None):
         return Decision(True, "asked for (cache/full-now)", check=True)
     if state is None:
         return Decision(True, "no state from a last build")
+    if state.get("redo"):
+        return Decision(True, "the last round turned full after it had carried pages")
     # A file the last build recorded and this one finds different, or gone. A
     # file read for the first time is recorded, not compared: which lazy files a
     # sample of pages opens varies from build to build.
@@ -554,6 +556,12 @@ class Round:
     def note_drawn(self, pk, base, nearby, rec_dg, trace):
         self.pages[pk] = [base, nearby, rec_dg, trace]
 
+    def drew_all(self):
+        """True when every page of the round was drawn: a full decision with
+        nothing carried. A round that turns full after an earlier province
+        carried pages did not draw them."""
+        return self.decision.full and self.tally.carried == 0
+
     def state_out(self):
         """The state to save: carried pages keep their entries, drawn ones the new."""
         was = (self.state or {}).get("pages", {})
@@ -563,12 +571,13 @@ class Round:
                 pages[pk] = self.pages[pk]
             elif pk in was:
                 pages[pk] = was[pk]
-        full = self.decision.full
+        full = self.drew_all()
         old = self.state or {}
         stamp = self.now.isoformat(timespec="seconds")
         return {"v": VERSION, "date": self.B.date, "files": self.files,
                 "full_at": stamp if full else old.get("full_at", stamp),
                 "audited_at": stamp if (full or self.audited) else old.get("audited_at", old.get("full_at", stamp)),
+                "redo": bool(self.decision.full and self.tally.carried > 0),
                 "built_at": stamp, "pages": pages}
 
 

@@ -24739,7 +24739,7 @@ coordinates, channels and ant rank, no markup to strip. {len(all_recs):,} lines.
         _rnd = _INCR["round"]
         if _rnd and _rnd.decision is not None:
             incremental.save_state(_rnd.state_out())
-            if _rnd.decision.full:
+            if _rnd.drew_all():
                 incremental.FULL_NOW.unlink(missing_ok=True)
             print("  " + _rnd.tally.line())
             _rnd.tally.write()
