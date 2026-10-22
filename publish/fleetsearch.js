@@ -768,9 +768,14 @@ function rankScore(o, names, tb) {
   names = names.map((nm) => String(nm).toLowerCase());
   if (names.length) {
     const piece = names.map(() => "instr(' · ' || replace(lower(k.title), ' — ', ' · ') || ' · ', ?) > 0").join(" OR ");
+    /* A piece that starts with the words is the thing itself more often than
+     * one that only carries them (Nan 2026-10-22: "efeo" put "Great buttressed
+     * tree in the EFEO garden" over "EFEO Chiang Mai Centre"). */
+    const starts = names.map(() => "instr(' · ' || replace(lower(k.title), ' — ', ' · '), ?) > 0").join(" OR ");
     const has = names.map(() => "instr(lower(k.title), ?) > 0").join(" OR ");
-    sc += ` * (CASE WHEN ${piece} THEN 3.0 WHEN ${has} THEN 2.0 ELSE 1.0 END)`;
+    sc += ` * (CASE WHEN ${piece} THEN 3.0 WHEN ${starts} THEN 2.5 WHEN ${has} THEN 2.0 ELSE 1.0 END)`;
     for (const nm of names) tb.push(` · ${nm} · `);
+    for (const nm of names) tb.push(` · ${nm}`);
     for (const nm of names) tb.push(nm);
   }
   if (o.pin) {
