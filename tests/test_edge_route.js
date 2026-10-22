@@ -86,7 +86,9 @@ if (!existsSync(join(DOCS, "api/v1/edge/meta.json")) || !existsSync(IDX)) {
   console.log(failures ? `\n${failures} FAILED` : "\nall green"); process.exit(failures ? 1 : 0);
 }
 const env = { SITE: { get: async (key) => { const p = join(DOCS, key); if (!existsSync(p)) return null;
-  const buf = readFileSync(p); return { json: async () => JSON.parse(buf.toString("utf8")), text: async () => buf.toString("utf8"), httpEtag: "x" }; } } };
+  const buf = readFileSync(p); return { json: async () => JSON.parse(buf.toString("utf8")), text: async () => buf.toString("utf8"),
+    arrayBuffer: async () => buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength), httpEtag: "x" }; },
+  head: async (key) => (existsSync(join(DOCS, key)) ? { httpEtag: "x" } : null) } };
 const ix = JSON.parse(readFileSync(IDX, "utf8"));
 const q = (s) => searchHandler(env, ix, new URLSearchParams(s));
 const edgeIds = new Set(JSON.parse(readFileSync(join(DOCS, "api/v1/edge/ids.json"), "utf8")));
