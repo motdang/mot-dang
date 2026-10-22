@@ -58,6 +58,7 @@
   .row input{width:20px;height:20px}
   .link{background:none;border:0;color:var(--go);padding:0;font-size:.88rem;
         text-decoration:underline;cursor:pointer}
+  .linein{display:block;box-sizing:border-box;text-align:center;text-decoration:none;background:#06c755!important;color:#fff!important;font-weight:600}
   .send{width:100%;margin-top:22px;padding:16px;border:0;border-radius:12px;
         background:var(--go);color:var(--goink);font-size:1.06rem;font-weight:700;cursor:pointer}
   .send[disabled]{opacity:.55}
@@ -96,7 +97,9 @@
 
   <div id="lock">
     <h1>Send mail</h1>
-    <p class="sub">Type the password once. This phone will remember it.</p>
+    <a class="send linein" id="linein" href="/auth/team?to=mail">Sign in with LINE</a>
+    <div class="msg" id="linemsg"></div>
+    <p class="sub" style="margin-top:2em">Or the password, typed once. This phone will remember it.</p>
     <label for="pw">Password</label>
     <input id="pw" type="password" autocomplete="current-password" enterkeyhint="go">
     <button class="send" id="unlock">Open</button>
@@ -145,7 +148,7 @@
         <button type="button" data-fs="24" aria-label="Biggest text">A</button>
       </span><br><br>
       Photos are made smaller so they send on phone data.<br>
-      <button type="button" class="link" id="forget">Forget the password on this phone</button>
+      <button type="button" class="link" id="forget">Sign out on this phone</button>
     </div>
   </form>
 
@@ -216,6 +219,14 @@
 
   var from = "";   /* the chosen address, once the Worker says which exist */
 
+  /* Signed in with LINE (Michael, 2026-10-22: one sign-in on every device), the
+     phone keeps a session token instead of the password; either one proves who
+     is sending. */
+  function cred(){
+    var s = store.get("sess");
+    return s ? { s: s } : { pass: store.get("pass") };
+  }
+
   function post(path, body){
     return fetch(API + path, {
       method: "POST",
@@ -231,9 +242,9 @@
   /* Who the password belongs to is the Worker's answer, not the page's. The
      page ships no list of people and no list of addresses. */
   function identify(pass, typed){
-    return post("/who", { pass: pass }).then(function(r){
+    return post("/who", pass ? { pass: pass } : cred()).then(function(r){
       if (!r.ok) {
-        store.del("pass");
+        store.del("pass"); store.del("sess");
         lockSays(r.status === 401 ? "Wrong password." : "Something is wrong. Try again in a minute.");
         return false;
       }
@@ -300,8 +311,23 @@
     });
   }
 
-  if (fromUrl) identify(fromUrl, false);
-  else if (store.get("pass")) identify(store.get("pass"), false);
+  var lineNote = /(?:^#|&)line=([A-Za-z0-9_.-]{20,})/.exec(location.hash);
+  function lineSays(words){ var m = $("linemsg"); m.className = words ? "msg bad" : "msg"; m.textContent = words || ""; }
+  if (lineNote) {
+    history.replaceState(null, "", location.pathname);
+    post("/line", { t: lineNote[1], pass: store.get("pass") || undefined }).then(function(r){
+      return r.json().then(function(d){
+        if (d.session) {
+          store.set("sess", d.session); store.del("pass");
+          draw(d); $("lock").className = "hide"; $("app").className = ""; restore();
+        } else if (d.wait) {
+          lineSays((d.name || "LINE") + ": NaN or Michael lets you in on the Team Wheel. Then tap Sign in with LINE again.");
+        } else lineSays(d.error || "Something is wrong. Try again in a minute.");
+      });
+    }).catch(function(){ lineSays("No answer. Check the signal and try again."); });
+  }
+  else if (fromUrl) identify(fromUrl, false);
+  else if (store.get("pass") || store.get("sess")) identify(null, false);
 
   $("unlock").addEventListener("click", function(e){
     e.preventDefault();
@@ -313,7 +339,8 @@
   $("pw").addEventListener("keydown", function(e){ if (e.key === "Enter") $("unlock").click(); });
 
   $("forget").addEventListener("click", function(){
-    store.del("pass"); store.del("draft");
+    if (store.get("sess")) post("/out", { s: store.get("sess") }).catch(function(){});
+    store.del("pass"); store.del("sess"); store.del("draft");
     location.replace(location.pathname);   /* drop the link's copy too */
   });
 
@@ -423,8 +450,7 @@
     Promise.all(picked.map(function(f){
       return b64(f).then(function(c){ return { filename: f.name, content: c }; });
     })).then(function(atts){
-      return post("/send", {
-        pass: store.get("pass"),
+      return post("/send", Object.assign(cred(), {
         from: from,
         to: $("to").value,
         cc: $("cc").value,
@@ -432,13 +458,13 @@
         text: $("text").value,
         copy: $("copy").checked,
         attachments: atts
-      });
+      }));
     }).then(function(r){
       return r.json().then(function(d){ return { ok: r.ok, d: d, code: r.status }; });
     }).then(function(res){
       btn.disabled = false; btn.textContent = "Send";
       if (!res.ok) {
-        if (res.code === 401) { store.del("pass"); say("bad", "Wrong password. Reload the page and type it again."); return; }
+        if (res.code === 401) { store.del("pass"); store.del("sess"); say("bad", "Signed out. Reload the page and sign in again."); return; }
         return say("bad", res.d.error || "It did not send. Try again.");
       }
       say("good", "Sent to " + $("to").value.trim() + ".");

@@ -146,3 +146,43 @@ test("a wrong state, or a token for another channel, signs nobody in", async () 
 test("cookies parse", () => {
   assert.deepEqual(cookies(new Request("https://x/", { headers: { cookie: "a=1; md-s=abc%3D" } })), { a: "1", "md-s": "abc=" });
 });
+
+test("team pages: LINE first, then a signed note for the Wheel or mail", async () => {
+  const db = d1(), env = { ...ENV(db), TEAM_SIGNIN: "team-secret" };
+  const bad = await call(env, "/auth/team?to=evil");
+  assert.equal(bad.status, 400);
+  const off = await call(ENV(db), "/auth/team?to=wheel");
+  assert.equal(off.status, 503, "no TEAM_SIGNIN, not switched on");
+
+  const out = await call(env, "/auth/team?to=wheel");
+  assert.equal(out.status, 302);
+  assert.equal(out.headers.get("location"), "/auth/line?back=%2Fauth%2Fteam%3Fto%3Dwheel");
+
+  /* a first LINE sign-in that came for a team page goes back to it, not the welcome */
+  const start = await call(env, "/auth/line?back=" + encodeURIComponent("/auth/team?to=wheel"));
+  const pending = cookieOf(start, "md-la"), pend = JSON.parse(pending);
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async (u) => String(u).endsWith("/token")
+    ? new Response(JSON.stringify({ id_token: "i" }))
+    : new Response(JSON.stringify({ sub: "Uteam", aud: "1650000000", name: "Michael", picture: "" }));
+  let token;
+  try {
+    const cb = await call(env, `/auth/line/callback?code=c&state=${pend.state}`, { headers: { cookie: `md-la=${encodeURIComponent(pending)}` } });
+    assert.equal(cb.headers.get("location"), "/auth/team?to=wheel");
+    token = cookieOf(cb, "md-s");
+  } finally { globalThis.fetch = realFetch; }
+
+  for (const [to, where] of [["wheel", "https://pm.nanobotco.workers.dev/#line="], ["mail", "/mail#line="]]) {
+    const r = await call(env, "/auth/team?to=" + to, { headers: { cookie: `md-s=${token}` } });
+    assert.equal(r.status, 302);
+    const loc = r.headers.get("location");
+    assert.ok(loc.startsWith(where), loc);
+    const [data, sig] = loc.slice(where.length).split(".");
+    const key = await crypto.subtle.importKey("raw", new TextEncoder().encode("team-secret"), { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
+    const ok = await crypto.subtle.verify("HMAC", key, Buffer.from(sig, "base64url"), new TextEncoder().encode(data));
+    assert.ok(ok, "signed with TEAM_SIGNIN");
+    const body = JSON.parse(Buffer.from(data, "base64url").toString());
+    assert.equal(body.s, "Uteam"); assert.equal(body.n, "Michael"); assert.equal(body.to, to);
+    assert.ok(body.x > Date.now() / 1000 && body.x <= Date.now() / 1000 + 120);
+  }
+});
