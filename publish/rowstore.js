@@ -26,6 +26,10 @@
 import { REFINE_WORDS } from "./api.js";
 
 const DROP = new Set(["q"]);
+
+/* The refine words in bit order. Rows written with another list would set
+ * the wrong chips, so the Worker refuses them (worker.js, loadRows). */
+export const refineSig = () => REFINE_WORDS.map((w) => w.group + ":" + w.word).join(",");
 const ABSENT = 0, NULL = 1;
 
 function refineBits(row) {
@@ -141,7 +145,7 @@ export function encodeRows(index) {
   const bin = new Uint8Array(size);
   for (const [name, a] of arrays) bin.set(new Uint8Array(a.buffer, a.byteOffset, a.byteLength), layout[name][1]);
 
-  return { text: { n, head, keys, cols, layout, strs, words: REFINE_WORDS.length }, bin };
+  return { text: { n, head, keys, cols, layout, strs, rw: refineSig() }, bin };
 }
 
 const TYPES = { Float64Array, Uint8Array, Uint16Array, Uint32Array };

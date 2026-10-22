@@ -49,7 +49,7 @@ import { SCHEMA_VERSION, queryPlaces, findPlace, slugCandidates, minuteOfWeek,
          gridEligible, queryPlacesGrid, cmpPlaceName, cmpPlaceDefault,
          RF_CUISINE, RF_SERVICE, RF_FEATURE, refineBit,
          LIMIT_DEFAULT, LIMIT_MAX } from "./api.js";
-import { RowStore } from "./rowstore.js";
+import { RowStore, refineSig } from "./rowstore.js";
 import SEARCHCORE from "./searchcore.js";
 import { fleetSearch } from "./fleetsearch.js";
 import { translateApi } from "./quickanswer.js";
@@ -848,7 +848,12 @@ function loadRows(env) {
       const t = await cachedGet(env, "api/v1/rows/text.json", 86400, head.httpEtag);
       if (!t) return null;
       const text = await t.json();
-      const b = await cachedGet(env, "api/v1/rows/cols.bin", 86400, text.bv);
+      if (text.rw !== refineSig()) { console.error("api/v1/rows written with other refine words"); return null; }
+      /* keyed by the object's own etag, so bytes caught mid-deploy cannot sit
+       * under the next version's name */
+      const bh = await env.SITE.head("api/v1/rows/cols.bin");
+      if (!bh) return null;
+      const b = await cachedGet(env, "api/v1/rows/cols.bin", 86400, bh.httpEtag);
       if (!b) return null;
       const buf = await b.arrayBuffer();
       const sum = [...new Uint8Array(await crypto.subtle.digest("SHA-1", buf))]

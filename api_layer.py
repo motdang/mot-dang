@@ -754,6 +754,12 @@ def emit(g, data, photos, tags):
             + _emit_grid(g, docs) + _emit_rows(docs))
 
 
+def _drop_rows(docs):
+    """A failed emit leaves no older rows beside the new index."""
+    import shutil
+    shutil.rmtree(docs / "api" / "v1" / "rows", ignore_errors=True)
+
+
 def _emit_rows(docs):
     """api/v1/rows/ beside index.json (publish/emit_rows.mjs): the packed rows
     /api/v1/search keeps in the isolate. Without it the search reads index.json
@@ -764,8 +770,10 @@ def _emit_rows(docs):
         r = subprocess.run(["node", "--max-old-space-size=4096", str(script), str(docs)],
                            capture_output=True, text=True, timeout=600)
     except (OSError, subprocess.TimeoutExpired) as e:
+        _drop_rows(docs)
         return f"\n  ! rows not written ({e.__class__.__name__}) — /api/v1/search reads the index"
     if r.returncode:
+        _drop_rows(docs)
         return (f"\n  ! rows not written (node exit {r.returncode}) — /api/v1/search reads the index\n"
                 + r.stderr.strip()[-400:])
     return "\n" + r.stdout.rstrip()
