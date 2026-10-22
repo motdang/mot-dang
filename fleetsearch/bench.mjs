@@ -1,7 +1,7 @@
 /* Score /find on fleetsearch/bench_cases.json (written by bench_build.py).
  *
  *   node fleetsearch/bench.mjs --local                 the real handler over the local twin
- *   node fleetsearch/bench.mjs --base https://motdang.net
+ *   node fleetsearch/bench.mjs --base https://motdang.net --slow --set kind,spec
  *   node fleetsearch/bench.mjs --local --label after --set kind,spec
  *   node fleetsearch/bench.mjs --diff before after     what changed between two runs
  *
@@ -122,7 +122,9 @@ if (has("--engine")) {
 const places = placeMap();
 const run = has("--local") ? await localRunner() : liveRunner(arg("--base", "https://motdang.net"));
 const out = [];
-const conc = has("--local") ? 1 : 3;
+/* --slow: one search every 3.5 s, under the site's ~20-a-minute gate (precepts),
+ * which otherwise turns the run away and scores the refusals. */
+const conc = has("--local") || has("--slow") ? 1 : 3;
 let i = 0;
 async function worker() {
   while (i < cases.length) {
@@ -133,7 +135,7 @@ async function worker() {
     const rows = d.results || [];
     out.push({ ...c, ms: Date.now() - t, total: d.total, match: d.match, meaning: d.meaning ? 1 : 0,
       top: rows.slice(0, 10).map((r) => [r.kind || "", (r.url || "").replace(SITE, "")]), j: judge(c, rows, places), err: d.error || undefined });
-    if (!has("--local")) await new Promise((ok) => setTimeout(ok, 250));
+    if (!has("--local")) await new Promise((ok) => setTimeout(ok, has("--slow") ? 3500 : 250));
   }
 }
 await Promise.all(Array.from({ length: conc }, worker));
