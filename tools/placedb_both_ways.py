@@ -98,6 +98,8 @@ def main():
         sys.exit("no data/places.sqlite: run importers/import_all.py first")
     rows = sorted(con.execute("SELECT id, province FROM place"))
     con.close()
+    if not 1 <= a.n <= len(rows):
+        sys.exit(f"--n {a.n}: the database file holds {len(rows):,} places")
     # a sampled place with no page of its own (a merged duplicate, a record the
     # build leaves out) draws nothing either way; pages are counted at the end.
     # One place of each province first: 200 drawn at random from 92,064 held
@@ -182,8 +184,9 @@ def main():
     differ = [r for r in pages if (b_root / r).exists() and r not in set(same)]
     only = sorted(set(pages) ^ set(other))
     html = [r for r in pages if r.endswith(".html")]
-    # a province compared here that the second way read from the JSON proves nothing
-    provs = sorted({r.split("/", 1)[0] for r in pages} & set(froms.get("database", {})))
+    # a province compared here that the second way read from the JSON proves
+    # nothing; the provinces are the ones the first way's build loaded
+    provs = sorted({r.split("/", 1)[0] for r in pages} & set(froms.get("json", {})))
     not_db = [k for k in provs if froms.get("database", {}).get(k) != "database"]
     report = {
         "sampled places": len(sample),
@@ -205,7 +208,8 @@ def main():
             shutil.rmtree(p, ignore_errors=True)
     shutil.rmtree(data_before, ignore_errors=True)
     shutil.rmtree(keep_cache, ignore_errors=True)
-    sys.exit(1 if differ or only or not_db or "database" not in froms else 0)
+    ok = html and provs and not (differ or only or not_db) and {"json", "database"} <= set(froms)
+    sys.exit(0 if ok else 1)
 
 
 if __name__ == "__main__":
