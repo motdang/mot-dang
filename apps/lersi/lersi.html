@@ -1,0 +1,298 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8">
+<title>ฤๅษีดัดตน Lersi</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1c2620">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Charm:wght@700&family=Anuphan:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#e9eee4; --panel:#f6f8f2; --ink:#1c2620; --muted:#5b6a5f; --rule:#cdd6c7;
+  --lacquer:#8e2b20; --gold:#b0842a; --tiger:#d79335; --skin:#f3e2c2; --ring:#b0842a33;
+  --display:"Charm","Anuphan",serif; --body:"Anuphan","Noto Sans Thai",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#121814; --panel:#1b231e; --ink:#e6ebdf; --muted:#98a59a; --rule:#2d3a31;
+  --lacquer:#e0765f; --gold:#d9ad4f; --tiger:#d99a3d; --skin:#e9d3ad; --ring:#d9ad4f2e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --ground:#121814; --panel:#1b231e; --ink:#e6ebdf; --muted:#98a59a; --rule:#2d3a31;
+  --lacquer:#e0765f; --gold:#d9ad4f; --tiger:#d99a3d; --skin:#e9d3ad; --ring:#d9ad4f2e; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--ground);color:var(--ink);font:16px/1.5 var(--body);margin:0}
+.app{max-width:560px;margin:0 auto;padding:12px 16px 20px;display:flex;flex-direction:column;gap:12px;min-height:100%;box-sizing:border-box}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+h1{font:700 28px/1 var(--display);margin:0;color:var(--lacquer)}
+h1 small{font:500 13px var(--body);color:var(--muted);letter-spacing:.06em;margin-left:6px}
+.seg{display:flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden}
+.seg button{background:none;border:0;color:var(--muted);font:500 13px var(--body);padding:6px 10px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--ground)}
+.routines{display:flex;gap:8px;flex-wrap:wrap}
+.routines button{flex:1;min-width:0;background:var(--panel);border:1px solid var(--rule);color:var(--ink);border-radius:10px;padding:8px 6px;font:500 14px var(--body);cursor:pointer}
+.routines button[aria-pressed="true"]{border-color:var(--lacquer);box-shadow:inset 0 0 0 1px var(--lacquer)}
+.stage{position:relative;background:var(--panel);border-radius:18px;aspect-ratio:1/1;max-width:100%;overflow:hidden}
+.stage svg{width:100%;height:100%;display:block}
+.phase{position:absolute;left:0;right:0;top:12px;text-align:center;font:600 15px var(--body);color:var(--muted);letter-spacing:.04em}
+.count{position:absolute;right:14px;bottom:10px;font:600 13px var(--body);color:var(--muted);font-variant-numeric:tabular-nums}
+.pose h2{font:700 26px/1.2 var(--display);margin:0;text-wrap:balance}
+.pose .en{color:var(--muted);font-size:14px}
+.pose p{margin:6px 0 0;font-size:15px}
+.controls{display:grid;grid-template-columns:1fr 1.6fr 1fr;gap:10px}
+.controls button{border:0;border-radius:14px;padding:14px 8px;font:600 16px var(--body);cursor:pointer;background:var(--panel);color:var(--ink)}
+.controls .go{background:var(--lacquer);color:#fff8ee}
+.strip{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.strip button{flex:0 0 64px;height:76px;border:1px solid var(--rule);background:var(--panel);border-radius:10px;padding:2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;color:var(--muted);font:500 11px var(--body)}
+.strip button[aria-current="true"]{border-color:var(--lacquer);color:var(--lacquer)}
+.strip svg{width:56px;height:56px}
+details{background:var(--panel);border-radius:12px;padding:10px 14px}
+summary{cursor:pointer;font-weight:600}
+.set{display:grid;grid-template-columns:1fr auto;gap:10px 12px;align-items:center;margin-top:10px;font-size:15px}
+.set output{font-variant-numeric:tabular-nums;min-width:3ch;text-align:right;font-weight:600}
+input[type=range]{accent-color:var(--lacquer);grid-column:1/-1;width:100%;margin:-4px 0 4px}
+.note{font-size:13px;color:var(--muted);margin:10px 0 0}
+button:focus-visible,summary:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.bd{fill:none;stroke:var(--lacquer);stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+.hd{fill:var(--skin);stroke:var(--lacquer);stroke-width:4}
+.hat{fill:var(--gold);stroke:var(--lacquer);stroke-width:3;stroke-linejoin:round}
+.brd{fill:var(--panel);stroke:var(--lacquer);stroke-width:2.5;stroke-linejoin:round}
+.cloth{fill:var(--tiger);stroke:var(--lacquer);stroke-width:2.5;stroke-linejoin:round}
+.floor{stroke:var(--rule);stroke-width:4;stroke-linecap:round}
+.breath{fill:var(--ring);stroke:none}
+html.lang-th .en-only,html.lang-en .th-only{display:none}
+</style>
+</head><body>
+
+<div class="app">
+  <header>
+    <h1>ฤๅษีดัดตน<small>LERSI</small></h1>
+    <div class="seg" role="group" aria-label="ภาษา Language">
+      <button id="lang-th" data-lang="th">ไทย</button>
+      <button id="lang-both" data-lang="both">ทั้งคู่</button>
+      <button id="lang-en" data-lang="en">EN</button>
+    </div>
+  </header>
+
+  <div class="routines" role="group" aria-label="ชุดท่า Routine">
+    <button id="r-seated" data-r="seated"><span class="th-only">ชุดนั่ง</span><span class="en-only"> Seated</span></button>
+    <button id="r-standing" data-r="standing"><span class="th-only">ชุดยืน</span><span class="en-only"> Standing</span></button>
+    <button id="r-all" data-r="all"><span class="th-only">ครบชุด</span><span class="en-only"> All</span></button>
+  </div>
+
+  <div class="stage">
+    <svg id="stage" viewBox="-160 -250 320 320" role="img" aria-label="ท่าฤๅษีดัดตนที่กำลังทำ The pose being practised">
+      <circle id="breath" class="breath" cx="0" cy="-95" r="120"/>
+      <line id="floor" class="floor" x1="-140" x2="140" y1="12" y2="12"/>
+      <g id="fig"></g>
+    </svg>
+    <div class="phase" id="phase" aria-live="polite"></div>
+    <div class="count" id="count"></div>
+  </div>
+
+  <div class="pose">
+    <h2><span class="th-only" id="name-th"></span></h2>
+    <div class="en en-only" id="name-en"></div>
+    <p><span class="th-only" id="cue-th"></span> <span class="en-only en" id="cue-en"></span></p>
+  </div>
+
+  <div class="controls">
+    <button id="prev" aria-label="ท่าก่อนหน้า Previous">◀</button>
+    <button id="play" class="go"></button>
+    <button id="next" aria-label="ท่าถัดไป Next">▶</button>
+  </div>
+
+  <div class="strip" id="strip" aria-label="ท่าในชุดนี้ Poses in this routine"></div>
+
+  <details>
+    <summary><span class="th-only">ตั้งค่า</span><span class="en-only"> Settings</span></summary>
+    <div class="set">
+      <label for="s-hold"><span class="th-only">ค้างท่า (วินาที)</span><span class="en-only"> Hold (seconds)</span></label><output id="o-hold"></output>
+      <input type="range" id="s-hold" min="4" max="40" step="2">
+      <label for="s-reps"><span class="th-only">จำนวนรอบ ต่อข้าง</span><span class="en-only"> Rounds per side</span></label><output id="o-reps"></output>
+      <input type="range" id="s-reps" min="1" max="6" step="1">
+      <label for="s-breath"><span class="th-only">ลมหายใจเข้า/ออก (วินาที)</span><span class="en-only"> Breath in / out (seconds)</span></label><output id="o-breath"></output>
+      <input type="range" id="s-breath" min="3" max="8" step="1">
+      <label for="s-bell"><span class="th-only">เสียงระฆังเมื่อเปลี่ยนจังหวะ</span><span class="en-only"> Bell on each change</span></label>
+      <input type="checkbox" id="s-bell" style="grid-column:auto;justify-self:end;width:22px;height:22px;accent-color:var(--lacquer)">
+    </div>
+    <p class="note"><span class="th-only">ชื่อท่าในแอปนี้บอกลักษณะการเคลื่อนไหว ไม่ใช่ชื่อท่าดั้งเดิม ท่าทางคำนวณจากมุมข้อต่อ แต่ละท่าคือมุม 13 ค่า</span><span class="en-only"> Names here describe the movement; they are not the traditional names. Each figure is computed from 13 joint angles.</span></p>
+  </details>
+</div>
+
+<script>
+/* Forward kinematics: every joint stores an angle relative to its parent.
+   world angle = sum down the chain; joint = parent + L·(−sin a, cos a); a=0 is straight up,
+   positive swings toward the figure's right (the viewer's left). */
+const L={torso:3,neck:.45,head:.6,upper:1.55,fore:1.45,thigh:2.1,shin:2,sh:.95,hip:.55}, S=20;
+const dir=a=>{const r=a*Math.PI/180;return[-Math.sin(r),Math.cos(r)]};
+function fk(p){
+  const P={},pel=[p.dx||0,p.dy||0],t=p.torso||0,[ux,uy]=dir(t),[px,py]=dir(t+90),pv=p.pelvis||0,[qx,qy]=dir(pv+90);
+  const neck=[pel[0]+ux*L.torso,pel[1]+uy*L.torso];P.pel=pel;P.neck=neck;
+  const ha=t+(p.head||0),[hx,hy]=dir(ha);P.ha=ha;
+  P.head=[neck[0]+hx*(L.neck+L.head),neck[1]+hy*(L.neck+L.head)];
+  for(const [s,g] of [['R',1],['L',-1]]){
+    const sho=[neck[0]+g*px*L.sh,neck[1]+g*py*L.sh],a1=t+p[s+'u'],e=dir(a1),elb=[sho[0]+e[0]*L.upper,sho[1]+e[1]*L.upper];
+    const w=dir(a1+p[s+'f']),wr=[elb[0]+w[0]*L.fore,elb[1]+w[1]*L.fore];
+    const hip=[pel[0]+g*qx*L.hip,pel[1]+g*qy*L.hip],b1=pv+180+p[s+'t'],k=dir(b1),kn=[hip[0]+k[0]*L.thigh,hip[1]+k[1]*L.thigh];
+    const an=dir(b1+p[s+'s']),ank=[kn[0]+an[0]*L.shin,kn[1]+an[1]*L.shin];
+    Object.assign(P,{[s+'sho']:sho,[s+'elb']:elb,[s+'wr']:wr,[s+'hip']:hip,[s+'kn']:kn,[s+'an']:ank});
+  }
+  return P;
+}
+// mirror = negate every angle and swap sides: the same stretch on the other side
+const KEYS=['torso','head','pelvis','dx','dy','Ru','Rf','Lu','Lf','Rt','Rs','Lt','Ls'];
+function mirror(p){const q={};for(const k of KEYS){const v=p[k]||0;
+  if(k==='dy')q.dy=v;else if(k[0]==='R'&&k.length===2)q['L'+k[1]]=-v;else if(k[0]==='L'&&k.length===2)q['R'+k[1]]=-v;else q[k]=-v}return q}
+const lerp=(a,b,u)=>{const q={};for(const k of KEYS)q[k]=(a[k]||0)+((b[k]||0)-(a[k]||0))*u;return q};
+
+const SEATED={torso:0,head:0,Ru:165,Rf:-20,Lu:-165,Lf:20,Rt:-80,Rs:155,Lt:80,Ls:-155,dy:0};
+const STAND={torso:0,head:0,Ru:172,Rf:0,Lu:-172,Lf:0,Rt:-6,Rs:0,Lt:6,Ls:0,dy:4.08};
+const PRAY={Ru:165,Rf:-225,Lu:-165,Lf:225};
+const POSES=[
+ {id:'overhead',base:'seat',th:'นั่งประนมมือเหนือศีรษะ',en:'Seated, palms joined overhead',
+  cth:'นั่งขัดสมาธิ หายใจเข้ายกแขนขึ้น พนมมือเหนือศีรษะ ยืดลำตัวขึ้น',cen:'Sit cross-legged. Breathe in, raise the arms, join the palms overhead, lengthen upward.',
+  p:{...SEATED,Ru:12,Rf:-62,Lu:-12,Lf:62}},
+ {id:'sidebend',base:'seat',two:1,th:'นั่งเอนตัวข้าง',en:'Seated side bend',
+  cth:'มือหนึ่งวางพื้น อีกแขนยกข้ามศีรษะ เอนลำตัวไปทางมือที่วางพื้น',cen:'One hand on the floor, the other arm over the head, lean toward the grounded hand.',
+  p:{...SEATED,torso:22,head:8,Ru:140,Rf:10,Lu:8,Lf:38}},
+ {id:'wide',base:'seat',th:'นั่งกางแขน',en:'Seated, arms spread wide',
+  cth:'กางแขนออกสองข้างระดับไหล่ เหยียดปลายนิ้วออกไปให้ไกล',cen:'Spread the arms to shoulder height and reach out through the fingertips.',
+  p:{...SEATED,Ru:90,Rf:0,Lu:-90,Lf:0}},
+ {id:'neck',base:'seat',two:1,th:'นั่งเอียงคอ มือดึงศีรษะ',en:'Seated neck stretch',
+  cth:'เอียงศีรษะไปด้านหนึ่ง มืออีกข้างอ้อมวางบนศีรษะ ดึงเบาๆ',cen:'Tilt the head to one side; the far hand rests over the head and draws gently.',
+  p:{...SEATED,head:30,Lu:-30,Lf:118}},
+ {id:'across',base:'seat',two:1,th:'นั่งดึงแขนพาดอก',en:'Seated, arm drawn across the chest',
+  cth:'เหยียดแขนข้างหนึ่งพาดอก ใช้แขนอีกข้างกดไว้',cen:'Bring one straight arm across the chest and hold it with the other arm.',
+  p:{...SEATED,Ru:-100,Rf:0,Lu:-165,Lf:210}},
+ {id:'reach',base:'stand',th:'ยืนเหยียดแขนขึ้น',en:'Standing, arms stretched up',
+  cth:'ยืนเท้าชิด หายใจเข้ายกแขนขึ้นเหนือศีรษะ เหยียดทั้งตัว',cen:'Stand feet together. Breathe in, lift both arms overhead, stretch the whole body.',
+  p:{...STAND,Ru:8,Rf:0,Lu:-8,Lf:0}},
+ {id:'standbend',base:'stand',two:1,th:'ยืนเอนตัวข้าง',en:'Standing side bend',
+  cth:'แขนหนึ่งแนบลำตัว อีกแขนยกข้ามศีรษะ เอนไปด้านข้าง',cen:'One arm down the side, the other over the head, lean sideways.',
+  p:{...STAND,torso:18,head:6,Ru:168,Rf:0,Lu:10,Lf:30}},
+ {id:'lunge',base:'stand',two:1,th:'ยืนย่อเข่าข้างเดียว',en:'Side lunge onto a bent knee',
+  cth:'ก้าวเท้ากว้าง ย่อเข่าข้างหนึ่ง อีกขาเหยียดตรง',cen:'Step wide, bend one knee, keep the other leg straight.',
+  p:{...STAND,dx:-.8,dy:3.48,torso:6,Rt:-45,Rs:45,Lt:32,Ls:0,Ru:150,Rf:-15,Lu:-172,Lf:0}},
+ {id:'knee',base:'stand',two:1,th:'ยืนขาเดียว ประนมมือ',en:'One leg, knee raised, palms joined',
+  cth:'ยืนขาเดียว ยกเข่าอีกข้างขึ้น พนมมือระดับอก',cen:'Stand on one leg, raise the other knee, palms joined at the chest.',
+  p:{...STAND,dx:.05,Rt:0,Lt:70,Ls:-90,...PRAY}},
+ {id:'squat',base:'stand',th:'นั่งยองเข่ากว้าง',en:'Wide squat, palms joined',
+  cth:'แยกเท้ากว้าง ย่อตัวลง เข่าชี้ออกด้านข้าง พนมมือระดับอก',cen:'Feet wide, sink down, knees out to the sides, palms joined at the chest.',
+  p:{...STAND,dy:2.36,Rt:-80,Rs:80,Lt:80,Ls:-80,...PRAY}},
+];
+const ROUTINES={seated:POSES.filter(p=>p.base==='seat'),standing:POSES.filter(p=>p.base==='stand'),all:POSES};
+
+// ---- drawing ----
+const BONES=[['pel','neck'],['Rsho','Lsho'],['Rsho','Relb'],['Relb','Rwr'],['Lsho','Lelb'],['Lelb','Lwr'],['Rhip','Rkn'],['Rkn','Ran'],['Lhip','Lkn'],['Lkn','Lan']];
+function figureSVG(p){
+  const P=fk(p),X=q=>[q[0]*S,-q[1]*S],f=n=>n.toFixed(1),pt=q=>{const [x,y]=X(q);return f(x)+' '+f(y)};
+  const body=BONES.map(([a,b])=>'M'+pt(P[a])+'L'+pt(P[b])).join('');
+  const [ux,uy]=dir(P.ha),[rx,ry]=dir(P.ha-90),H=P.head;
+  const at=(k,sd)=>[H[0]+ux*k+rx*sd,H[1]+uy*k+ry*sd];
+  const hat='M'+pt(at(.35,.62))+'L'+pt(at(1.9,0))+'L'+pt(at(.35,-.62))+'Z';
+  const brd='M'+pt(at(-.35,.4))+'L'+pt(at(-1.35,0))+'L'+pt(at(-.35,-.4))+'Z';
+  const mid=(a,b,u)=>[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u];
+  const cloth='M'+pt(mid(P.pel,P.neck,.18))+'L'+pt(P.Rhip)+'L'+pt(mid(P.Rhip,P.Rkn,.42))+'L'+pt(mid(P.Lhip,P.Lkn,.42))+'L'+pt(P.Lhip)+'Z';
+  const [hx,hy]=X(H);
+  return `<path class="cloth" d="${cloth}"/><path class="bd" d="${body}"/><path class="brd" d="${brd}"/><path class="hat" d="${hat}"/><circle class="hd" r="${L.head*S}" cx="${f(hx)}" cy="${f(hy)}"/>`;
+}
+function thumb(p){return `<svg viewBox="-150 -250 300 300" aria-hidden="true"><g>${figureSVG(p.p)}</g></svg>`}
+
+// ---- state ----
+const store={get(k,d){try{const v=localStorage.getItem('lersi.'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+             set(k,v){try{localStorage.setItem('lersi.'+k,JSON.stringify(v))}catch(e){}}};
+const st={routine:store.get('routine','seated'),idx:0,lang:store.get('lang','both'),
+  hold:store.get('hold',12),reps:store.get('reps',2),breath:store.get('breath',4),bell:store.get('bell',true),
+  playing:false,t0:0,elapsed:0};
+const $=id=>document.getElementById(id);
+const list=()=>ROUTINES[st.routine];
+const rest=pose=>pose.base==='seat'?SEATED:STAND;
+
+// A pose run = for each side, for each round: rise (inhale) → hold → release (exhale) → pause.
+function plan(pose){
+  const sides=pose.two?[pose.p,mirror(pose.p)]:[pose.p],segs=[];
+  sides.forEach((target,si)=>{for(let r=0;r<st.reps;r++){
+    segs.push({k:'rise',d:st.breath,target,si,r},{k:'hold',d:st.hold,target,si,r},{k:'release',d:st.breath,target,si,r},{k:'pause',d:2,target,si,r});
+  }});
+  return {segs,sides:sides.length,total:segs.reduce((a,s)=>a+s.d,0)};
+}
+const ease=u=>u<.5?2*u*u:1-2*(1-u)*(1-u);
+const WORDS={rise:['หายใจเข้า · เข้าท่า','Breathe in · move in'],hold:['ค้างไว้','Hold'],release:['หายใจออก · คลายท่า','Breathe out · release'],pause:['พัก','Rest']};
+
+function frameAt(pose,t){
+  const pl=plan(pose);let acc=0;
+  for(const s of pl.segs){
+    if(t<acc+s.d){const u=(t-acc)/s.d,r=rest(pose);let p,br;
+      if(s.k==='rise'){p=lerp(r,s.target,ease(u));br=u}
+      else if(s.k==='hold'){p=s.target;const c=((t-acc)%(2*st.breath))/st.breath;br=c<1?c:2-c}
+      else if(s.k==='release'){p=lerp(s.target,r,ease(u));br=1-u}
+      else{p=r;br=0}
+      return {p,br,s,pl,left:Math.ceil(acc+s.d-t)}}
+    acc+=s.d;
+  }
+  return null;
+}
+function lbl(pair){return st.lang==='th'?pair[0]:st.lang==='en'?pair[1]:pair[0]+'  ·  '+pair[1]}
+
+function drawStill(){
+  const pose=list()[st.idx];
+  $('fig').innerHTML=figureSVG(pose.p);
+  $('breath').setAttribute('r',112);
+  $('floor').setAttribute('y1',pose.base==='seat'?12:-2);$('floor').setAttribute('y2',pose.base==='seat'?12:-2);
+  $('phase').textContent='';$('count').textContent='';
+}
+function render(){
+  document.documentElement.className='lang-'+st.lang;
+  for(const b of document.querySelectorAll('[data-lang]'))b.setAttribute('aria-pressed',b.dataset.lang===st.lang);
+  for(const b of document.querySelectorAll('[data-r]'))b.setAttribute('aria-pressed',b.dataset.r===st.routine);
+  const pose=list()[st.idx];
+  $('name-th').textContent=(st.idx+1)+'. '+pose.th;$('name-en').textContent=(st.idx+1)+'. '+pose.en;
+  $('cue-th').textContent=pose.cth;$('cue-en').textContent=pose.cen;
+  $('play').textContent=st.playing?lbl(['หยุด','Pause']):lbl(['เริ่ม','Start']);
+  $('strip').innerHTML=list().map((p,i)=>`<button data-i="${i}" aria-current="${i===st.idx}" aria-label="${p.th} ${p.en}">${thumb(p)}<span>${i+1}</span></button>`).join('');
+  for(const [k,o] of [['hold','o-hold'],['reps','o-reps'],['breath','o-breath']]){$('s-'+k).value=st[k];$(o).textContent=st[k]}
+  $('s-bell').checked=st.bell;
+  if(!st.playing&&st.elapsed===0)drawStill();
+}
+
+// ---- sound & wake ----
+let ac=null,wake=null;
+function bell(f=660){if(!st.bell)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+  const o=ac.createOscillator(),g=ac.createGain(),o2=ac.createOscillator(),t=ac.currentTime;
+  o.frequency.value=f;o2.frequency.value=f*2.76;o.connect(g);o2.connect(g);g.connect(ac.destination);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.18,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+2.2);
+  o.start(t);o2.start(t);o.stop(t+2.3);o2.stop(t+2.3)}catch(e){}}
+async function lock(on){try{if(on&&'wakeLock' in navigator)wake=await navigator.wakeLock.request('screen');else if(!on&&wake){await wake.release();wake=null}}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(st.playing&&document.visibilityState==='visible')lock(true)});
+
+// ---- loop ----
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let lastKey='';
+function tick(now){
+  if(!st.playing)return;
+  const t=st.elapsed+(now-st.t0)/1000,pose=list()[st.idx],fr=frameAt(pose,t);
+  if(!fr){ // pose finished → next, or stop at the end of the routine
+    bell(520);
+    if(st.idx<list().length-1){st.idx++;st.elapsed=0;st.t0=now;render();requestAnimationFrame(tick);return}
+    st.playing=false;st.elapsed=0;lock(false);render();$('phase').textContent=lbl(['จบชุด','Routine complete']);return;
+  }
+  const key=fr.s.k+fr.s.si+fr.s.r;if(key!==lastKey){if(lastKey&&fr.s.k!=='pause')bell(fr.s.k==='hold'?784:660);lastKey=key}
+  $('fig').innerHTML=figureSVG(reduce&&fr.s.k!=='pause'?fr.s.target:fr.p);
+  $('breath').setAttribute('r',(70+50*fr.br).toFixed(1));
+  const y=pose.base==='seat'?12:-2;$('floor').setAttribute('y1',y);$('floor').setAttribute('y2',y);
+  $('phase').textContent=lbl(WORDS[fr.s.k]);
+  const side=fr.pl.sides>1?lbl(['ข้าง '+(fr.s.si+1)+'/2','side '+(fr.s.si+1)+'/2'])+' · ':'';
+  $('count').textContent=side+lbl(['รอบ '+(fr.s.r+1)+'/'+st.reps,'round '+(fr.s.r+1)+'/'+st.reps])+' · '+fr.left+'s';
+  requestAnimationFrame(tick);
+}
+function play(){if(st.playing){st.elapsed+=(performance.now()-st.t0)/1000;st.playing=false;lock(false)}
+  else{st.playing=true;st.t0=performance.now();lastKey='';bell(660);lock(true);requestAnimationFrame(tick)}render()}
+function go(i){st.idx=(i+list().length)%list().length;st.elapsed=0;st.t0=performance.now();lastKey='';render();if(st.playing)frameAt(list()[st.idx],0)}
+
+$('play').onclick=play;$('prev').onclick=()=>go(st.idx-1);$('next').onclick=()=>go(st.idx+1);
+$('strip').onclick=e=>{const b=e.target.closest('button');if(b)go(+b.dataset.i)};
+for(const b of document.querySelectorAll('[data-lang]'))b.onclick=()=>{st.lang=b.dataset.lang;store.set('lang',st.lang);render()};
+for(const b of document.querySelectorAll('[data-r]'))b.onclick=()=>{st.routine=b.dataset.r;store.set('routine',st.routine);st.idx=0;st.elapsed=0;render()};
+for(const k of ['hold','reps','breath'])$('s-'+k).oninput=e=>{st[k]=+e.target.value;store.set(k,st[k]);$('o-'+k).textContent=st[k]};
+$('s-bell').onchange=e=>{st.bell=e.target.checked;store.set('bell',st.bell)};
+render();
+</script>
+</body></html>
