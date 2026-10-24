@@ -161,6 +161,13 @@ with tempfile.TemporaryDirectory() as tmp:
     check("by code, lower case", (row(d, "md-c0002") or {}).get("id") == "cm-a-0002")
     check("by id", (row(d, "cm-a-0003") or {}).get("code") == "C0003")
     check("get by ids", set(P.get(["cm-a-0001", "cm-a-0003", "cm-nope"], "cm", f, path=db)) == {"cm-a-0001", "cm-a-0003"})
+    short = d / "short.sqlite"
+    short.write_bytes(db.read_bytes())
+    con = sqlite3.connect(short)
+    with con:
+        con.execute("DELETE FROM place WHERE id='cm-a-0002'")
+    con.close()
+    check("get on a copy that lost a row says no", P.get(["cm-a-0001"], "cm", f, path=short) is None)
 
     print("10. a province of one place (lpn, 2026-10-24)")
     one = [rec("lpn-a-0001", "วัดพระธาตุหริภุญชัย", province="lpn")]

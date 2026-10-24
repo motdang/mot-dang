@@ -275,9 +275,13 @@ def get(ids, prov, json_path, path=None):
     ids = list(ids)
     con = reader(path)
     try:
+        # a copy that lost rows mid-write: read() catches it with the digest
+        n, = con.execute("SELECT n FROM province WHERE key=?", (prov,)).fetchone()
+        if con.execute("SELECT count(*) FROM place WHERE province=?", (prov,)).fetchone()[0] != n:
+            return None
         q = "SELECT id, record, raw FROM place WHERE province=? AND id IN (%s)" % ",".join("?" * len(ids))
         got = con.execute(q, [prov] + ids).fetchall()
-    except sqlite3.Error:
+    except (sqlite3.Error, TypeError):
         return None
     finally:
         con.close()

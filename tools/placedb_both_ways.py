@@ -96,11 +96,19 @@ def main():
     con = placedb.reader()
     if con is None:
         sys.exit("no data/places.sqlite: run importers/import_all.py first")
-    ids = sorted(i for (i,) in con.execute("SELECT id FROM place"))
+    rows = sorted(con.execute("SELECT id, province FROM place"))
     con.close()
     # a sampled place with no page of its own (a merged duplicate, a record the
-    # build leaves out) draws nothing either way; pages are counted at the end
-    sample = random.Random(a.seed).sample(ids, a.n)
+    # build leaves out) draws nothing either way; pages are counted at the end.
+    # One place of each province first: 200 drawn at random from 92,064 held
+    # none of lpn's one (2026-10-24).
+    rng = random.Random(a.seed)
+    by_prov = {}
+    for i, prov in rows:
+        by_prov.setdefault(prov, []).append(i)
+    sample = [rng.choice(by_prov[k]) for k in sorted(by_prov)][:a.n]
+    rest = sorted(set(i for i, _ in rows) - set(sample))
+    sample += rng.sample(rest, a.n - len(sample))
     work = ROOT / "cache" / "placedb-both-ways"
     work.mkdir(parents=True, exist_ok=True)
     need = SCRATCH_ROOM
@@ -122,29 +130,8 @@ def main():
         if p.name != work.name:
             copy(p, keep_cache / p.name)
 
-    outs = {}
-    for way in ("json", "database"):
-        out = work / way
-        if out.exists():
-            shutil.rmtree(out)
-        t = time.time()
-        log = work / f"{way}.log"
-        with open(log, "w") as fh:
-            rc = subprocess.run([sys.executable, str(Path(__file__).resolve()), "--draw", way, str(out),
-                                 str(ids_file)], stdout=fh, stderr=subprocess.STDOUT).returncode
-        print(f"{way}: build {'ok' if rc == 0 else 'FAILED, see ' + str(log)} in {time.time() - t:.0f} s")
-        if rc:
-            sys.exit(1)
-        outs[way] = out
-        if way == "json":       # room for the second: keep only what is compared
-            for q in list(out.iterdir()):
-                if not (q.is_dir() and (q / "p").is_dir()):
-                    shutil.rmtree(q) if q.is_dir() else q.unlink()
-                    continue
-                for sub in list(q.iterdir()):
-                    if sub.name != "p":
-                        shutil.rmtree(sub) if sub.is_dir() else sub.unlink()
-        # put cache/ and data/ back for the next way
+    def put_back():
+        """cache/ and data/ as they were before the first way."""
         for p in (ROOT / "cache").iterdir():
             if p.name != work.name:
                 shutil.rmtree(p) if p.is_dir() and not p.is_symlink() else p.unlink()
@@ -152,6 +139,32 @@ def main():
             copy(p, ROOT / "cache" / p.name)
         shutil.rmtree(ROOT / "data")
         copy(data_before, ROOT / "data")
+
+    outs = {}
+    for way in ("json", "database"):
+        out = work / way
+        if out.exists():
+            shutil.rmtree(out)
+        t = time.time()
+        log = work / f"{way}.log"
+        try:
+            with open(log, "w") as fh:
+                rc = subprocess.run([sys.executable, str(Path(__file__).resolve()), "--draw", way, str(out),
+                                     str(ids_file)], stdout=fh, stderr=subprocess.STDOUT).returncode
+            print(f"{way}: build {'ok' if rc == 0 else 'FAILED, see ' + str(log)} in {time.time() - t:.0f} s")
+            if rc:
+                sys.exit(1)
+            outs[way] = out
+            if way == "json":       # room for the second: keep only what is compared
+                for q in list(out.iterdir()):
+                    if not (q.is_dir() and (q / "p").is_dir()):
+                        shutil.rmtree(q) if q.is_dir() else q.unlink()
+                        continue
+                    for sub in list(q.iterdir()):
+                        if sub.name != "p":
+                            shutil.rmtree(sub) if sub.is_dir() else sub.unlink()
+        finally:
+            put_back()          # for the next way, and after a failed build
 
     froms = {}
     for way in outs:
@@ -169,6 +182,9 @@ def main():
     differ = [r for r in pages if (b_root / r).exists() and r not in set(same)]
     only = sorted(set(pages) ^ set(other))
     html = [r for r in pages if r.endswith(".html")]
+    # a province compared here that the second way read from the JSON proves nothing
+    provs = sorted({r.split("/", 1)[0] for r in pages} & set(froms.get("database", {})))
+    not_db = [k for k in provs if froms.get("database", {}).get(k) != "database"]
     report = {
         "sampled places": len(sample),
         "place pages drawn (html)": len(html),
@@ -176,6 +192,8 @@ def main():
         "identical": len(same),
         "different": differ[:50],
         "drawn one way only": only[:50],
+        "provinces compared": provs,
+        "compared but not read from the database": not_db,
         "read from": froms,
     }
     (work / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=1))
@@ -187,7 +205,7 @@ def main():
             shutil.rmtree(p, ignore_errors=True)
     shutil.rmtree(data_before, ignore_errors=True)
     shutil.rmtree(keep_cache, ignore_errors=True)
-    sys.exit(1 if differ or only else 0)
+    sys.exit(1 if differ or only or not_db or "database" not in froms else 0)
 
 
 if __name__ == "__main__":
