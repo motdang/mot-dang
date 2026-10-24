@@ -63,7 +63,8 @@ WARM = 300
 # id tables, which the fingerprint hashes itself; a change in one is not a
 # reason to redraw everything. streets.json and open_lamps.json change every
 # round only in their counts (parse.records, counts).
-FEEDS = ("data/canonical/", "data/streets.json", "data/open_lamps.json", "data/claims.json")
+FEEDS = ("data/canonical/", "data/places.sqlite", "data/streets.json", "data/open_lamps.json",
+         "data/claims.json")
 # Live readings baked into front pages and fetched by place pages in the
 # browser (nownear_layer.strip: "a change in the sky rewrote every page"). They
 # go up on their own: tools/publish_data.py.

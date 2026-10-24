@@ -118,6 +118,9 @@ docs/the-plan/
 # hand-off (importers/server_link.sh). lpn.json is small and stays tracked.
 data/canonical/cm.json
 data/canonical/cr.json
+# The same records, a row a place (placedb.py): written by import_all, read by build.py
+data/places.sqlite
+data/places.sqlite-journal
 
 # Build output. The server builds it and R2 serves it; GitHub Pages had stopped
 # serving it by 2026-10-11. Untracked that day.
