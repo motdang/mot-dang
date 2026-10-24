@@ -17,7 +17,8 @@ Sources (all sibling repos under ~/Developer/claude code projects/):
   data/curated/condo_register.json                 the Treasury's registered อาคารชุด + assessed value, from importers/harvest_condo_register.py
   data/curated/status.json                         places shut or moved, by id, each with who reported it and when
 
-Output: data/canonical/cm.json, data/canonical/cr.json
+Output: data/canonical/cm.json, data/canonical/cr.json, and the same records in
+data/places.sqlite (placedb.py), one row a place
 Curated/field records always win over crawled ones with the same source ref.
 """
 import json
@@ -665,6 +666,32 @@ def apply_parking_locators(records, prov):
     return done
 
 
+def write_places(prov, final, f):
+    """The province's rows in data/places.sqlite, after its JSON file (placedb.py,
+    ticket 82). If this fails the JSON stands, and build.py reads that instead."""
+    import sys as _sys
+    if str(ROOT) not in _sys.path:
+        _sys.path.insert(0, str(ROOT))
+    try:
+        import placedb
+        new, moved, gone = placedb.write(prov, final, f)
+        if new or moved or gone:
+            print(f"{prov}: places database: {new} new, {moved} changed, {gone} gone")
+    except Exception as e:
+        print(f"{prov}: places database not written ({type(e).__name__}: {e}); the build reads the JSON")
+
+
+def drop_places(prov):
+    import sys as _sys
+    if str(ROOT) not in _sys.path:
+        _sys.path.insert(0, str(ROOT))
+    try:
+        import placedb
+        placedb.drop(prov)
+    except Exception as e:
+        print(f"{prov}: places database not updated ({type(e).__name__}: {e})")
+
+
 # Provinces crawled beyond the first two: Pathum Thani (Nan 2026-10-12). Each
 # is merged by finish_crawled() and written to data/canonical/ only once its
 # data/coverage.json entry carries "release": true; until then to
@@ -777,7 +804,10 @@ def finish_crawled(prov, records, outdir, entry):
         stale = outdir / f"{prov}.json"
         if stale.exists():
             stale.unlink()
+        drop_places(prov)
     f.write_text(json.dumps(final, ensure_ascii=False, indent=1), encoding="utf-8")
+    if entry.get("release"):
+        write_places(prov, final, f)
     print(f"{prov}: {len(final)} records → {f.relative_to(ROOT)}"
           f"{'' if entry.get('release') else ' (staged, not released)'}")
 
@@ -798,6 +828,7 @@ def write_passive(outdir, passive, coverage):
             if f.exists():
                 f.unlink()
                 print(f"{pk}: nothing held — canonical file removed")
+            drop_places(pk)
             continue
         by_id = {}
         for r in records:
@@ -812,6 +843,7 @@ def write_passive(outdir, passive, coverage):
         apply_curated_status(final)
         final, _ = apply_curated_merges(final)
         f.write_text(json.dumps(final, ensure_ascii=False, indent=1), encoding="utf-8")
+        write_places(pk, final, f)
         print(f"{pk}: {len(final)} records (passive — not crawled)")
 
 
@@ -1073,6 +1105,7 @@ def main():
                 print(f"        {_k:<44} {_dcounts[_k]:>7,}")
         (outdir / f"{prov}.json").write_text(
             json.dumps(final, ensure_ascii=False, indent=1), encoding="utf-8")
+        write_places(prov, final, outdir / f"{prov}.json")
         got = sum(1 for r in final if (r.get("attrs") or {}).get("facets"))
         extra = (f" · {got} with facets ("
                  + ", ".join(f"{k} {v}" for k, v in sorted(facets.items())) + ")") if got else ""
