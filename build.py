@@ -9101,12 +9101,28 @@ def enrich(r):
 # 20 m of separation is noise. So the relation is stated in the data and
 # resolved here, once, into something a page can link to.
 PLACE_BY_ID = {}
+PLACES_FROM = {}
+
+
+def canonical_records(key, f=None):
+    """A province's records: from data/places.sqlite while it matches the JSON
+    file (placedb.py, ticket 82), from data/canonical/<key>.json otherwise."""
+    f = f or ROOT / "data" / "canonical" / f"{key}.json"
+    try:
+        import placedb
+        got = placedb.read(key, f)
+        PLACES_FROM[key] = "database" if got is not None else placedb.why_not(key, f) or "database short"
+    except Exception as e:      # a damaged file: the JSON is still there
+        got, PLACES_FROM[key] = None, f"{type(e).__name__}: {e}"
+    return got if got is not None else json.loads(f.read_text())
 
 
 def load():
-    loaded = {p["key"]: [google_id(enrich(r)) for r in
-                         json.loads((ROOT / "data" / "canonical" / f"{p['key']}.json").read_text())]
+    loaded = {p["key"]: [google_id(enrich(r)) for r in canonical_records(p["key"])]
               for p in PROVINCES}
+    _off = {k: v for k, v in PLACES_FROM.items() if v != "database"}
+    print("  places: data/places.sqlite" + ("" if not _off else " · from the JSON: " + " · ".join(
+        f"{k} ({v})" for k, v in sorted(_off.items()))))
     # Reader-supplied facts approved by hand (facts.py, importers/apply_facts.py)
     # land here as well as in import_all, so a build without an import still
     # carries them. Idempotent, so both paths can run.
@@ -9807,7 +9823,7 @@ def _neighbour_grid():
     if _NEIGHBOUR_GRID:
         return _NEIGHBOUR_GRID
     for f in sorted((ROOT / "data" / "canonical").glob("*.json")):
-        for r in json.loads(f.read_text()):
+        for r in canonical_records(f.stem, f):
             if r.get("lat") is None or r.get("lng") is None:
                 continue
             if (r.get("geoPrecision") or "exact") == "needs-pin":
@@ -11583,7 +11599,7 @@ def _slug_clash():
         f = ROOT / "data" / "canonical" / f"{prov}.json"
         if not f.exists():
             continue
-        for r in json.loads(f.read_text()):
+        for r in canonical_records(prov, f):
             by_stem.setdefault(_slug_stem(r), []).append(
                 (r["id"], (r.get("name") or r.get("nameTh") or r.get("nameEn") or "").strip()))
     _SLUG_CLASH = {}
@@ -13667,8 +13683,16 @@ def _moat_pins():
     if _MOAT_PINS is None:
         path = ROOT / "data" / "canonical" / "cm.json"
         want = set(MOAT_CORNER_IDS.values()) | set(MOAT_CROSSING_IDS)
-        _MOAT_PINS = ({r["id"]: r for r in json.loads(path.read_text()) if r["id"] in want}
-                      if path.exists() else {})
+        _MOAT_PINS = None
+        if path.exists():
+            try:
+                import placedb
+                _MOAT_PINS = placedb.get(want, "cm", path)
+            except Exception:
+                _MOAT_PINS = None
+            if _MOAT_PINS is None:
+                _MOAT_PINS = {r["id"]: r for r in json.loads(path.read_text()) if r["id"] in want}
+        _MOAT_PINS = _MOAT_PINS or {}
     return _MOAT_PINS
 
 
