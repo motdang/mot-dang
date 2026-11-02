@@ -192,6 +192,47 @@ const HOSTING_ASNS = new Map([
   [9009, 'M247'],
 ]);
 
+/*
+ * A request made by code running on Cloudflare, not by a reader.
+ *
+ * Added 2026-11-02. From 26 Oct a client on Cloudflare's own network asked
+ * motdang.net /search and /suggest up to 54,010 times a day with stock Chrome
+ * strings and the Sec-Fetch headers a browser sends, so every row was filed as
+ * a person. AS13335 cannot be listed (WARP users share it), but Cloudflare marks
+ * these requests itself: a Worker's fetch() carries CF-Worker (the zone that
+ * owns the Worker) and, from another zone, CF-Connecting-IP 2a06:98c0:3600::103;
+ * Browser Rendering adds cf-brapi-* and cf-biso-devtools. Source:
+ * developers.cloudflare.com/fundamentals/reference/http-headers/ and
+ * /browser-rendering/reference/automatic-request-headers/, read 2026-11-02.
+ */
+const WORKER_IP = '2a06:98c0:3600::103';
+const BROWSER_RUN = ['cf-brapi-request-id', 'cf-brapi-devtools', 'cf-biso-devtools'];
+
+function cloudflareMade(headers) {
+  if (!headers) return null;
+  const zone = headers.get('cf-worker');
+  if (zone) return `Cloudflare Worker · ${zone.slice(0, 40)}`;
+  if (BROWSER_RUN.some((k) => headers.has(k))) return 'Cloudflare Browser Rendering';
+  if (headers.get('cf-connecting-ip') === WORKER_IP) return 'Cloudflare Worker';
+  return null;
+}
+
+/*
+ * Our own looking, filed apart so it leaves the people count (2026-11-02):
+ * a test tool that sends X-Nanobot-Test, a browser of ours carrying the
+ * nb_ours=1 cookie, or a preview page on one of our machines (a localhost
+ * referrer).
+ */
+const LOCAL_REF = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\]|[^/?#]*\.localhost)(:\d+)?(\/|$)/i;
+
+function ours(headers) {
+  if (!headers) return null;
+  if (headers.has('x-nanobot-test')) return 'test tool';
+  if (/(?:^|;\s*)nb_ours=1(?:;|$)/.test(headers.get('cookie') || '')) return 'marked browser';
+  if (LOCAL_REF.test(headers.get('referer') || '')) return 'local preview';
+  return null;
+}
+
 /**
  * A browser-shaped request that is not a browser, or null.
  *
@@ -204,6 +245,8 @@ const HOSTING_ASNS = new Map([
  */
 function dressedAsBrowser(ua, seen) {
   if (!seen) return null;
+  const made = cloudflareMade(seen.headers);
+  if (made) return made;
   const net = HOSTING_ASNS.get(Number(seen.asn));
   if (net) return `data centre · ${net}`;
   const chrome = ua.match(/\bChrome\/(\d+)/);
@@ -219,9 +262,11 @@ function dressedAsBrowser(ua, seen) {
  * @param {{asn?: number, headers?: Headers}} [seen] what else the edge saw.
  *   Optional: with the User-Agent alone the answer is what it always was.
  * @returns {{category: string, agent: string}}
- *   category: ai | search | social | seo | monitor | tool | other | human | none
+ *   category: ai | search | social | seo | monitor | tool | other | human | none | ours
  */
 export function classify(ua, seen) {
+  const mine = ours(seen?.headers);
+  if (mine) return { category: 'ours', agent: mine };
   if (!ua || !ua.trim()) return { category: 'none', agent: '(no user-agent)' };
 
   for (const [category, agent, re] of SIGNATURES) {
@@ -258,4 +303,4 @@ export function isHuman(category) {
   return category === 'human';
 }
 
-export const CATEGORIES = ['human', 'ai', 'search', 'social', 'seo', 'monitor', 'tool', 'other', 'none'];
+export const CATEGORIES = ['human', 'ai', 'search', 'social', 'seo', 'monitor', 'tool', 'other', 'none', 'ours'];
