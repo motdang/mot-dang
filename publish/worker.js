@@ -1225,6 +1225,26 @@ async function api(request, env, url, path, ctx) {
     "GET /api/v1/ lists every endpoint this version has");
 }
 
+/* /…/p/geo:lat,lng, as a crawler builds it from a place page's maps link. */
+export function geoPath(pathname) {
+  let p;
+  try { p = decodeURIComponent(pathname); } catch { return null; }
+  const m = p.match(/^\/(?:[\w-]+\/)*p\/geo:(-?\d{1,2}\.\d{1,8}),(-?\d{1,3}\.\d{1,8})(?:\?.*)?$/);
+  return m ? { lat: m[1], lng: m[2] } : null;
+}
+
+/* The page of the one place standing on those coordinates, asked of the same
+ * index /api/v1/places answers from; null when none or several are within 2 m. */
+async function placeAt({ lat, lng }, env, url, ctx) {
+  try {
+    const q = new URL(`/api/v1/places?near=${lat},${lng}&radius=2&limit=2`, url.origin);
+    const r = await api(new Request(q), env, q, "/places", ctx);
+    if (!r || r.status !== 200) return null;
+    const hits = (await r.json()).results || [];
+    return hits.length === 1 && hits[0].url ? new URL(hits[0].url).pathname : null;
+  } catch { return null; }
+}
+
 async function serve(request, env, ctx) {
   const url = new URL(request.url);
 
@@ -1333,6 +1353,19 @@ async function serve(request, env, ctx) {
 
   if (fleetOwns(url))
     return fleetSearch(request, env, url, ctx, () => edgeCore(env));
+
+  /* A place page's maps link is href="geo:lat,lng?q=…" (the location-sharing
+   * repair, live about 2026-10-12). A phone hands it to a maps app; ClaudeBot
+   * reads it as an address beside the page, asks for /cr/p/geo:19.58,99.77 and
+   * got a 404: 67,161 times in the two weeks to 2026-11-01. The coordinates are
+   * the place's own, so when exactly one place stands within 2 m of them the
+   * request moves to its page. Two places can share a spot (a shop inside a
+   * market): then, or with none there, the 404 stands. */
+  const geo = geoPath(url.pathname);
+  if (geo) {
+    const to = await placeAt(geo, env, url, ctx);
+    if (to) return Response.redirect(url.origin + to, 301);
+  }
 
   /* Renamed shelves. The learn/ slug said classes while the shelf held
    * gyms (WO-37, 2026-08-26); the pages moved to sport/ and every old URL

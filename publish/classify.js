@@ -46,6 +46,12 @@ const SIGNATURES = [
   // Exa: a search engine whose readers are AI programs; it answers their
   // questions from what this bot reads (first seen here 6 Oct 2026).
   ['ai', 'ExaSearchBot', /\bExa(Search)?Bot\b/i],
+  // Named on their own bot pages, read 2026-11-02: Keenable's index answers AI
+  // agents (keenable.ai/bot); Reflection AI's crawler builds its models
+  // (reflection.ai/bot); ElevenLabs' may train its models (elevenlabs.io/docs/bots).
+  ['ai', 'KeenableBot', /KeenableBot/i],
+  ['ai', 'Reflectionbot', /Reflectionbot/i],
+  ['ai', 'ElevenlabsCrawler', /ElevenlabsCrawler/i],
   ['ai', 'Perplexity-User', /Perplexity-User/i],
   ['ai', 'Google-Extended', /Google-Extended/i],
   ['ai', 'Applebot-Extended', /Applebot-Extended/i],
