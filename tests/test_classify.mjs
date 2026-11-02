@@ -74,6 +74,22 @@ const CASES = [
   ['http.rb/5.2.0 (Mastodon/4.3.0; +https://mastodon.social/)', 'social', 'Mastodon', { asn: 24940, headers: new Headers({}) }],
   // A named crawler keeps its name wherever it runs.
   ['Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.2; +https://openai.com/gptbot)', 'ai', 'GPTBot', { asn: 8075, headers: new Headers({}) }],
+
+  // --- made on Cloudflare (added 2026-11-02) ---------------------------------
+  // The /search client of 26 Oct–1 Nov: Chrome's string and headers, from a Worker.
+  [CHROME_WIN, 'other', 'Cloudflare Worker · example.com', { asn: 13335, headers: new Headers({ ...REAL_CHROME, 'cf-worker': 'example.com' }) }],
+  [CHROME_WIN, 'other', 'Cloudflare Worker', { asn: 13335, headers: new Headers({ ...REAL_CHROME, 'cf-connecting-ip': '2a06:98c0:3600::103' }) }],
+  [CHROME_WIN, 'other', 'Cloudflare Browser Rendering', { asn: 13335, headers: new Headers({ ...REAL_CHROME, 'cf-brapi-devtools': 'x1' }) }],
+  // A person on WARP shares AS13335 and stays a person.
+  [CHROME_WIN, 'human', 'Chrome', { asn: 13335, headers: new Headers({ ...REAL_CHROME, 'cf-connecting-ip': '104.28.1.1' }) }],
+
+  // --- our own looking (added 2026-11-02) ------------------------------------
+  [CHROME_WIN, 'ours', 'marked browser', { asn: 23969, headers: new Headers({ ...REAL_CHROME, cookie: 'a=b; nb_ours=1' }) }],
+  [CHROME_WIN, 'human', 'Chrome', { asn: 23969, headers: new Headers({ ...REAL_CHROME, cookie: 'nb_ours=10' }) }],
+  ['Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/120 Safari/537.36', 'ours', 'test tool', { asn: 23969, headers: new Headers({ 'x-nanobot-test': '1' }) }],
+  [CHROME_WIN, 'ours', 'local preview', { asn: 23969, headers: new Headers({ ...REAL_CHROME, referer: 'http://localhost:8000/' }) }],
+  [CHROME_WIN, 'ours', 'local preview', { asn: 23969, headers: new Headers({ ...REAL_CHROME, referer: 'http://127.0.0.1:8811' }) }],
+  [CHROME_WIN, 'human', 'Chrome', { asn: 23969, headers: new Headers({ ...REAL_CHROME, referer: 'https://localhost.example.com/' }) }],
 ];
 
 let pass = 0;

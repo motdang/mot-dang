@@ -1526,6 +1526,19 @@ export default {
       if (response.status === 200 && v.length >= 8 && /\.(js|css)$/.test(u.pathname) && et.startsWith(v))
         response.headers.set("cache-control", "public, max-age=31536000, immutable");
     } catch { /* headers as they were */ }
+    /* Cloudflare's Web Analytics script is added to pages at the edge, and it
+     * counts a visit wherever it runs, headless browsers included. A page sent
+     * to a machine, or to our own looking, carries no-transform, which keeps the
+     * script off it (2026-11-02). */
+    try {
+      if (/^text\/html/i.test(response.headers.get("content-type") || "")) {
+        const { category } = classify(request.headers.get("user-agent") || "",
+          { asn: request.cf?.asn, headers: request.headers });
+        const cc = response.headers.get("cache-control") || "";
+        if (category !== "human" && !/no-transform/i.test(cc))
+          response.headers.set("cache-control", cc ? `${cc}, no-transform` : "no-transform");
+      }
+    } catch { /* headers as they were */ }
 
     try {
       ctx.waitUntil(Promise.resolve(record(request, response, env, Date.now() - started)));
