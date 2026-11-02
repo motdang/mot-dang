@@ -1456,6 +1456,19 @@ async function serve(request, env, ctx) {
     return ext(key) === "html" ? withWhere(res, request, obj.size) : res;
   }
 
+  /* A place page asked for by its record id, /cm/p/cm-osm-node-5583840795.html.
+   * Pages are named by place_slug() (Latin name plus OSM number). On 2026-11-02
+   * Search Console held 2,593 id-form addresses as 404s, and 32% of Googlebot's
+   * fetches were 404s. The id finds the place; a 301 moves the crawler to its page. */
+  const byId = url.pathname.match(/^\/(cm|cr)\/p\/((?:cm|cr)-[^/]+)\.html$/);
+  if (byId) {
+    let row = null;
+    try { row = findPlace(await loadLean(env), decodeURIComponent(byId[2])); }
+    catch { /* no index deployed: the 404 below answers */ }
+    if (row && row.slug && row.province && row.slug !== byId[2])
+      return Response.redirect(`${url.origin}/${row.province}/p/${row.slug}.html${url.search}`, 301);
+  }
+
   /* Miss. Serve the site's own 404 page when one has been deployed, so a
    * mistyped soi still lands somewhere with the search box on it. */
   const nf = await env.SITE.get("404.html");
