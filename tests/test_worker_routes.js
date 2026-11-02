@@ -70,7 +70,8 @@ const SITE = {
 const ETAG_OVERRIDE = new Map();
 
 const get = (path, init) =>
-  worker.fetch(new Request("https://motdang.net" + path, init), { SITE });
+  worker.fetch(new Request("https://motdang.net" + path, init), { SITE },
+               { waitUntil() {}, passThroughOnException() {} });
 
 let failures = 0;
 async function t(name, fn) {
@@ -224,6 +225,17 @@ await t("the retired /why lands on the page that answers it", async () => {
     eq(r.headers.get("location"), "https://motdang.net/what.html",
        `${u} should land on what.html`);
   }
+});
+
+/* 2026-11-02: Search Console held 2,593 id-form place addresses
+ * (/cm/p/cm-osm-node-….html) as 404s. The id forwards to the place's page. */
+await t("a place page asked for by its record id forwards to its page", async () => {
+  const body = await (await get("/api/v1/places?limit=1")).json();
+  const p = (body.results || body.places || [])[0];
+  ok(p && p.id && p.url, "the API gave no place to try");
+  const r = await get(`/${p.province}/p/${p.id}.html`);
+  eq(r.status, 301, `/${p.province}/p/${p.id}.html`);
+  eq(r.headers.get("location"), p.url, "should land on the place's own page");
 });
 
 /* ------------------------------------------- the index revalidation clock */
