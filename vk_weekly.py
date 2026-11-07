@@ -4,6 +4,8 @@
     python3 vk_weekly.py                 # the 7 Chiang Mai days ending yesterday, build + publish
     python3 vk_weekly.py --end 2026-09-26 --no-deploy
                                          # the 7 days before 26 Sept, write files only
+    python3 vk_weekly.py --lost          # only the sala at /this-page-does-not-exist-smoke-test,
+                                         # from the newest week already counted
 
 Numbers come from two places, both read with the fleet token:
   traffic_eye   the site Worker's per-request log (Analytics Engine, 90 days, since 8 Sept 2026)
@@ -788,6 +790,89 @@ def splice_main(block: str) -> None:
     p.write_text(s, encoding="utf-8")
 
 
+# ── the sala at the smoke check's address (Nan 2026-11-07: "keep it current") ────────
+
+LOST = "/this-page-does-not-exist-smoke-test"
+
+
+def lost_page(w: dict) -> bool:
+    """The week's knocks on the smoke check's address, written into the sala page
+    (voight-kampff/lost/, served there with status 404) and drawn on its share card.
+    Leaves the page as it is when the address is not in the week's misses."""
+    n = sum(r[3] for r in w.get("misses") or [] if r[1] == LOST)
+    if not n:
+        print("· sala: no knocks counted this week, page left as it was")
+        return False
+    en, th = span(w["from"], w["to"])
+    page = VK / "lost" / "index.html"
+    s = page.read_text(encoding="utf-8")
+    body = f"""<!-- vk:lost -->
+<section class="card">
+ <p class="big">{c(n)}</p>
+ <p class="th">สัปดาห์ {th} มีคนมาเคาะประตูนี้ {c(n)} ครั้ง ทุกครั้งได้คำตอบว่า ไม่มี
+ ตอนนี้ที่นี่มีศาลาแล้ว น้ำแดงบนม้านั่งยังเย็นอยู่ อยู่นานเท่าที่อยากอยู่</p>
+ <p class="en">Someone knocked on this door {c(n)} times the week of {e(en)}. Each time the answer was: not here.
+ There is a sala here now. The nam daeng on the bench is still cold. Stay as long as you like.</p>
+</section>
+<!-- /vk:lost -->"""
+    desc = (f"Someone knocked on this door {c(n)} times the week of {en}. Each time the answer was: not here. "
+            "There is a sala here now. Sit down.")
+    head = f"""<!-- vk:lost-head -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="มดแดง · Mot Dang">
+<meta property="og:url" content="https://motdang.net{LOST}">
+<meta property="og:title" content="ไม่มีหน้านี้ · This page does not exist">
+<meta property="og:description" content="{e(desc)}">
+<meta property="og:image" content="https://motdang.net/voight-kampff/lost/card.png?w={w['to']}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A small sala at the end of a soi at night, a lantern, a red ant asleep on the bench, and the number {c(n)}.">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /vk:lost-head -->"""
+    for tag, block in (("vk:lost", body), ("vk:lost-head", head)):
+        assert f"<!-- {tag} -->" in s, f"{tag} markers missing from voight-kampff/lost/index.html"
+        s = re.sub(rf"<!-- {tag} -->.*?<!-- /{tag} -->", lambda _: block, s, flags=re.S)
+    page.write_text(s, encoding="utf-8")
+    lost_card(s, n, en, th, VK / "lost" / "card.png")
+    print(f"· sala: {n} knocks, {en}")
+    return True
+
+
+def lost_card(page: str, n: int, en: str, th: str, out: Path) -> None:
+    """1200×630 share card: the page's own sala picture and the week's count."""
+    scene = re.search(r'<svg class="scene".*?</svg>', page, flags=re.S).group(0)
+    scene = scene.replace('class="scene"', 'class="scene" width="640" height="360"')
+    fonts = (ROOT / "assets" / "fonts").as_uri()
+    body = f"""<!doctype html><meta charset="utf-8"><style>
+@font-face{{font-family:JBM;src:url("{fonts}/jetbrains-mono-400-latin.woff2")}}
+@font-face{{font-family:Prompt;font-weight:600;src:url("{fonts}/prompt-600-thai.woff2");unicode-range:U+0E00-0E7F}}
+@font-face{{font-family:Prompt;font-weight:600;src:url("{fonts}/prompt-600-latin.woff2")}}
+@font-face{{font-family:Prompt;font-weight:400;src:url("{fonts}/prompt-400-thai.woff2");unicode-range:U+0E00-0E7F}}
+@font-face{{font-family:Prompt;font-weight:400;src:url("{fonts}/prompt-400-latin.woff2")}}
+html,body{{margin:0;width:1200px;height:630px;overflow:hidden;background:#1a1147;color:#fff8ec;font-family:Prompt}}
+.c{{position:relative;width:1200px;height:630px;background:radial-gradient(ellipse 70% 90% at 30% 50%,#2a1a6e,#1a1147 60%,#0d0826)}}
+.stitch{{position:absolute;left:0;right:0;height:14px;background:linear-gradient(135deg,#ff4fa8 25%,transparent 25%) -7px 0/14px 14px,linear-gradient(225deg,#ffd23f 25%,transparent 25%) -7px 0/14px 14px,linear-gradient(315deg,#3fffb0 25%,transparent 25%) 0 0/14px 14px,linear-gradient(45deg,#5fd8ff 25%,transparent 25%) 0 0/14px 14px}}
+.scene{{position:absolute;left:40px;top:135px;border:3px solid #fff8ec;border-radius:18px;box-shadow:8px 8px 0 #ff4fa8}}
+.scene *{{animation:none!important}}
+.r{{position:absolute;left:720px;top:70px;width:440px}}
+h1{{font-weight:600;font-size:44px;margin:0;line-height:1.2}} h1 small{{display:block;font-weight:400;font-size:28px;color:#c9c0f0}}
+.big{{font-family:JBM;font-size:150px;color:#ffd23f;margin:34px 0 0;line-height:1;text-shadow:0 0 26px rgba(255,210,63,.55)}}
+.k{{font-size:28px;margin:14px 0 0;line-height:1.35}} .k small{{display:block;font-size:24px;color:#c9c0f0}}
+.url{{position:absolute;right:40px;bottom:34px;font-family:JBM;font-size:22px;color:#5fd8ff}}
+</style><div class="c"><div class="stitch" style="top:0"></div>{scene}
+<div class="r"><h1>ไม่มีหน้านี้<small>This page does not exist</small></h1>
+<p class="big">{c(n)}</p>
+<p class="k">ครั้งที่มีคนมาเคาะ · knocks<small>{e(th)}<br>{e(en)}</small></p></div>
+<div class="url">motdang.net · ศาลา · a sala</div><div class="stitch" style="bottom:0"></div></div>"""
+    tmp = out.with_name("_card.html")
+    tmp.write_text(body, encoding="utf-8")
+    subprocess.run([CHROME, "--headless=new", "--hide-scrollbars", "--force-device-scale-factor=1",
+                    "--window-size=1200,630", "--default-background-color=1a1147ff",
+                    f"--screenshot={out}", tmp.as_uri()],
+                   check=True, capture_output=True, timeout=120)
+    tmp.unlink()
+
+
 # ── publish ────────────────────────────────────────────────────────────────────
 
 def building() -> bool:
@@ -817,6 +902,12 @@ def gossip_json(w: dict, items: list[dict], day: str) -> None:
 
 def main() -> None:
     args = sys.argv[1:]
+    if "--lost" in args:
+        # the sala alone, from the newest week already counted
+        lost_page(json.loads(sorted(DATA.glob("20*.json"))[-1].read_text()))
+        if "--no-deploy" not in args:
+            publish()
+        return
     today = dt.datetime.now(ICT).date()
     end = dt.date.fromisoformat(args[args.index("--end") + 1]) if "--end" in args else today
     a, b = end - dt.timedelta(days=7), end
@@ -838,6 +929,7 @@ def main() -> None:
     card_png(w, items, out / "card.png")
     gossip_json(w, items, day)
     splice_main(weekly_block(w, items, day))
+    lost_page(w)
     for it in items:
         print(f"· {it['title_en']}: {it['en']}")
     if "--no-deploy" not in args:

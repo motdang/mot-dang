@@ -1481,8 +1481,12 @@ async function serve(request, env, ctx) {
     const sala = url.pathname === "/this-page-does-not-exist-smoke-test"
       ? await env.SITE.get("voight-kampff/lost/index.html") : null;
     if (sala) nf.body.cancel();
+    /* Link previews (Mastodon, Bluesky and the rest) draw no card for a 404,
+     * so they alone get the sala with 200 and its share card. The smoke
+     * check (motdang-smoke/1) and everyone else still get 404. Nan, 2026-11-07. */
+    const preview = sala && PREVIEW_UA.test(request.headers.get("user-agent") || "");
     return new Response((sala || nf).body, {
-      status: 404,
+      status: preview ? 200 : 404,
       headers: {
         "content-type": TYPES.html,
         "cache-control": "public, max-age=0, must-revalidate",
@@ -1495,6 +1499,9 @@ async function serve(request, env, ctx) {
     headers: { "content-type": "text/plain; charset=utf-8", ...CORS },
   });
 }
+
+/* Link-preview fetchers, for the sala's share card above. */
+const PREVIEW_UA = /Mastodon|Bluesky|Cardyb|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot|TelegramBot|WhatsApp|Iframely|Embedly|redditbot|SkypeUriPreview/i;
 
 /* ------------------------------------------------- who asked for the page */
 
