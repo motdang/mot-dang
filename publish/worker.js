@@ -193,6 +193,9 @@ const NT_DONE = new WeakSet();
 /* Travelpayouts, project Motdang 581229 (Nan, 2026-10-11): their site script,
  * as they gave it, in the head of every page. */
 const TP_SCRIPT = '<script nowprocket data-noptimize="1" data-cfasync="false" data-wpfc-render="false" seraph-accel-crit="1" data-no-defer="1" data-cmp-ab="2">(function () {var script = document.createElement("script");script.async = 1;script.setAttribute("data-cmp-ab","2");script.src = \'https://tp-em.com/NTgxMjI5.js?t=581229\';document.head.appendChild(script);})();</script>';
+/* Except the mail page (Nan, 2026-11-12): it shows people's own mail. */
+const NO_TP = /^\/mail(\.html|\/.*)?$/;
+const noTp = (base) => { try { return NO_TP.test(new URL(base).pathname); } catch { return false; } };
 
 export const ntEtag = (tag) => tag.replace(/"$/, NT_ETAG + '"');
 
@@ -260,7 +263,7 @@ export function versioned(ref, av = AV, base = "https://motdang.net/") {
 }
 
 function noTranslate(rw, atHeadEnd = () => {}, base = "https://motdang.net/") {
-  let done = false, google = false, robots = false, script = false, tp = false;
+  let done = false, google = false, robots = false, script = false, tp = noTp(base);
   const tags = () => (google ? "" : NT_META_GOOGLE) + (robots ? "" : NT_META_ROBOTS) +
                      (script ? "" : NT_SCRIPT) + (tp ? "" : TP_SCRIPT);
   const put = (write) => { if (!done) { done = true; write(tags()); } };
