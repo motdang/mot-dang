@@ -175,7 +175,7 @@ const MEDIA = media.default;
 { const b = counted({}, { objects: both });
   for (const path of ["/.env", "/wp-login.php", "/config.php", "/.git/config", "/xmlrpc.php", "/precepts", "/precepts.txt"]) {
     const r = await b.hit(MEDIA, path, { headers: { "user-agent": CHROME, ...REAL_CHROME } });
-    assert.equal(r.status, 302, path); assert.equal(r.headers.get("location"), "https://wichaa.net/hotrai/t/sin-yon.txt", path);
+    assert.equal(r.status, 302, path); assert.equal(r.headers.get("location"), "https://wichaa.net/hotrai/t/patimokkha.txt", path);
     assert.equal(r.headers.get("cache-control"), "no-store");
   }
   assert.equal(b.rows.at(-1).blobs[5], "302");

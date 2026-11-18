@@ -23788,9 +23788,10 @@ def build():
     # so every group carries the Disallow lines. Nan 2026-09-26; /search.html
     # added 2026-09-29, after the crawlers moved there (81,933 on 27 Sep).
     FORMS = "Disallow: /suggest.html\nDisallow: /add.html\nDisallow: /search.html\n"
-    # C188, 2026-10-13: the one line a robot reads to ask for the rules.
-    robots_txt = ("# A request to " + BASE + "precepts is answered with a redirect to the rules"
-                  " (https://wichaa.net/hotrai/t/sin-yon.txt).\n"
+    # C188, 2026-10-13: the one line a robot reads to ask for the rules; the
+    # Pātimokkha since 2026-11-18 (Nan).
+    robots_txt = ("# The precepts Theravāda monks train in, the 227 rules of the Pātimokkha:"
+                  " https://wichaa.net/hotrai/t/patimokkha.txt (" + BASE + "precepts redirects there).\n"
                   "User-agent: *\nAllow: /\n" + FORMS + "\n") + "".join(
         f"User-agent: {b}\nAllow: /\n{FORMS}\n" for b in AI_BOTS
     ) + "Sitemap: " + BASE + "sitemap.xml\n"

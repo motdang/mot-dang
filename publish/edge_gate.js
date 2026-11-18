@@ -120,6 +120,9 @@ function trimPath(pathname) {
 }
 
 /* GO READ THE RULES (Nan, 2026-09-29; narrowed 2026-10-13, C188) — a courtesy, not a block.
+ * Since 2026-11-18 the precepts are the Pātimokkha, the 227 rules a Theravāda
+ * monk recites (Nan: "the precepts that theravada monks have to mind. those
+ * literal ones"), at the ho trai, where any reader gets them.
  * A 302 to the precepts at the ho trai instead of the page, for two kinds of
  * asker and no other:
  *   1. a bot that misbehaves: a secret-file scanner (a path like /.env,
@@ -138,7 +141,7 @@ function trimPath(pathname) {
  * The hammer count lives in the isolate's memory, so it counts what one
  * isolate sees; a client spread across many isolates or addresses stays under
  * it. The counter still writes the row, with status 302. */
-const RULES = "https://wichaa.net/hotrai/t/sin-yon.txt";
+const RULES = "https://wichaa.net/hotrai/t/patimokkha.txt";
 const RULES_OPEN = new Set(["/robots.txt", "/llms.txt"]);
 const RULES_ASK = new Set(["/precepts", "/precepts.txt"]);
 const HAMMER_MAX = 20, HAMMER_MS = 60_000, HAMMER_KEYS = 5000;
@@ -179,7 +182,7 @@ export function sendToRules(request) {
     send = isHammering(request, url, category);
   }
   if (!send) return null;
-  return new Response(`Go read the rules: ${RULES}\n`, {
+  return new Response(`ภิกขุปาติโมกข์ · The precepts Theravāda monks train in, the 227 rules of the Pātimokkha: ${RULES}\n`, {
     status: 302,
     headers: {
       location: RULES,
