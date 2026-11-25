@@ -127,6 +127,13 @@ CRAWLPAY_PRICE_LO = "USD 0.001"
 CRAWLPAY_PRICE_HI = "USD 0.05"
 # The ask stops by itself after this moment (14 days from her go); listening goes on.
 CRAWLPAY_UNTIL = "2026-10-18T03:45:00Z"
+# WORK FOR ACCESS (crawlpay.js, Nan 2026-11-25: "i like work for access", "402,
+# one in 20"). "on" sends training crawlers a 402 on one page in 20 that asks for
+# one check at motdang.net/anthill/api/v1/access instead of money; a key from
+# there opens the page for 24 hours. Needs the ACCESS_SECRET secret, shared with
+# the Anthill Worker (token get ACCESS_SECRET). 14 days, then it stops by itself.
+WORK_ASK = "on"
+WORK_UNTIL = "2026-12-09T17:00:00Z"
 # The listing-agent gate (lister.js). "auto" (Nan, 2026-09-27): a confirmed
 # applicant who passes the sanity check is invited; one who fails waits with
 # the reasons on the row, and listing-sheet/digest.py mails Nan both once a
