@@ -6,7 +6,7 @@
  * Moved here from worker.js on 2026-10-13 with no change to what it does. */
 import { classify } from "./classify.js";
 import { shareLand } from "./sharesense.js";
-import { crawlAsk, crawlListen } from "./crawlpay.js";
+import { crawlAsk, crawlListen, workAsk, workOn } from "./crawlpay.js";
 
 /* THE COUNT AT THE EDGE
  * --------------------
@@ -172,11 +172,13 @@ function isHammering(request, url, category) {
   return ++w.n > HAMMER_MAX;
 }
 
-export function sendToRules(request) {
+/* `pass` is crawlpay.js accessPass(): a good work-for-access key ("valid")
+ * goes past the hammer count; probes and /precepts are sent as before. */
+export function sendToRules(request, pass = "") {
   const url = new URL(request.url);
   if (RULES_OPEN.has(url.pathname)) return null;
   let send = RULES_ASK.has(url.pathname) || PROBE.test(url.pathname);
-  if (!send) {
+  if (!send && pass !== "valid") {
     const { category } = classify(request.headers.get("user-agent") || "",
       { asn: request.cf?.asn, headers: request.headers });
     send = isHammering(request, url, category);
@@ -200,6 +202,16 @@ export function askCrawler(request, env) {
   const { category, agent } = classify(request.headers.get("user-agent") || "",
     { asn: request.cf?.asn, headers: request.headers });
   return crawlAsk(request, env, category, agent);
+}
+
+/* WORK FOR ACCESS (Nan, 2026-11-25) — crawlpay.js. Off unless WORK_ASK is
+ * "on" and ACCESS_SECRET is set; even then only training crawlers on one page
+ * in 20, without a good key, get the 402. */
+export function askWork(request, env, pass = "") {
+  if (!workOn(env)) return null;
+  const { category, agent } = classify(request.headers.get("user-agent") || "",
+    { asn: request.cf?.asn, headers: request.headers });
+  return workAsk(request, env, category, agent, pass);
 }
 
 /* Plain http:// answers with a 301 to the same path and query on https://.

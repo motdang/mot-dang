@@ -76,7 +76,8 @@ import { newsletter, ownsNewsletter } from "./newsletter.js";
 import { lister, ownsLister } from "./lister.js";
 import { live, ownsLive, resolve } from "./live.js";
 import { shareSense } from "./sharesense.js";
-import { toHttps, sendToRules, askCrawler, record } from "./edge_gate.js";
+import { toHttps, sendToRules, askCrawler, askWork, record } from "./edge_gate.js";
+import { accessPass } from "./crawlpay.js";
 export { toHttps };
 import { accounts } from "./accounts.js";
 import { me, ownsMe } from "./me.js";
@@ -1570,7 +1571,10 @@ export default {
     if (new URL(request.url).pathname.startsWith("/api/")) ctx.waitUntil(assetVersions(env).catch(() => {}));
     else try { await assetVersions(env); } catch { /* pages go out unversioned */ }
     /* The one thing that matters. Nothing below this line can fail it. */
-    const response = finish(toHttps(request) || sendToRules(request) || askCrawler(request, env) || await serve(request, env, ctx), request.url);
+    /* a work-for-access key (crawlpay.js, Nan 2026-11-25): "valid", "invalid" or "" */
+    const pass = await accessPass(request, env);
+    const response = finish(toHttps(request) || sendToRules(request, pass) || askWork(request, env, pass) || askCrawler(request, env) || await serve(request, env, ctx), request.url);
+    if (pass) try { response.headers.set("x-ant-pass", pass); } catch { /* the page as it was */ }
     /* A script or stylesheet asked for by its content hash is kept for good —
      * when the bytes served are the ones the hash names. The bucket's etag of
      * a small file is its md5, so a ?v= that arrives before its file (or for a
