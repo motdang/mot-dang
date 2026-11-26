@@ -1258,6 +1258,11 @@ async function serve(request, env, ctx) {
   if (request.method === "OPTIONS")
     return new Response(null, { status: 204, headers: CORS });
 
+  /* Voight-Kampff data (vk-data/, Nan 2026-11-26): the daily request-log files sit
+   * in their own bucket, which this site's deploy does not mirror. */
+  if (env.VKDATA && (url.pathname === "/voight-kampff/data" || url.pathname.startsWith("/voight-kampff/data/")))
+    return env.VKDATA.fetch(request);
+
   /* The mailing list (subscribe.js). Ahead of the GET/HEAD guard because the
    * sign-up form POSTs here; subscribe() refuses on its own every method a
    * given path does not take. Double opt-in, and the confirmation mail is
