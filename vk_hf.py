@@ -6,12 +6,14 @@ goes in the token store as HUGGINGFACE_TOKEN (~/.claude/bin/token save HUGGINGFA
 
     python3 vk_hf.py --repo <user-or-org>/voight-kampff     # card + every month in the GitHub releases
     python3 vk_hf.py --repo <...> --month 2026-11
+    python3 vk_hf.py --repo <...> --card                    # the card alone
 
 Files land as data/bots-<month>.parquet and data/people-<month>.csv.gz, the same files as the
 GitHub release for that month (NaNoBotCo/voight-kampff-data), so the dataset viewer reads them.
 """
 from __future__ import annotations
 
+import datetime as dt
 import json
 import subprocess
 import sys
@@ -36,6 +38,9 @@ def card(repo: str, months: list[str]) -> str:
     ix = X.get_json("index.json") or {"days": []}
     days = ix["days"]
     rows = sum(d["rows"] for d in days)
+    here = [d for d in days if d["day"][:7] in months]
+    here_rows = sum(d["rows"] for d in here)
+    span = ", ".join(dt.date.fromisoformat(m + "-01").strftime("%B %Y") for m in months)
     fields = "\n".join(f"| `{n}` | {t} | {w} |" for n, t, w in X.BOT_FIELDS)
     pfields = "\n".join(f"| `{n}` | {t} | {w} |" for n, t, w in X.PEOPLE_FIELDS)
     return f"""---
@@ -60,10 +65,9 @@ configs:
 
 # Voight-Kampff: every bot request to motdang.net
 
-Every request bots made to [motdang.net](https://motdang.net) (a map and directory of Chiang Mai, in Thai and
-English) and hongdam.net, one row each, to the second, from 8 Sept 2026: {rows:,} rows to {days[-1]['day'] if days else ''}.
-From 26 Nov 2026 each row also carries the caller's network, the Cloudflare data centre that answered, its TLS
-fingerprints (SHA-1 of the cipher list and of the extensions) and the TCP round trip.
+Every request bots made to [motdang.net](https://motdang.net) (a map and directory of Chiang Mai, in Thai and English) and hongdam.net, one row each, to the second.
+
+Here: {span}, {here_rows:,} rows; each month is added after it ends. The daily files run from 8 Sept 2026 to {days[-1]['day'] if days else ''} ({rows:,} rows) and add a day each night. From 26 Nov 2026 each row also carries the caller's network, the Cloudflare data centre that answered, its TLS fingerprints (SHA-1 of the cipher list and of the extensions) and the TCP round trip.
 
 People appear only as counts per hour, page and country, in the `people` config.
 
@@ -72,8 +76,7 @@ People appear only as counts per hour, page and country, in the `people` config.
 - Ask it in your browser with SQL: https://motdang.net/voight-kampff/#ask
 - What the site makes of it, every night and every week: https://motdang.net/voight-kampff/
 
-The log is Cloudflare Workers Analytics Engine, written by the site's own Worker on every request. When busy it
-stores one row in N and says so in `weight`: requests = `SUM(weight * counted)`. No addresses are logged.
+The log is Cloudflare Workers Analytics Engine, written by the site's own Worker on every request. When busy it stores one row in N and says so in `weight`: requests = `SUM(weight * counted)`. No addresses are logged.
 
 ## bots
 
@@ -101,7 +104,7 @@ def months_released() -> list[str]:
 def main() -> None:
     args = sys.argv[1:]
     repo = args[args.index("--repo") + 1]
-    months = [args[args.index("--month") + 1]] if "--month" in args else months_released()
+    months = [args[args.index("--month") + 1]] if "--month" in args else [] if "--card" in args else months_released()
     from huggingface_hub import HfApi
     api = HfApi(token=token())
     api.create_repo(repo, repo_type="dataset", exist_ok=True)
@@ -115,7 +118,9 @@ def main() -> None:
                             repo_type="dataset", commit_message=f"{kind}, {m}")
             f.unlink()
         print("hf:", m)
-    (WORK / "README.md").write_text(card(repo, months))
+    have = sorted({f.split("-", 1)[1].split(".")[0] for f in api.list_repo_files(repo, repo_type="dataset")
+                   if f.startswith("data/bots-")})
+    (WORK / "README.md").write_text(card(repo, have))
     api.upload_file(path_or_fileobj=str(WORK / "README.md"), path_in_repo="README.md", repo_id=repo,
                     repo_type="dataset", commit_message="Dataset card")
     print(f"https://huggingface.co/datasets/{repo}")

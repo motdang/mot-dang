@@ -254,16 +254,13 @@ def readme(index: dict) -> str:
         "  bots/<day>.csv.gz       the same rows as gzipped CSV",
         "  people/<day>.csv.gz     browsers the classifier counts as people, as counts per hour, site, page and country",
         "  fields.json             the fields below, as JSON",
+        "Each month, whole: https://github.com/NaNoBotCo/voight-kampff-data/releases and https://huggingface.co/datasets/NaNoBotCo/voight-kampff",
         "",
-        "Who is in bots/: every row the site's classifier (publish/classify.js in github.com/motdang/mot-dang) does not call a browser,",
-        "plus browsers on data-centre networks, which it calls 'other'. People appear only as counts, in people/.",
+        "Who is in bots/: every row the site's classifier (publish/classify.js in github.com/motdang/mot-dang) does not call a browser, plus browsers on data-centre networks, which it calls 'other'. People appear only as counts, in people/.",
         "",
-        "The log is Cloudflare Workers Analytics Engine, written by the site's own Worker on every request. It stores 90 days;",
-        "these files carry them past that. When the site is busy, Analytics Engine stores one row in N and says so in `weight`:",
-        "requests = SUM(weight * counted).",
+        "The log is Cloudflare Workers Analytics Engine, written by the site's own Worker on every request. It stores 90 days; these files carry them past that. When the site is busy, Analytics Engine stores one row in N and says so in `weight`: requests = SUM(weight * counted).",
         "",
-        "Network, data centre, TLS fingerprints and round-trip time start on 26 Nov 2026; earlier rows leave them empty.",
-        "No addresses are logged.",
+        "Network, data centre, TLS fingerprints and round-trip time start on 26 Nov 2026; earlier rows leave them empty. No addresses are logged.",
         "",
         "Fields, bots/:",
         *[f"  {n:<16} {t:<9} {w}" for n, t, w in BOT_FIELDS],
@@ -296,7 +293,10 @@ def write_index(new: list[dict]) -> dict:
     days = sorted(by.values(), key=lambda x: x["day"])
     index = {"title": "Voight-Kampff data, motdang.net", "licence": "CC BY 4.0",
              "credit": "motdang.net Voight-Kampff, https://motdang.net/voight-kampff/",
-             "base": BASE + "/", "updated": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+             "base": BASE + "/",
+             "links": {"github": f"https://github.com/{REPO}/releases",
+                       "huggingface": "https://huggingface.co/datasets/NaNoBotCo/voight-kampff"},
+             "updated": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
              "fields": {"bots": [{"name": n, "type": t, "what": w} for n, t, w in BOT_FIELDS],
                         "people": [{"name": n, "type": t, "what": w} for n, t, w in PEOPLE_FIELDS]},
              "days": days}
@@ -352,6 +352,10 @@ def release(month: str) -> bool:
         f.unlink()
     work.rmdir()
     print(f"release {month}: {rows:,} rows, {len(days)} days")
+    # the same month to Hugging Face (her pick 2026-11-26), from the release just made
+    hf = subprocess.run([sys.executable, str(ROOT / "vk_hf.py"), "--repo", "NaNoBotCo/voight-kampff", "--month", month],
+                        capture_output=True, text=True)
+    print("hf:", month, "ok" if hf.returncode == 0 else "failed: " + hf.stderr.strip()[-300:])
     return True
 
 
