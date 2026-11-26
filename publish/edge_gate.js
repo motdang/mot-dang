@@ -20,9 +20,11 @@ import { crawlAsk, crawlListen, workAsk, workOn } from "./crawlpay.js";
  * WHAT IT WRITES, AND WHAT IT DELIBERATELY DOES NOT
  * ------------------------------------------------
  * One row per request into Analytics Engine: host, category, agent name,
- * path, country, status, referrer HOST, method. No IP address. No cookie. No
- * identifier of any kind, so two requests by the same person are two rows
- * that cannot be joined — this counts arrivals, it cannot follow anybody.
+ * path, country, status, referrer HOST, method, and since 2026-11-26 the
+ * caller's network and connection (wireSense, below). No IP address, no
+ * cookie, no per-reader identifier. On a big network two requests by one
+ * person look like everyone else's; on a small one, network plus browser
+ * build can narrow it to a few people.
  *
  * The referring URL is cut down to its host on purpose: a full referrer from
  * a search engine carries the words somebody typed, which are their business
@@ -74,11 +76,13 @@ export function record(request, response, env, ms) {
       String(response.status),        // 6 status
       refHost,                        // 7 referrer host only
       request.method,                 // 8 method
-      ...searchSense(url, response),  // 9–11 search: the view, and words that found nothing
+      ...pad(searchSense(url, response), 3, ""),  // 9–11 search: the view, and words that found nothing
+      "", "", "",                     // 12–14 empty on a request row (share rows use them)
+      ...wireSense(request),          // 15–20 the caller's network and connection
     ],
     /* double1 is a literal 1 so SUM(double1) survives sampling; COUNT(*) would
      * quietly under-report if this site ever gets busy enough to be sampled. */
-    doubles: [1, response.status, ms, ...searchCount(url, response)],
+    doubles: [1, response.status, ms, ...pad(searchCount(url, response), 2, 0), ...wireCount(request)],
     indexes: [url.host],              // sampling key, per-site
   });
   /* opened from a shared link (?s=<code>.<channel>): one more row, sharesense.js */
@@ -86,6 +90,42 @@ export function record(request, response, env, ms) {
   /* a crawler that says it can pay, or signs itself: one more row, crawlpay.js */
   crawlListen(request, response, env, category, agent, ms);
 }
+
+/* THE CALLER'S NETWORK AND CONNECTION (Nan, 2026-11-26: "Network + TLS, everyone",
+ * toward Voight-Kampff reading a flood). Cloudflare hands every Worker these on
+ * request.cf, on every plan:
+ *   blob15 network number (ASN)          blob18 HTTP version, TLS version, cipher
+ *   blob16 the network's owner           blob19 SHA-1 of the cipher list the client offered
+ *   blob17 Cloudflare data centre        blob20 SHA-1 of the TLS extensions it sent
+ *   double6 round-trip time, ms (TCP, else QUIC; -1 unknown)
+ *   double7 length of the TLS hello, bytes (-1 unknown)
+ * The two hashes describe the client's software (a Go program, curl, a browser
+ * build), not the reader: everyone on the same browser build sends the same
+ * list. tlsClientRandom, which differs on every connection, is not written. */
+function wireSense(request) {
+  const cf = request.cf || {};
+  const conn = [cf.httpProtocol, cf.tlsVersion, cf.tlsCipher].filter(Boolean).join(" ");
+  return [
+    cf.asn ? String(cf.asn) : "",
+    String(cf.asOrganization || "").slice(0, 64),
+    String(cf.colo || ""),
+    conn.slice(0, 64),
+    String(cf.tlsClientCiphersSha1 || "").slice(0, 64),
+    String(cf.tlsClientExtensionsSha1 || "").slice(0, 64),
+  ];
+}
+
+function wireCount(request) {
+  const cf = request.cf || {};
+  const rtt = Number.isFinite(cf.clientTcpRtt) ? cf.clientTcpRtt
+    : Number.isFinite(cf.clientQuicRtt) ? cf.clientQuicRtt : -1;
+  const hello = Number(cf.tlsClientHelloLength);
+  return [rtt, Number.isFinite(hello) && hello > 0 ? hello : -1];
+}
+
+/* A fixed-width slot: positions are the schema, so a row that has no search
+ * view still fills 9–11 (and double4–5) and the network lands at 15. */
+const pad = (xs, n, v) => [...xs, ...Array(Math.max(0, n - xs.length)).fill(v)].slice(0, n);
 
 const CELL = (lat, lng) => `${(+lat).toFixed(2)},${(+lng).toFixed(2)}`;
 
