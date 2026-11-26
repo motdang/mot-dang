@@ -1,7 +1,7 @@
 // vk-watch: quiet, a flood that pings, the same flood again (no ping), and its end.
 //   node vk-watch/test/watch.test.mjs
 import assert from "node:assert/strict";
-import worker, { tick, over, signature, message, SITES } from "../src/index.js";
+import worker, { tick, over, signature, message, area, SITES } from "../src/index.js";
 
 const kv = new Map();
 const VK = {
@@ -40,7 +40,15 @@ globalThis.fetch = async (url, init = {}) => {
     }
     return json({ data: [{ n: 10000 }] });                 // the snapshot total
   }
-  if (url.endsWith("/graphql")) return json({ data: null, errors: [{ message: "does not have permission 'com.cloudflare.api.account.zone.analytics.read'" }] });
+  if (url.endsWith("/graphql")) {
+    const q = JSON.parse(init.body).query;
+    if (q.includes("firewallEventsAdaptive")) return json({ data: { viewer: { zones: [{ f: [
+      { action: "block", source: "firewallManaged", clientAsn: "16509", clientASNDescription: "AMAZON-02", clientIP: "192.0.2.1" },
+      { action: "block", source: "firewallManaged", clientAsn: "16509", clientASNDescription: "AMAZON-02", clientIP: "192.0.2.2" },
+      { action: "block", source: "firewallManaged", clientAsn: "16509", clientASNDescription: "AMAZON-02", clientIP: "192.0.2.1" },
+      { action: "managed_challenge", source: "securitylevel", clientAsn: "14061", clientASNDescription: "DIGITALOCEAN", clientIP: "198.51.100.9" }] }] } } });
+    return json({ data: { viewer: { zones: [{ r: [{ count: 9000, dimensions: { edgeResponseStatus: 200 } }, { count: 600, dimensions: { edgeResponseStatus: 504 } }] }] } } });
+  }
   if (url.startsWith("https://discord.test")) { pings.push(["discord", JSON.parse(init.body)]); return new Response(null, { status: 204 }); }
   if (url.startsWith("https://api.resend.com")) { pings.push(["email", JSON.parse(init.body)]); return json({ id: "email-1" }); }
   if (url === "https://motdang.net/" || url === "https://hongdam.net/") return new Response("ok", { status: 200 });
@@ -67,10 +75,14 @@ await tick(env, at(1));
 let f = JSON.parse(kv.get("on:motdang.net"));
 assert.equal(f.sig, "AS396982 → /search.html");
 assert.equal(f.repeat, false);
-assert.equal(f.snap.edge.error, "no permission");
+assert.equal(f.snap.edge.total, 9600);
+assert.deepEqual(f.snap.edge.actions[0], ["block", "firewallManaged", "16509", "AMAZON-02", 3, 2]);
+assert.equal(f.snap.edge.firewall.addresses, 3);
+assert.ok(!JSON.stringify(f.snap).includes("192.0.2.1"), "an address reached the snapshot");
 assert.deepEqual(pings.map((p) => p[0]), ["discord", "email"]);
 assert.deepEqual(pings[0][1].allowed_mentions, { parse: [] }, "no one is pinged by name");
 assert.match(pings[0][1].content, /Flood on motdang\.net/);
+assert.match(pings[0][1].content, /Cloudflare stopped: block firewallManaged AS16509 3 from 2 addresses/);
 assert.match(pings[1][1].subject, /VK: flood on motdang\.net, 10,000 requests in 5 min/);
 
 // still on: no more messages
@@ -101,10 +113,16 @@ assert.equal(r.headers.get("access-control-allow-origin"), "*");
 assert.equal(v.on.length, 1);
 assert.equal(v.floods.length, 1);
 assert.equal(v.sites["motdang.net"].median, 970);
+assert.deepEqual(v.sites["motdang.net"].edge, { total: 9600, s5xx: 600, s504: 600 });
+assert.ok(!JSON.stringify(v).includes("192.0.2"), "an address reached floods.json");
 const txt = await (await worker.fetch(new Request("https://vk-watch.test/"), env)).text();
 assert.match(txt, /ON NOW/);
 
 // words
 assert.equal(signature({ total: 100, networks: [["1", "x", 10]], callers: [["ClaudeBot", "ai", 60]], pages: [["/toilets.html", "", 50]] }), "ClaudeBot → /toilets.html");
 assert.ok(!message("motdang.net", { ...f, snap: { total: 0 } }).includes("undefined"));
+assert.equal(area("/api/fx"), "/api/…");
+assert.equal(area("/api/swan/poll"), "/api/…");
+assert.equal(area("/search.html"), "/search.html");
+assert.equal(area("/find"), "/find");
 console.log("vk-watch: all green");

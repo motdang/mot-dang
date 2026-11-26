@@ -121,32 +121,83 @@ export async function snapshot(env, host, a, b) {
   return snap;
 }
 
-/* Cloudflare's own view: what it blocked or challenged before the site, by action and network.
- * Needs Zone Analytics read on CF_API_TOKEN; without it the snapshot says so. */
+/* Cloudflare's own view, with Zone Analytics read on CF_API_TOKEN (her click, 2026-11-26).
+ * On these zones' plan two datasets answer (checked 2026-11-26): edge status counts
+ * (httpRequestsAdaptiveGroups by edgeResponseStatus) and raw firewall events
+ * (firewallEventsAdaptive). Grouped firewall events and network breakdowns of all edge
+ * traffic answer "does not have access". The raw events carry each address; only the
+ * count of distinct addresses is written, per action, source and network. */
+async function gql(env, query, variables) {
+  const r = await fetch("https://api.cloudflare.com/client/v4/graphql", {
+    method: "POST", headers: { Authorization: `Bearer ${env.CF_API_TOKEN}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ query, variables }),
+  });
+  const d = await r.json();
+  if (d.errors?.length) {
+    const m = String(d.errors[0].message);
+    throw new Error(m.includes("permission") ? "no permission" : m.slice(0, 160));
+  }
+  return d.data?.viewer?.zones || [];
+}
+
+export function foldFirewall(events) {
+  const by = new Map();
+  for (const x of events) {
+    const k = [x.action, x.source, x.clientAsn || "", x.clientASNDescription || ""].join("\u0001");
+    const o = by.get(k) || { n: 0, ips: new Set() };
+    o.n++; if (x.clientIP) o.ips.add(x.clientIP);
+    by.set(k, o);
+  }
+  return [...by.entries()].sort((p, q) => q[1].n - p[1].n).slice(0, 10)
+    .map(([k, o]) => [...k.split("\u0001"), o.n, o.ips.size]);
+}
+
 async function edge(env, host, a, b) {
-  const q = `query($z:String!,$s:Time!,$e:Time!){viewer{zones(filter:{zoneTag:$z}){
-    f:firewallEventsAdaptiveGroups(limit:10,orderBy:[count_DESC],filter:{datetime_geq:$s,datetime_lt:$e}){count dimensions{action source clientAsn clientASNDescription}}
-    r:httpRequestsAdaptiveGroups(limit:10,orderBy:[count_DESC],filter:{datetime_geq:$s,datetime_lt:$e}){count dimensions{edgeResponseStatus}}}}}`;
+  const v = { z: SITES[host].zone, s: new Date(a).toISOString(), e: new Date(b).toISOString() };
+  const out = {};
   try {
-    const r = await fetch("https://api.cloudflare.com/client/v4/graphql", {
-      method: "POST", headers: { Authorization: `Bearer ${env.CF_API_TOKEN}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ query: q, variables: { z: SITES[host].zone, s: new Date(a).toISOString(), e: new Date(b).toISOString() } }),
-    });
-    const d = await r.json();
-    if (d.errors?.length) return { error: String(d.errors[0].message).includes("permission") ? "no permission" : String(d.errors[0].message).slice(0, 160) };
-    const z = d.data?.viewer?.zones?.[0] || {};
-    return {
-      actions: (z.f || []).map((x) => [x.dimensions.action, x.dimensions.source, x.dimensions.clientAsn, x.dimensions.clientASNDescription, x.count]),
-      statuses: (z.r || []).map((x) => [x.dimensions.edgeResponseStatus, x.count]),
-    };
-  } catch (e) { return { error: String(e.message).slice(0, 160) }; }
+    const [z] = await gql(env, `query($z:String!,$s:Time!,$e:Time!){viewer{zones(filter:{zoneTag:$z}){
+      r:httpRequestsAdaptiveGroups(limit:20,orderBy:[count_DESC],filter:{datetime_geq:$s,datetime_lt:$e}){count dimensions{edgeResponseStatus}}}}}`, v);
+    out.statuses = (z?.r || []).map((x) => [x.dimensions.edgeResponseStatus, x.count]);
+    out.total = out.statuses.reduce((t, x) => t + x[1], 0);
+  } catch (e) { out.error = e.message; }
+  try {
+    const [z] = await gql(env, `query($z:String!,$s:Time!,$e:Time!){viewer{zones(filter:{zoneTag:$z}){
+      f:firewallEventsAdaptive(limit:5000,orderBy:[datetime_DESC],filter:{datetime_geq:$s,datetime_lt:$e}){action source clientAsn clientASNDescription clientIP}}}}`, v);
+    const ev = z?.f || [];
+    out.firewall = { n: ev.length, capped: ev.length >= 5000, addresses: new Set(ev.map((x) => x.clientIP)).size };
+    out.actions = foldFirewall(ev);   // [action, source, asn, network, events, addresses]
+  } catch (e) { out.firewallError = e.message; }
+  return out;
+}
+
+/* edge totals and 5xx for both sites, the last five minutes, for the minute's status */
+async function edgeNow(env, a, b) {
+  const out = {};
+  await Promise.all(Object.entries(SITES).map(async ([host, site]) => {
+    try {
+      const [z] = await gql(env, `query($z:String!,$s:Time!,$e:Time!){viewer{zones(filter:{zoneTag:$z}){
+        r:httpRequestsAdaptiveGroups(limit:20,filter:{datetime_geq:$s,datetime_lt:$e}){count dimensions{edgeResponseStatus}}}}}`,
+        { z: site.zone, s: new Date(a).toISOString(), e: new Date(b).toISOString() });
+      const st = (z?.r || []).map((x) => [x.dimensions.edgeResponseStatus, x.count]);
+      out[host] = { total: st.reduce((t, x) => t + x[1], 0), s5xx: st.filter((x) => x[0] >= 500).reduce((t, x) => t + x[1], 0),
+        s504: st.filter((x) => x[0] === 504).reduce((t, x) => t + x[1], 0) };
+    } catch (e) { out[host] = { error: e.message }; }
+  }));
+  return out;
 }
 
 export function signature(snap) {
   const top = (xs) => (xs && xs[0] ? xs[0] : null);
   const net = top(snap.networks), who = top(snap.callers), page = top(snap.pages);
   const lead = net && snap.total && net[2] >= 0.3 * snap.total ? `AS${net[0]}` : who ? who[0] : "?";
-  return `${lead} → ${page ? page[0] : "?"}`;
+  return `${lead} → ${page ? area(page[0]) : "?"}`;
+}
+
+/* a page's first folder, so a caller rotating through /api/fx, /api/php … is one signature */
+export function area(path) {
+  const m = String(path).match(/^\/[^/]+\/./);
+  return m ? m[0].slice(0, -1) + "…" : String(path);
 }
 
 /* can a person still get the front page? one fetch a minute while a flood is on */
@@ -177,7 +228,9 @@ export function message(host, f) {
   if (page) lines.push(`Top page: ${page[0]} · ${pct(page[2], t)}`);
   if (cc) lines.push(`Top country: ${cc[0]} · ${pct(cc[2], t)}`);
   if (f.door) lines.push(`Front page now: ${f.door.status || "no answer"} in ${c(f.door.ms)} ms`);
-  if (s.edge?.actions?.length) lines.push(`Cloudflare stopped: ${s.edge.actions.slice(0, 3).map((x) => `${x[0]} ${c(x[4])}`).join(", ")}`);
+  const e5 = (s.edge?.statuses || []).filter((x) => x[0] >= 500).reduce((t, x) => t + x[1], 0);
+  if (s.edge?.total) lines.push(`Cloudflare edge: ${c(s.edge.total)} requests, ${c(e5)} answered 5xx`);
+  if (s.edge?.actions?.length) lines.push(`Cloudflare stopped: ${s.edge.actions.slice(0, 3).map((x) => `${x[0]} ${x[1]} AS${x[2]} ${c(x[4])} from ${c(x[5])} addresses`).join("; ")}`);
   lines.push(PAGE);
   return lines.join("\n");
 }
@@ -208,13 +261,14 @@ async function alert(env, host, f) {
 /* ── the minute ───────────────────────────────────────────────────────── */
 
 export async function tick(env, now = Date.now()) {
-  const [five, base] = await Promise.all([lastFive(env, now), medians(env, now)]);
+  const b5 = minute(now) - 60000;
+  const [five, base, ed] = await Promise.all([lastFive(env, now), medians(env, now), edgeNow(env, b5 - 5 * 60000, b5)]);
   const seen = (await env.VK.get("seen", "json")) || {};
   let floods = null;
   const status = {};
   for (const [host, site] of Object.entries(SITES)) {
     const o = five[host], med = base[host] || 0, v = over(site, o, med);
-    status[host] = { five: Math.round(o.n), shed: Math.round(o.s), median: med, line: v.line, per: o.per, at: o.b };
+    status[host] = { five: Math.round(o.n), shed: Math.round(o.s), median: med, line: v.line, per: o.per, at: o.b, edge: ed[host] };
     let f = await env.VK.get(`on:${host}`, "json");
     if (v.hit) {
       if (!f) {
@@ -261,7 +315,8 @@ async function view(env) {
 
 function text(v) {
   const out = [`Voight-Kampff flood watch · ${v.updated ? ict(v.updated) + " ICT" : "not run yet"}`, ""];
-  for (const [h, s] of Object.entries(v.sites)) out.push(`${h}: ${c(s.five)} in the last 5 min · median ${c(s.median)} · line ${c(s.line)}`);
+  for (const [h, s] of Object.entries(v.sites)) out.push(`${h}: ${c(s.five)} in the last 5 min · median ${c(s.median)} · line ${c(s.line)}`
+    + (s.edge && !s.edge.error ? ` · edge ${c(s.edge.total)}, 5xx ${c(s.edge.s5xx)} (504 ${c(s.edge.s504)})` : ""));
   out.push("", v.on.length ? "ON NOW" : "No flood on now.");
   for (const f of v.on) out.push(`  ${f.host} since ${ict(f.start)} · ${f.sig} · peak ${c(f.peak)}/5 min`);
   out.push("", `Floods logged: ${v.floods.length}`);
