@@ -1,0 +1,14 @@
+# vk-data — the Voight-Kampff request log as daily files, at motdang.net/voight-kampff/data/ (src/index.js says how).
+# Files: vk_export.py (mot-dang root) writes them to the bucket each night.
+# Reached only through the site Worker's VKDATA binding. Deploy: CLOUDFLARE_API_TOKEN from cfenv, npx wrangler@4 deploy.
+name = "vk-data"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+workers_dev = false
+
+[[r2_buckets]]
+binding = "DATA"
+bucket_name = "motdang-vk-data"
+
+[observability]
+enabled = true

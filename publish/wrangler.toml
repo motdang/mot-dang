@@ -182,6 +182,11 @@ database_id = "6afa7e56-c839-4eef-9688-0ace550018da"
 # LINE account's Worker (motdang-line, src/entry.js class Site) sends the pushes
 # and keeps home alerts and reminders; motdang-pages' database holds the Gold
 # month code a reader gets for saying yes to the week on LINE.
+# Voight-Kampff data files (vk-data/, Nan 2026-11-26): /voight-kampff/data/* goes there.
+[[services]]
+binding = "VKDATA"
+service = "vk-data"
+
 [[services]]
 binding = "LINEBOT"
 service = "motdang-line"
