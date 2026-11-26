@@ -1,0 +1,17 @@
+# vk-watch — Voight-Kampff's flood watch for motdang.net and hongdam.net (src/index.js says how).
+# Deploy: npx wrangler@4 deploy (account token from cfenv; no zone routes, workers.dev only).
+# Secrets: CF_API_TOKEN, DISCORD_WEBHOOK (#app-and-site), RESEND_KEY.
+name = "vk-watch"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+workers_dev = true
+
+[triggers]
+crons = ["* * * * *"]
+
+[[kv_namespaces]]
+binding = "VK"
+id = "546cd7c1278b4df7971dcbfb1f96bd7d"
+
+[observability]
+enabled = true
