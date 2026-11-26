@@ -75,7 +75,7 @@ await t("a request writes exactly one row, in traffic-eye's blob order", async (
   await b.hit("/index.html", { headers: { "user-agent": CHROME } });
   eq(b.rows.length, 1, "rows written:");
   const [row] = b.rows;
-  eq(row.blobs.length, 8, "blob count:");
+  eq(row.blobs.length, 20, "blob count:");
   eq(row.blobs[0], "motdang.net", "blob1 site:");
   eq(row.blobs[1], "human", "blob2 category:");
   eq(row.blobs[2], "Chrome", "blob3 agent:");
