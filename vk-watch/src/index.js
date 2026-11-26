@@ -123,7 +123,9 @@ export async function snapshot(env, host, a, b) {
 
 /* Cloudflare's own view, with Zone Analytics read on CF_API_TOKEN (her click, 2026-11-26).
  * On these zones' plan two datasets answer (checked 2026-11-26): edge status counts
- * (httpRequestsAdaptiveGroups by edgeResponseStatus) and raw firewall events
+ * (httpRequestsAdaptiveGroups by edgeResponseStatus) and raw firewall events. Edge counts are
+ * requestSource "eyeball" only: the Worker's own Cache API lookups log a 504 on every miss or
+ * expired copy (Cloudflare docs, Cache API: expected), about a third of all edge rows here
  * (firewallEventsAdaptive). Grouped firewall events and network breakdowns of all edge
  * traffic answer "does not have access". The raw events carry each address; only the
  * count of distinct addresses is written, per action, source and network. */
@@ -157,7 +159,7 @@ async function edge(env, host, a, b) {
   const out = {};
   try {
     const [z] = await gql(env, `query($z:String!,$s:Time!,$e:Time!){viewer{zones(filter:{zoneTag:$z}){
-      r:httpRequestsAdaptiveGroups(limit:20,orderBy:[count_DESC],filter:{datetime_geq:$s,datetime_lt:$e}){count dimensions{edgeResponseStatus}}}}}`, v);
+      r:httpRequestsAdaptiveGroups(limit:20,orderBy:[count_DESC],filter:{datetime_geq:$s,datetime_lt:$e,requestSource:"eyeball"}){count dimensions{edgeResponseStatus}}}}}`, v);
     out.statuses = (z?.r || []).map((x) => [x.dimensions.edgeResponseStatus, x.count]);
     out.total = out.statuses.reduce((t, x) => t + x[1], 0);
   } catch (e) { out.error = e.message; }
@@ -177,7 +179,7 @@ async function edgeNow(env, a, b) {
   await Promise.all(Object.entries(SITES).map(async ([host, site]) => {
     try {
       const [z] = await gql(env, `query($z:String!,$s:Time!,$e:Time!){viewer{zones(filter:{zoneTag:$z}){
-        r:httpRequestsAdaptiveGroups(limit:20,filter:{datetime_geq:$s,datetime_lt:$e}){count dimensions{edgeResponseStatus}}}}}`,
+        r:httpRequestsAdaptiveGroups(limit:20,filter:{datetime_geq:$s,datetime_lt:$e,requestSource:"eyeball"}){count dimensions{edgeResponseStatus}}}}}`,
         { z: site.zone, s: new Date(a).toISOString(), e: new Date(b).toISOString() });
       const st = (z?.r || []).map((x) => [x.dimensions.edgeResponseStatus, x.count]);
       out[host] = { total: st.reduce((t, x) => t + x[1], 0), s5xx: st.filter((x) => x[0] >= 500).reduce((t, x) => t + x[1], 0),

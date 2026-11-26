@@ -47,6 +47,7 @@ globalThis.fetch = async (url, init = {}) => {
       { action: "block", source: "firewallManaged", clientAsn: "16509", clientASNDescription: "AMAZON-02", clientIP: "192.0.2.2" },
       { action: "block", source: "firewallManaged", clientAsn: "16509", clientASNDescription: "AMAZON-02", clientIP: "192.0.2.1" },
       { action: "managed_challenge", source: "securitylevel", clientAsn: "14061", clientASNDescription: "DIGITALOCEAN", clientIP: "198.51.100.9" }] }] } } });
+    assert.ok(q.includes('requestSource:"eyeball"'), "edge counts must be visitor requests only");
     return json({ data: { viewer: { zones: [{ r: [{ count: 9000, dimensions: { edgeResponseStatus: 200 } }, { count: 600, dimensions: { edgeResponseStatus: 504 } }] }] } } });
   }
   if (url.startsWith("https://discord.test")) { pings.push(["discord", JSON.parse(init.body)]); return new Response(null, { status: 204 }); }
