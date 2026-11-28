@@ -8,8 +8,6 @@ thing: shelf ink says which shelf, the green ring says known-open, the stack
 ring says how many share the pin. Nothing on the map is ever coloured by an
 attribute of the PLACE. This adds that one control, and nothing else.
 
-THE HOUSE RULE IT KEEPS
------------------------
 The control IS the legend. A shelf chip on /map.html already carries, in its
 own swatch, the ink its dots will be drawn in — so the chip row and the map
 are one legend and there is no key to look up. A colour-by control that did

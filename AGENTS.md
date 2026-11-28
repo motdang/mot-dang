@@ -8,7 +8,7 @@ Written 2026-07-30, after a week in which the site grew an ant rank, a LINE fron
 
 ## What this is
 
-A city directory for Chiang Mai and Chiang Rai. Thai first, open data, static HTML, stdlib Python. It is run by one person and it competes with Google by being structurally different rather than bigger: every fact carries where it came from and when it was read.
+A city directory for Chiang Mai and Chiang Rai. Thai first, open data, static HTML, stdlib Python.
 
 **Struck by Nan, 2026-09-18:** *"agents.md is wrong — motdang is 50 days old and I founded it."*
 The line that stood here — "not a startup, a marketplace, a platform, or an MVP on the way to
@@ -27,7 +27,7 @@ The one you will forget is the fourth. Most product instincts assume the user wa
 
 ## What delight means here
 
-Not animation. Not micro-interactions. Not a design system. The site is deliberately 1997 in register and that is load — that is the point, not a limitation to route around. Delight here has four shapes, and all four are already in the codebase to copy from.
+Not animation. Not micro-interactions. Not a design system. Delight here has four shapes, and all four are already in the codebase to copy from.
 
 **Recognition.** Something a Thai reader sees and knows instantly, that no global platform would ever carry. Day colours (สีประจำวัน) driving the accent. Buddhist Era dates. Royal monastery grades. The lunar disc. Wan phra. These cost almost nothing and they say *this was made by someone who lives here*. When you are choosing between two features, the one a foreigner would not think of is usually the right one.
 
@@ -59,8 +59,6 @@ These are not style preferences. Each one is a scar.
 
 **A crawl is not a verification.** The freshness ant originally counted `updatedAt`, which meant one bulk OSM import handed the ant to all 10,000 records at once and the signal said nothing. Freshness now requires a human touch — an owner's claim, or a curated/field source. Any signal that everything can earn simultaneously is not a signal.
 
-**A person's private data does not go on a page to make it look complete.** No home addresses for individuals, no ID numbers, no plate numbers, nothing about visa or work permit. Do not ask for them either. The ant rank must do not reward publishing them.
-
 **One source of truth per channel.** `data/config.json` holds the contact email, LINE OA id and QR. A superseded `data/line.json` path survived a refactor, was still being called, and rendered nothing — two sources of truth for the same phone number is how a wrong number eventually ships. Delete the loser.
 
 **Every channel except the domain belongs to someone else.** Facebook proved it on 29 July: disabled overnight, one appeal, permanent if it fails. `OUR_CHANNELS` / `NOT_OUR_CHANNELS` in `build.py` states what is ours and what is not, renders it on `add.html`, publishes `data/channels.json`, and says in `llms.txt` that any Facebook, Instagram, TikTok or X account claiming to be มดแดง is an impostor and that nobody is ever asked for money to be listed. Keep that current. The contact address in `config.json` is still a free third-party mailbox printed on ten thousand pages; moving it to an address on the domain is the outstanding fix.
@@ -91,11 +89,10 @@ Two environment traps that cost real time and will cost you the same time again.
 In the order they should be paid.
 
 1. **A person is not a place.** The driver and housekeeper handouts promise a page that the schema cannot yet create — `home-services` holds zero records and `transport` holds fuel stations. Until this exists, those two sheets must not be handed out. **2026-09-27:** motdang.net/home-help is live — the homematch repo, its own Worker route — where a housekeeper or driver lists themselves and gets a page (noindex unless they opt in). `BOARD` in `build.py` links it from the home-services shelf. The handouts do not yet print its address.
-2. **Unlisted by default for people.** URL and QR reachable; absent from the category index, the sitemap, `places.json` and `llms-full.txt`; `noindex`; opt in to indexing separately. See the fourth persona for why this is not optional.
-3. **`hello@motdang.net`** on the domain, forwarding wherever, replacing the free mailbox in `config.json`.
-4. **The Shan needs a human.** Fifteen minutes of a Shan speaker's time clears the banner.
-5. **The 2026 Michelin roster and the เชลล์ชวนชิม holders** need a real browser — the filter pages render client-side and `shellshuanshim.com` serves an expired certificate. The 2022-edition entries currently on the site are dated and say so, but they are four editions stale.
-6. **Ask whether a sponsor block belongs on a wat page.**
+2. **`hello@motdang.net`** on the domain, forwarding wherever, replacing the free mailbox in `config.json`.
+3. **The Shan needs a human.** Fifteen minutes of a Shan speaker's time clears the banner.
+4. **The 2026 Michelin roster and the เชลล์ชวนชิม holders** need a real browser — the filter pages render client-side and `shellshuanshim.com` serves an expired certificate. The 2022-edition entries currently on the site are dated and say so, but they are four editions stale.
+5. **Ask whether a sponsor block belongs on a wat page.**
 
 ## Where things live
 
